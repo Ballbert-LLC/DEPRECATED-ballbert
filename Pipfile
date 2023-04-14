@@ -6,6 +6,15 @@ name = "pypi"
 [packages]
 openai = "*"
 pyttsx3 = "*"
+sounddevice = "*"
+scipy = "*"
+moviepy = "*"
+pydub = "*"
+librosa = "*"
+matplotlib = "*"
+pandas = "*"
+install = "*"
+tensorflow = {file = "https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py3-none-any.whl"}
 
 [dev-packages]
 
