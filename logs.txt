@@ -1,1 +1,1 @@
-Q: wait 10minA: ]
+Q: what is 1 - 1A: 1 - 1 is equal to 0.

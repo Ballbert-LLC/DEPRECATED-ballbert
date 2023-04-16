@@ -3,4 +3,4 @@ from Classes import Action, Instruction
 
 assistant = Assistant(["Wait_Skill"])
 
-assistant.text_chat()
+assistant.voice_to_voice_chat()

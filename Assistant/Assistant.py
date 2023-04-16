@@ -1,10 +1,12 @@
 import importlib
 import inspect
 
+from ASR import ASR
 from Chat_Gpt import Chat_Gpt
 from Classes import Response
 from Decorators import paramRegistrar, reg
 from TTS import TTS
+from Wake_Word import Wake_Word
 
 
 class Assistant:
@@ -44,17 +46,18 @@ class Assistant:
                 possible_paramiters[skill_id].append(item)
 
         # chatbot
-        api_key = "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"
+        api_key = "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"
 
         self.action_functions = action_functions
         self.parameters = parameters
         self.possible_paramiters = possible_paramiters
         self.actions = actions
-        self.chatbot = Chat_Gpt("Hal", api_key=api_key, actions=self.actions)
+        self.chatbot = Chat_Gpt("Alexa", api_key=api_key, actions=self.actions)
         self.tts = TTS(lang="en-US")
-        self.punctuition = [".", ",", "?", "!", ":", ";", "\"", "'", "(", ")", "[", "]", "...", "-", "/", "\\", '"']
+        self.punctuition = [".", "?", "!"]
+        self.asr = ASR()
 
-    def text_chat(self):
+    def text_to_voice_chat(self):
         while True:
             question = input("Q: ")
 
@@ -65,8 +68,6 @@ class Assistant:
 
             json_identifier = "JS:"
             is_json = None
-            
-            self.tts.start_phrases()
 
             for i, chunk in enumerate(response):
                 if "content" in chunk["choices"][0]["delta"]:
@@ -83,20 +84,64 @@ class Assistant:
                                 is_json = False
                     if is_json == False and any(s in self.punctuition for s in content):
                         if buffer:
-                            self.tts.say_phrase_in_phrases(buffer)
+                            print(buffer + content)
+                            self.tts.say_phrase(buffer + content)
+                            print("past")
                             buffer = ""
-                        self.tts.say_phrase_in_phrases(content)
                     else:
                         buffer += content
+                            
 
-            print(is_json)
-            self.tts.end_phrases()
             file = open("logs.txt","w") 
             file.write("Q: "+ question)
-            file.write("A: "+ content)
+            file.write("A: "+ message)
+    def voice_to_voice_chat(self):
+        def callback():
+            wake_word.pause()
+            line = self.asr.get_line()
+            response = self.chatbot.ask(line)
+            message = ""
 
+            buffer = ""
 
-    def text_to_voice_chat(self):
+            json_identifier = "JS:"
+            is_json = None
+            print("detected")
+
+            for i, chunk in enumerate(response):
+                if "content" in chunk["choices"][0]["delta"]:
+                    content = chunk["choices"][0]["delta"]["content"]
+                    message += content
+                    if json_identifier == "" and is_json == None:
+                        is_json = True
+                    elif is_json == None:
+                        for letter in content:
+                            if letter in json_identifier and json_identifier.index(letter) == 0:
+                                json_identifier = json_identifier.replace(
+                                    letter, "", 1)
+                            elif json_identifier != "":
+                                is_json = False
+                    if is_json == False and any(s in self.punctuition for s in content):
+                        if buffer:
+                            self.tts.say_phrase(buffer + content)
+                            buffer = ""
+                    else:
+                        buffer += content
+            if(is_json):
+                self._handle_json(message)
+            wake_word.resume()
+            
+            file = open("logs.txt","w") 
+            file.write("Q: "+ line)
+            file.write("A: "+ message)    
+        wake_word = Wake_Word(callback=callback)
+        
+        wake_word.start()
+        
+    def _handle_json(self, the_json):
+        print(the_json)
+
+    def text_chat(self):
         while True:
             question = input("Q: ")
 

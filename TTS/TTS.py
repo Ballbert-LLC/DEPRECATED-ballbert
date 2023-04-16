@@ -1,11 +1,13 @@
+import time
+
 import pyttsx3
 
 
 class TTS:
     def __init__(self, lang: str, voice_id="com.apple.speech.synthesis.voice.Alex"):
         engine = pyttsx3.init()
-        engine.setProperty('voice', voice_id)
-
+        # engine.setProperty('voice', voice_id)
+        # engine.setProperty('rate', 500)
         self.lang = lang
         self.engine = engine
 
@@ -24,14 +26,3 @@ class TTS:
     def say_phrase(self, phrase: str):
         self.engine.say(phrase)
         self.engine.runAndWait()
-    
-    def start_phrases(self):
-        self.engine.startLoop(False)
-
-    def end_phrases(self):
-        self.engine.endLoop()
-
-    
-    def say_phrase_in_phrases(self, phrase: str):
-        self.engine.say(phrase)
-        self.engine.iterate()
