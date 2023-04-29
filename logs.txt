@@ -1,1 +1,159 @@
-Q: what is 1 - 1A: 1 - 1 is equal to 0.
+R: NoneQ: what is the square root of 16
+A: 🖥️{
+    "command": {
+        "name": "demo_skills.sqrt",
+        "args": {
+            "number": "16"
+        }
+    }
+}
+Action: demo_skills.sqrt
+P: {'number': '16'}
+R: None
+Q: get me the square root of 16
+A: 🖥️{
+    "command": {
+        "name": "demo_skills.multiply",
+        "args": {
+            "a": "4",
+            "b": "4"
+        }
+    }
+}
+Action: demo_skills.multiply
+P: {'a': '4', 'b': '4'}
+R: <Classes.Response.Response object at 0x11f19feb0>
+S: From Backend: The result of demo_skills.multiply is 16
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The square root of 16 is 4"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The square root of 16 is 4'}
+R: None
+Q: why did you multiply?
+A: Ohh, Sorry about that. I got confused about the operation. The correct operation for getting the square root of 16 is to use the `math.sqrt` function which is not one of the available commands in our system constraints.
+Q: why did you set the params as four and dour
+A: I apologize for the mistake. I set the params as "4" and "4" because the square root of 16 is 4 multiplied by 4 which gives a result of 16. However, this was incorrect as the operation for finding the square root of 16 is not multiplication but rather the `math.sqrt` function.
+Q: ok thank you
+A: You're welcome. Do you need assistance with anything else?
+Q: what time is it
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The current time is Mon Apr 24 20:47:56 2023"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The current time is Mon Apr 24 20:47:56 2023'}
+R: None
+Q: what is the time
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The current time is Mon Apr 24 20:54:08 2023"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The current time is Mon Apr 24 20:54:08 2023'}
+R: None
+Q: can you make that time in 12 hr time
+A: I'm sorry but I don't have an inbuilt functionality to convert military(Hours are 24-hour format) time to a 12-hour time.
+Q: can you try
+A: I'm afraid there is no predefined command to convert military time to 12-hour time. However, we can compute the 12-hour time using the modulo operator from the demo_skills.divide command. 
+
+Please provide the current time in military format beginning with "Time is...".
+Q: Time is 20:54:08
+A: 🖥️{
+    "command": {
+        "name": "demo_skills.divide",
+        "args": {
+            "a": "20",
+            "b": "12"
+        }
+    }
+}
+Action: demo_skills.divide
+P: {'a': '20', 'b': '12'}
+R: <Classes.Response.Response object at 0x12096a050>
+S: From Backend: The result of demo_skills.divide is 1.6666666666666667
+A: 🖥️{
+    "command": {
+        "name": "demo_skills.multiply",
+        "args": {
+            "a": "1",
+            "b": "60"
+        }
+    }
+}
+Action: demo_skills.multiply
+P: {'a': '1', 'b': '60'}
+R: <Classes.Response.Response object at 0x11fc3a4d0>
+S: From Backend: The result of demo_skills.multiply is 60
+A: 🖥️{
+    "command": {
+        "name": "demo_skills.subtract",
+        "args": {
+            "a": "54",
+            "b": " ((20 // 12) * 60)"
+        }
+    }
+}
+Action: demo_skills.subtract
+P: {'a': '54', 'b': ' ((20 // 12) * 60)'}
+Q: what time is it
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The current time is Tue Apr 25 17:25:01 2023"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The current time is Tue Apr 25 17:25:01 2023'}
+R: None
+Q: now what time is it
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The current time is Tue Apr 25 17:25:33 2023"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The current time is Tue Apr 25 17:25:33 2023'}
+R: None
+Q: how long has it been
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "🙃Hello there! Please give me a reference point to calculate the time difference."
+        }
+    }
+}
+Action: system.speak
+P: {'speech': '🙃Hello there! Please give me a reference point to calculate the time difference.'}
+R: None
+Q: 17:25:01
+A: 🖥️{
+    "command": {
+        "name": "demo_skills.subtract",
+        "args": {
+            "a": "Tue Apr 25 17:25:01 2023",
+            "b": "Tue Apr 25 17:25:33 2023"
+        }
+    }
+}
+Action: demo_skills.subtract
+P: {'a': 'Tue Apr 25 17:25:01 2023', 'b': 'Tue Apr 25 17:25:33 2023'}

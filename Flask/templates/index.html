@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>FlaskBlog</title>
+</head>
+
+<body class="bg-dark">
+
+
+    <nav class="d-flex flex-row-reverse p-0">
+        <div id="sidebar" class="text-light bg-secondary pt-5 p-4">
+            <a class="item text-light" href="{{url_for('skills')}}">Skills</a>
+            <a class="item text-light" href="{{url_for('addons')}}">Addons</a>
+            <a class="item text-light" href="{{url_for('config')}}">Config</a>
+            <a class="item text-light" href="{{url_for('settings')}}">Settings</a>
+        </div>
+        <button id="hamburger" class="m-2"><img class="hamburgerImage" src="{{ url_for('static', filename= 'menu.png') }}"
+                alt=""></button>
+
+    </nav>
+
+    <h1 class="text-center text-light p-5">Welcome to <span class="fw-bold">Hal</span></h1>
+
+    <h3 class="text-light text-center pt-5 online"><span class="text-secondary"> Total Devices Online: </span>​  ​{{ totalDevicesOnline }} ​ ​<span class="dotContainer pl-3"><span class="dot"></span></span></h3>
+</body>
+
+<script>
+    let sidebarOpen = false;
+
+    document.getElementById("hamburger").addEventListener("click", () => {
+        if(sidebarOpen){
+            document.getElementById("sidebar").style.width = "0"
+        } else {
+            document.getElementById("sidebar").style.width = "max(20vw, 10rem)"
+
+        }
+
+        sidebarOpen = !sidebarOpen
+    })
+</script>
+
+</html>

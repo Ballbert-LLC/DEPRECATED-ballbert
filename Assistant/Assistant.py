@@ -1,12 +1,21 @@
 import importlib
 import inspect
+import sqlite3
 
 from ASR import ASR
 from Chat_Gpt import Chat_Gpt
 from Classes import Response
+from Config import Config
 from Decorators import paramRegistrar, reg
+from Memory import Weaviate
+from PromptGenerator import create_response_message
 from TTS import TTS
+from Utils import (convert_dict_to_lower, execute_response,
+                   get_action_from_response)
+from Logging import log_line
 from Wake_Word import Wake_Word
+
+config = Config()
 
 
 class Assistant:
@@ -15,47 +24,39 @@ class Assistant:
         for skill in skills:
             importlib.import_module(skill)
 
-        # full set of actions with function and paramiters
-        actions = {skill_id: {"parameters": {}}
-                   for skill_id, func in reg.all.items()}
+        # set a action dictionary
+        action_dict: dict = reg.all
 
-        # get all of the action functions from the decorator
-        action_functions: dict[str, function] = reg.all
+        # get paramiters from decorator
+        for skill_id, item in action_dict.items():
+            _parameters = tuple(inspect.signature(item["function"]).parameters.items())
+            
+            for argument in _parameters:
+                _name = argument[0]
+                _type =  f"<{argument[1].annotation}>" if type(argument[1].annotation) is str else f"<{argument[0]}>"
+                action_dict[skill_id]["parameters"]= {_name: _type}
+            
+        # get all of the action
+        actions: list[tuple] = [(item["name"], item["id"], item["parameters"]) for skill_id, item in reg.all.items()]
+        
+        # pinecone memory
+        pm = None
+        pm = Weaviate()
+        
+        # create memory
+        for item in actions:
+            pm.add(str(item))
+    
 
-        # get all of the paramiters from the decorator
-        parameters = set()
-
-        for skill_id, func in action_functions.items():
-            _parameters = inspect.signature(func).parameters
-
-            # add paramiters to actions
-            actions[skill_id]["parameters"] = set(
-                argument for argument in _parameters)
-
-            # back to working with paramiters
-            _parameters = set(
-                f"{skill_id}.{argument}" for argument in _parameters)
-            parameters = parameters.union(_parameters)
-
-        # get all of the possible paramiters
-        possible_paramiters = dict()
-
-        for skill_id, func in paramRegistrar.all.items():
-            possible_paramiters[skill_id] = []
-            for item in func():
-                possible_paramiters[skill_id].append(item)
-
-        # chatbot
-        api_key = "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"
-
-        self.action_functions = action_functions
-        self.parameters = parameters
-        self.possible_paramiters = possible_paramiters
+        
+        self.pm = pm
         self.actions = actions
-        self.chatbot = Chat_Gpt("Alexa", api_key=api_key, actions=self.actions)
+        self.action_dict = action_dict
+        self.chatbot = Chat_Gpt(config.name, api_key=config.open_ai_api_key, actions=self.actions)
         self.tts = TTS(lang="en-US")
-        self.punctuition = [".", "?", "!"]
         self.asr = ASR()
+        self.speak_mode = False
+        self.action_functions = {key: value["function"] for key, value in self.action_dict.items()}
 
     def text_to_voice_chat(self):
         while True:
@@ -82,7 +83,7 @@ class Assistant:
                                     letter, "", 1)
                             elif json_identifier != "":
                                 is_json = False
-                    if is_json == False and any(s in self.punctuition for s in content):
+                    if is_json == False and any(s in config.punctuition for s in content):
                         if buffer:
                             print(buffer + content)
                             self.tts.say_phrase(buffer + content)
@@ -121,7 +122,7 @@ class Assistant:
                                     letter, "", 1)
                             elif json_identifier != "":
                                 is_json = False
-                    if is_json == False and any(s in self.punctuition for s in content):
+                    if is_json == False and any(s in config.punctuition for s in content):
                         if buffer:
                             self.tts.say_phrase(buffer + content)
                             buffer = ""
@@ -131,50 +132,152 @@ class Assistant:
                 self._handle_json(message)
             wake_word.resume()
             
-            file = open("logs.txt","w") 
-            file.write("Q: "+ line)
-            file.write("A: "+ message)    
+  
         wake_word = Wake_Word(callback=callback)
         
         wake_word.start()
         
     def _handle_json(self, the_json):
         print(the_json)
+    
+    def _text_gpt_response(self, to_gpt):
+        
+        response = self.chatbot.ask(to_gpt)
+
+        total_message = ""
+        
+        spoken_message = ""
+        
+        backend_message = ""
+                    
+        should_add_to_backend = False
+        
+        currently_speaking = ""
+
+        speach_control = 0
+        
+        for chunk in response:
+            if "content" in chunk["choices"][0]["delta"]:
+                content = chunk["choices"][0]["delta"]["content"]
+                total_message += content
+                if "🖥" in content or should_add_to_backend:
+                    backend_message += content
+                    should_add_to_backend = True
+                else:
+                    spoken_message += content
+                    currently_speaking += content
+                if should_add_to_backend ==  False:
+                    print(content, end="", flush=True)
+                #check for begining
+                if '"speech": ' in total_message and '"' in content and speach_control != -1:
+                    speach_control += 1
+                #check for content
+                if speach_control > 0:
+                    currently_speaking += content
+                    spoken_message += content
+                #check for end
+                if speach_control > 0 and '",' in spoken_message:
+                    speach_control = -1
+                #fix it
+                if '"' in spoken_message:
+                    spoken_message = spoken_message.replace(' "', '')
+                    currently_speaking = currently_speaking.replace(' "', '')
+                    spoken_message = spoken_message.replace('"', '')
+                    currently_speaking = currently_speaking.replace('"', '')
+                #fic it
+                if '",' in spoken_message:
+                    spoken_message = spoken_message.replace('",', '')
+                #buffer speach
+                if speach_control == 1:
+                    print(currently_speaking, end="", flush=True)
+                    currently_speaking = ""
+        log_line(f"A: {total_message}")
+    
+        if "🖥️" in backend_message:                                   
+            backend_res = execute_response(actions=self.action_functions, response=backend_message)
+            action = get_action_from_response(backend_message)
+            
+            response_message = create_response_message(action, backend_res)
+            
+            if action in self.action_dict:
+                log_line(f"S: {response_message}")
+
+                self._text_gpt_response(response_message) 
+            
+        print()
 
     def text_chat(self):
         while True:
             question = input("Q: ")
+            log_line(f"Q: {question}")
+            self._text_gpt_response(question)
 
-            response = self.chatbot.ask(question)
-            message = ""
-
-            buffer = ""
-
-            json_identifier = "JS:"
-            is_json = None
-
-            for i, chunk in enumerate(response):
-                if "content" in chunk["choices"][0]["delta"]:
-                    content = chunk["choices"][0]["delta"]["content"]
-                    message += content
-                    if json_identifier == "" and is_json == None:
-                        is_json = True
-                    elif is_json == None:
-                        for letter in content:
-                            if letter in json_identifier and json_identifier.index(letter) == 0:
-                                json_identifier = json_identifier.replace(
-                                    letter, "", 1)
-                            elif json_identifier != "":
-                                is_json = False
-                    if is_json != None:
-                        if buffer and is_json == False:
-                            print(buffer, end="", flush=True)
-                            buffer = ""
-                        print(content, end="", flush=True)
-                    else:
-                        buffer += content
-
-            print(is_json)
+            
+                       
 
     def send_response(response: Response):
         print(response)
+        
+    def add_skill(self, skill):
+        con = sqlite3.connect("skills.db")
+
+        cur = con.cursor()
+
+        prev_action_dict: dict = self.action_dict.copy()
+
+        importlib.import_module(skill)
+
+        new_action_dict: dict = {}
+        
+        cur.execute(f"DELETE FROM actions WHERE skill='{skill}'")
+                
+        # set a action dictionary
+        action_dict: dict = reg.all
+                
+        # get paramiters from decorator
+        for skill_id, item in action_dict.items():
+            
+            _parameters = tuple(inspect.signature(item["function"]).parameters.items())
+            
+            
+            if not (skill_id in prev_action_dict):
+                new_action_dict[skill_id] = item
+                new_action_dict[skill_id]["parameters"] = {}
+                        
+            for argument in _parameters:
+                print(argument)
+                _name = argument[0]
+                _type =  f"<{argument[1].annotation}>" if type(argument[1].annotation) is str else f"<{argument[0]}>"
+                if skill_id not in prev_action_dict:
+                    new_action_dict[skill_id]["parameters"][_name] = _type
+                action_dict[skill_id]["parameters"][_name] = _type
+ 
+            
+        
+        # get all of the action
+        actions: list[tuple] = [(item["name"], item["id"], item["parameters"]) for skill_id, item in reg.all.items()]
+        
+        result = self.pm.add_list(action_dict)
+        
+        for action_id, action in result.items(): 
+            cur.execute(f"""
+            INSERT INTO actions VALUES
+                ('{skill}', '{action["uuid"]}' ,'{action["id"]}', '{action["name"]}', '{str(action["parameters"]).replace("'", '"')}')
+            """)
+            
+            con.commit()
+
+        cur.execute(f"""
+            INSERT INTO installedSkills (skill, version) VALUES
+                ('{skill}', 0.0)
+        """)
+        
+        con.commit()
+    
+        print(self.action_dict)
+        
+        self.action_dict = action_dict
+        self.actions = actions
+        self.action_functions = {key: value["function"] for key, value in self.action_dict.items()}
+
+        

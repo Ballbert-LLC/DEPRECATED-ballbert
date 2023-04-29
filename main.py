@@ -1,3 +1,13 @@
-from Classes import Action, Instruction
 from Hal import assistant
-from Helper import responses_to_string
+import threading
+
+
+def main():
+    from Classes import Action, Instruction
+    assistant.add_skill("Demo_Skills")
+    assistant.text_chat()
+
+
+if __name__ == "__main__":
+
+    main()

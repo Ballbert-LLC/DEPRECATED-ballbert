@@ -1,0 +1,73 @@
+h1 {
+    text-align: center;
+}
+
+.hamburgerImage {
+    width: 2rem;
+    height: 2rem;
+}
+
+#hamburger {
+    all: unset;
+    z-index: 10;
+}
+
+#sidebar {
+    width: 0;
+    height: 100vh;
+    position: fixed;
+    right: -4rem;
+    transition: all 0.4s ease-in-out;
+}
+
+nav {
+    margin: 0;
+    position: fixed;
+    width: 100vw;
+}
+
+.dot {
+    background-color: greenyellow;
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+    border-radius: 100%;
+    animation: pulse 1s infinite;
+}
+
+.dotContainer {
+    display: inline-flex;
+    justify-content: center;
+    align-self: center;
+    width: 1rem;
+    position: relative;
+    height: 1rem;
+}
+
+.online {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item {
+    font-size: xx-large;
+    width: 100%;
+    cursor: pointer;
+    display: block;
+}
+
+@keyframes pulse {
+    0% {
+        width: 0;
+        height: 0;
+    }
+    50% {
+        width: 1rem;
+        height: 1rem;
+    }
+    100% {
+        width: 0rem;
+        height: 0rem;
+    }
+}

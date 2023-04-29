@@ -38,6 +38,5 @@ class Instruction:
 
     def run_actions(self):
         for action in self.actions:
-            print("ran")
             self.responses.append(self.next())
         return self.responses

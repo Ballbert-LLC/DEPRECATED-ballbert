@@ -15,7 +15,7 @@ class Wake_Word:
     def _start(self):
         try:
             self.recoder.start()
-
+            print("hello")
             while True:
                 while self._paused:
                     pass

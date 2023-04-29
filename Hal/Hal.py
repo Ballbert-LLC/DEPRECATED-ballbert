@@ -1,6 +1,5 @@
 from Assistant import Assistant
-from Classes import Action, Instruction
+from PromptGenerator import chat_with_ai
 
-assistant = Assistant(["Wait_Skill"])
+assistant = Assistant()
 
-assistant.voice_to_voice_chat()

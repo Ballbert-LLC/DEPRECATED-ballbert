@@ -11,16 +11,19 @@ scipy = "*"
 moviepy = "*"
 pydub = "*"
 pandas = "*"
-tensorflow = "*"
-scikit-learn = "*"
-pvporcupine = "*"
 pvrecorder = "*"
 speechrecognition = "*"
 google = "*"
 pyaudio = "*"
 google-cloud-speech = "*"
+tiktoken = "*"
+colorama = "*"
+pinecone-client = "*"
+pipenv = "*"
+install = "*"
+weaviate-client = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.9"
