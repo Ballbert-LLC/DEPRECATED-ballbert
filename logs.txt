@@ -157,3 +157,123 @@ A: 🖥️{
 }
 Action: demo_skills.subtract
 P: {'a': 'Tue Apr 25 17:25:01 2023', 'b': 'Tue Apr 25 17:25:33 2023'}
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.do_nothing",
+        "args": {}
+    }
+}
+Action: system.do_nothing
+P: {}
+R: None
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello! How can I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello! How can I assist you today?'}
+R: None
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello! How can I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello! How can I assist you today?'}
+R: None
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello! How can I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello! How can I assist you today?'}
+R: None
+Q: ho2 many timnes did i repeat that
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "You repeated the word 'hi' three times. How can I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': "You repeated the word 'hi' three times. How can I assist you today?"}
+R: None
+Q: what are some of your skills
+Q: what are some of your skills
+A: 🖥️{
+    "command": {
+        "name": "skills.list"
+    }
+}
+Action: skills.list
+Q: what are some of your skills
+A: 🖥️{"command": {"name": "skills"}}
+Action: skills
+Q: hi
+A: 🖥️{"command":{"name":"system.speak","args":{"speach":"Hello! How can I assist you today?"}}}
+Action: system.speak
+P: {'speach': 'Hello! How can I assist you today?'}
+R: None
+Q: what are some of your skills
+A: 🖥️{"command":{"name":"system.speak","args":{"speach":"I have basic arithmetics skills such as addition, subtraction, multiplication and division. Additionally, I can do nothing if you like."}}}
+Action: system.speak
+P: {'speach': 'I have basic arithmetics skills such as addition, subtraction, multiplication and division. Additionally, I can do nothing if you like.'}
+R: None
+Q: add ten plus ten
+A: 🖥️{"command":{"name":"skills.add","args":{"a":10,"b":10}}}
+Action: skills.add
+P: {'a': 10, 'b': 10}
+R: <Hal.Classes.Response.Response object at 0x000001D2827235D0>
+S: From Backend: The result of skills.add is 20
+A: 🖥️{"command":{"name":"system.speak","args":{"speach":"The result of addition is 20."}}}
+Action: system.speak
+P: {'speach': 'The result of addition is 20.'}
+R: None
+Q: add ten plus ten
+A: 🖥️{
+    "command": {
+        "name": "simplemath.add",
+        "args": {
+            "a": "10",
+            "b": "10"
+        }
+    }
+}
+Action: simplemath.add
+P: {'a': '10', 'b': '10'}
+R: <Hal.Classes.Response.Response object at 0x000001C02CDE65D0>
+S: From Backend: The result of simplemath.add is 20
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The result of adding 10 and 10 is 20"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The result of adding 10 and 10 is 20'}
+R: None
+Q: 

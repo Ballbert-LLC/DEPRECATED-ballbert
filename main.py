@@ -3,8 +3,8 @@ import threading
 
 
 def main():
-    from Classes import Action, Instruction
-    assistant.add_skill("Demo_Skills")
+    from Hal import Action, Instruction
+    assistant.add_skill("SimpleMath")
     assistant.text_chat()
 
 
