@@ -5,6 +5,7 @@ import yaml
 from flask import Flask, jsonify, render_template, request
 from flask_socketio import SocketIO, send
 from git import Repo
+from ..Hal import assistant
 
 repos_path = "./repos"
 app = Flask(__name__)
@@ -47,31 +48,14 @@ def settings():
 
 @socketio.on('addSkill')
 def handle_json(json):
-    try:
-        add_skill_to_path(json["url"])
-        send({"status_code": 200}, json=True)
+    # try:
+        if assistant.add_skill_from_url(json["url"]):
+            send({"status_code": 200}, json=True)
+        else:
+            send({"status_code": 500}, json=True)
 
-    except:
-        send({"status_code": 500}, json=True)
-
-
-def add_skill_to_path(url):
-    Repo.clone_from(url, f"{repos_path}/temp")
-    name = ""
-    requirements = []
-    with open(f"{repos_path}/temp/config.yaml", 'r') as stream:
-        data_loaded = yaml.safe_load(stream)
-        name = data_loaded["name"] if data_loaded["name"] else uuid.uuid4()
-        print(data_loaded)
-        requirements = data_loaded["requirements"] if "requirements" in data_loaded else [
-        ]
-
-    open(f"{repos_path}/temp/settings.yaml", 'w').close()
-
-    os.rename(f"{repos_path}/temp", f"{repos_path}/{name}")
-
-    for requirement in requirements:
-        add_skill_to_path(requirement)
+    # except:
+    #     send({"status_code": 500}, json=True)
 
 
 def run():

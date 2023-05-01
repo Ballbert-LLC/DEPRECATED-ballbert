@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import os
+import shutil
 import sqlite3
 import uuid
 
@@ -21,7 +22,7 @@ from ..Wake_Word import Wake_Word
 
 from git import Repo
 
-repos_path = f"{os.path.abspath(os.getcwd())}\\Skills"
+repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
 
 config = Config()
 
@@ -63,7 +64,8 @@ class Assistant:
         self.action_dict = action_dict
         self.chatbot = Chat_Gpt(
             config.name, api_key=config.open_ai_api_key, actions=self.actions)
-        self.tts = TTS(lang="en-US")
+        # self.tts = TTS(lang="en-US")
+        self.tts = None
         self.asr = ASR()
         self.speak_mode = False
         self.action_functions = {key: value["function"]
@@ -226,7 +228,7 @@ class Assistant:
     def send_response(response: Response):
         print(response)
 
-    def add_skill(self, skill):
+    def add_skill(self, skill, should_replace=True):
         con = sqlite3.connect("skills.db")
 
         cur = con.cursor()
@@ -248,9 +250,11 @@ class Assistant:
             _parameters = tuple(inspect.signature(
                 item["function"]).parameters.items())
 
-            if not (skill_id in prev_action_dict):
+            if skill_id not in prev_action_dict:
                 new_action_dict[skill_id] = item
                 new_action_dict[skill_id]["parameters"] = {}
+            
+            action_dict[skill_id]["parameters"] = action_dict[skill_id]["parameters"] if "parameters" in action_dict[skill_id] else {}
 
             for argument in _parameters:
                 print(argument)
@@ -258,6 +262,7 @@ class Assistant:
                 _type = f"<{argument[1].annotation}>" if type(
                     argument[1].annotation) is str else f"<{argument[0]}>"
                 if skill_id not in prev_action_dict:
+                    print(new_action_dict[skill_id])
                     new_action_dict[skill_id]["parameters"][_name] = _type
                 action_dict[skill_id]["parameters"][_name] = _type
 
@@ -275,9 +280,15 @@ class Assistant:
 
             con.commit()
 
+        
         cur.execute(f"""
-            INSERT INTO installedSkills (skill, version) VALUES
-                ('{skill}', 0.0)
+            INSERT INTO installedSkills (skill, version)
+            SELECT '{skill}', 0.0
+            WHERE NOT EXISTS (
+                SELECT 1 FROM installedSkills WHERE skill = '{skill}'
+            ) AND ({not should_replace} OR NOT EXISTS (
+                SELECT 1 FROM installedSkills WHERE skill = '{skill}'
+            ))
         """)
 
         con.commit()
@@ -289,8 +300,11 @@ class Assistant:
         self.action_functions = {key: value["function"]
                                  for key, value in self.action_dict.items()}
 
-    def add_skill_from_url(self, url):
+    def add_skill_from_url(self, url, should_replace=True):
 
+        if not os.path.exists(os.path.join(repos_path, "temp")):
+            os.makedirs(f"{repos_path}/temp")
+        
         for filename in os.listdir(f"{repos_path}/temp"):
             file_path = os.path.join(f"{repos_path}/temp", filename)
             try:
@@ -312,22 +326,39 @@ class Assistant:
             print(data_loaded)
             requirements = data_loaded["requirements"] if "requirements" in data_loaded else [
             ]
+        
+        temp_name = uuid.uuid4()
+        os.rename(f"{repos_path}/temp", f"{repos_path}/{temp_name}")
 
-        if not self.is_folder_valid(f"{repos_path}/temp"):
+        for requirement in requirements:
+            self.add_skill_from_url(requirement)
+            
+        os.rename(f"{repos_path}/{temp_name}", f"{repos_path}/temp")
+
+
+        print("name", os.path.exists(f"{repos_path}/temp"))
+        if not self.is_folder_valid(f"{repos_path}/temp", should_replace):
             print("notValid")
+            shutil.rmtree(os.path.join(repos_path, "temp"))
             return False
 
         open(f"{repos_path}/temp/settings.yaml", 'w').close()
 
+        if should_replace and os.path.exists(os.path.join(repos_path, name)):
+            shutil.rmtree(os.path.join(repos_path, name))
+        
+        print("renaming")
+
         os.rename(f"{repos_path}/temp", f"{repos_path}/{name}")
-
-        for requirement in requirements:
-            self.add_skill_from_url(requirement)
-
+        
+        
+        self.add_skill(name, should_replace=should_replace)
+        
         return True
 
-    def is_folder_valid(self, folder_path):
+    def is_folder_valid(self, folder_path, should_replace=True):
         # Read the config file
+        print("fp", folder_path)
         config_file_path = os.path.join(folder_path, 'config.yaml')
         with open(config_file_path, 'r') as config_file:
             config = yaml.safe_load(config_file)
@@ -373,7 +404,10 @@ class Assistant:
         conn.close()
 
         # Check if the value exists in the table
-        if result > 0:
+        if result > 0 and not should_replace:
             return False
-        # If all checks pass, return True
+        
+        if os.path.exists(os.path.join(repos_path,name)) and not should_replace:
+            return True
+        
         return True
