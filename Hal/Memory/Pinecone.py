@@ -6,7 +6,7 @@ from colorama import Fore, Style
 from openai.error import APIError, RateLimitError
 
 from ..Assistant import Assistant
-from ..Config import Config
+from Config import Config
 
 config = Config()
 

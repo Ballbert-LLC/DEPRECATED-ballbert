@@ -2,7 +2,6 @@ from .ASR import *
 from .Assistant import *
 from .Chat_Gpt import *
 from .Classes import *
-from .Config import *
 from .Decorators import *
 from .Flask import *
 from .Hal import *

@@ -277,3 +277,237 @@ Action: system.speak
 P: {'speech': 'The result of adding 10 and 10 is 20'}
 R: None
 Q: 
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello! How may I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello! How may I assist you today?'}
+R: None
+Q: what are your skills?
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "As an AI assistant, I can assist you with various tasks such as setting reminders, controlling your smart home devices, and answering your queries among other things. What task would you like me to help you with today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'As an AI assistant, I can assist you with various tasks such as setting reminders, controlling your smart home devices, and answering your queries among other things. What task would you like me to help you with today?'}
+R: None
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello again! How may I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello again! How may I assist you today?'}
+R: None
+Q: what are some of your skills?
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "As an AI assistant, I can assist you with various tasks such as setting reminders, controlling your smart home devices, and answering your queries among other things. What task would you like me to help you with today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'As an AI assistant, I can assist you with various tasks such as setting reminders, controlling your smart home devices, and answering your queries among other things. What task would you like me to help you with today?'}
+R: None
+Q: add one plus one
+A: 🖥️{
+    "command": {
+        "name": "simplemath.add",
+        "args": {
+            "a": 1,
+            "b": 1
+        }
+    }
+}
+Action: simplemath.add
+P: {'a': 1, 'b': 1}
+R: <Hal.Classes.Response.Response object at 0x000002E12DEDC190>
+S: From Backend: The result of simplemath.add is 2
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The result of 1 + 1 is 2."
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The result of 1 + 1 is 2.'}
+R: None
+Q: Add one plus one
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "One plus one is equal to two."
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'One plus one is equal to two.'}
+R: None
+Q: add two plus two
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Two plus two is equal to four."
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Two plus two is equal to four.'}
+R: None
+Q: use the skill this time
+A: I'm sorry, I'm not sure what skill you are referring to. Could you please provide more information or context?
+Q: add one plus one
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Result of 1+1 is 2"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Result of 1+1 is 2'}
+R: None
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello! How may I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello! How may I assist you today?'}
+R: None
+Q: add uno plus uno
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The result of 1+1 is 2."
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The result of 1+1 is 2.'}
+R: None
+Q: hi
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "Hello! How can I assist you today?"
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'Hello! How can I assist you today?'}
+R: None
+Q: add uno plus uno
+A: 🖥️{
+    "command": {
+        "name": "simplemath.add",
+        "args": {
+            "a": 1,
+            "b": 1
+        }
+    }
+} 
+
+Action: simplemath.add
+P: {'a': 1, 'b': 1}
+R: <Hal.Classes.Response.Response object at 0x0000025011264B50>
+S: From Backend: The result of simplemath.add is 2
+A: 🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The sum of 1 and 1 is 2."
+        }
+    }
+}
+Action: system.speak
+P: {'speech': 'The sum of 1 and 1 is 2.'}
+R: None
+Q: what is the square root of 900 and also the square root of 55
+A: 🖥️{
+    "command": {
+        "name": "advancedmath.square_root",
+        "args": {
+            "base": 900
+        }
+    }
+} 
+🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The square root of 900 is 30."
+        }
+    }
+} 
+🖥️{
+    "command": {
+        "name": "advancedmath.square_root",
+        "args": {
+            "base": 55
+        }
+    }
+} 
+🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The square root of 55 is 7.416198487095663."
+        }
+    }
+}
+Action: advancedmath.square_root
+P: {'base': 900}
+R: <Hal.Classes.Response.Response object at 0x000002501174B410>
+S: From Backend: The result of advancedmath.square_root is 30.0
+A: 
+Q: sorry i missed that can you repeat
+A: 🖥️{
+    "command": {
+        "name": "advancedmath.square_root",
+        "args": {
+            "base": 900
+        }
+    }
+} 
+🖥️{
+    "command": {
+        "name": "system.speak",
+        "args": {
+            "speech": "The square root of 900 is 30."
+        }
+    }
+}
+Action: advancedmath.square_root
+P: {'base': 900}
+R: <Hal.Classes.Response.Response object at 0x0000025011728ED0>
+S: From Backend: The result of advancedmath.square_root is 30.0
+A: Okay.
+Q: no i meant the one bout fifty five

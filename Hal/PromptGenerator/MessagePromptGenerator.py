@@ -4,7 +4,7 @@ import time
 from openai.error import RateLimitError
 from ..Classes import Response
 
-from ..Config import Config
+from Config import Config
 from ..PromptGenerator import InitialPromptGenerator
 from ..TokenCounter import count_message_tokens, num_tokens
 from ..Utils import create_chat_completion

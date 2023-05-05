@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from ..Config import Config
+from Config import Config
 
 config = Config()
 

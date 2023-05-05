@@ -2,7 +2,7 @@ import pinecone
 import weaviate
 from colorama import Fore, Style
 
-from ..Config import Config
+from Config import Config
 
 config = Config()
 
@@ -42,11 +42,13 @@ class Weaviate:
 
             self.client.schema.create_class(self.class_obj)
         else:
-            self.client.schema.delete_class("Action")
-            self.client.schema.create_class(self.class_obj)
+            if config.debug_mode:
+                self.client.schema.delete_class("Action")
+                self.client.schema.create_class(self.class_obj)
 
     def add_list(self, datas: list):
         results = datas.copy()
+        print(datas)
         with self.client.batch as batch:
             batch.batch_size = 20
             for skill_id, data in datas.items():
@@ -58,6 +60,7 @@ class Weaviate:
 
                 results[data["id"]]["uuid"] = self.client.batch.add_data_object(
                     properties, "Action")
+        print(results)
         return results
 
     def get(self, data):

@@ -1,15 +1,38 @@
+import multiprocessing
+import sys
 import threading
+import time
 
-from Hal import assistant, run
+
+from Config import Config
+
+config = Config()
 
 
-def main():
-    from Hal import Action, Instruction
+def run_assistant():
+    from Hal import assistant
+    # assistant.add_skill_from_url(
+    #     "https://github.com/seesi8/HalAdvancedMath.git")
+    print(assistant.installed_skills)
     assistant.text_chat()
 
 
-if __name__ == "__main__":
-    t = threading.Thread(target=run)
-    t.start()
+def main():
+    if "-setup" in sys.argv:
+        import setup
 
+    if config.ws:
+        from Hal import run
+
+        t = multiprocessing.Process(target=run)
+        t.start()
+
+    try:
+        run_assistant()
+    except:
+        t.kill()
+        print("Stoping")
+
+
+if __name__ == "__main__":
     main()

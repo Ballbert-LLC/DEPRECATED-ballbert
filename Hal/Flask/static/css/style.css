@@ -71,3 +71,38 @@ nav {
         height: 0rem;
     }
 }
+
+.card {
+    background-color: white;
+    margin: 2vw;
+    padding: 1rem;
+    width: 30vw;
+    border-radius: 1rem !important;
+}
+
+.card_image {
+    width: 10vw;
+    border-radius: 2vw;
+    border: solid 0.2rem rgb(79, 113, 119);
+    padding: 0.2rem;
+}
+
+.card_title {
+    color: green;
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+}
+
+.skills_container {
+    flex-wrap: wrap;
+}
+
+img.threeDots {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    right: 1rem;
+}

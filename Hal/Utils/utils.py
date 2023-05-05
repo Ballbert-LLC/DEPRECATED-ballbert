@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import ast
 import json
+import os
+import re
+import shutil
 import time
 
 import openai
 from colorama import Fore
 from openai.error import APIError, RateLimitError
 
-from ..Config import Config
+from Config import Config
 from ..Logging.Logging import log_line
 
 config = Config()
@@ -81,10 +84,10 @@ def create_chat_completion(
                 max_tokens=max_tokens,
             )
             break
-        except RateLimitError:
+        except RateLimitError as e:
             if config.debug_mode:
                 print(
-                    "Error: "
+                    "Error: " + e
                 )
         except APIError as e:
             if e.http_status == 502:
@@ -243,10 +246,29 @@ def execute_response(actions, response: dict | str):
         lowest = get_path(response, path)
         action = lowest["command"]["name"].lower()
         log_line(f"Action: {action}")
-        print(lowest)
         result_of_action = execute_action(
             action, actions, lowest["command"]["args"])
         log_line(f"R: {result_of_action}")
 
         response = replace_path(response, path, result_of_action)
     return response
+
+
+def rmtree_hard(path, _prev=""):
+    try:
+        shutil.rmtree(path)
+    except PermissionError as e:
+        if e == _prev:
+            return
+        match = re.search(r"Access is denied: '(.*)'", str(e))
+        if match:
+            file_path = match.group(1)
+            os.chmod(
+                file_path, 0o777)
+
+            # Delete the file
+            os.remove(
+                file_path)
+            rmtree_hard(path, _prev=e)
+        else:
+            raise e

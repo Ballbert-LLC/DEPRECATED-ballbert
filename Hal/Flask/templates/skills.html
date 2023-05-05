@@ -65,12 +65,32 @@
                         name="git_repo"
                     />
                 </div>
-                <div class="d-flex justify-content-center">
-                    <input id="addSkill" type="submit" value="Add Skill" />
+                <div class="btn_container d-flex justify-content-center">
+                    <input class="btn btn-primary" id="addSkill" type="submit" value="Add Skill" />
+                </div>
+                <div class="d-flex justify-content-center skills_container">
+                    <div class="card-container">
+                        {%for item in installedSkills%}
+
+                        <div class="text-light card">
+                            <h3 class="card_title">{{item["name"]}}</h3>
+                            <img class="card_image" src="{{url_for('static',  filename=item["image"])}}"></img>
+                            <img
+                                class="threeDots"
+                                src="{{ url_for('static', filename= 'dots.png') }}"
+                                alt=""
+                            />
+                            <div id="{{item["name"] + "_submenu"}}" class="text-secondary">
+                                <li>Remove Skill</li>
+                                <li>Update Skill</li>
+                                <li>Go To Config</li>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
                 </div>
             </form>
         </div>
-        `
     </body>
 
     <script>

@@ -16,3 +16,4 @@ class Config:
         self.debug_mode = os.getenv("DEBUG_MODE", "False") == "True"
         self.speak_mode = os.getenv("SPEAK_MODE", "False") == "True"
         self.role = "an ai assistant to help in a smart home"
+        self.ws = os.getenv("WS", "True") == "True"
