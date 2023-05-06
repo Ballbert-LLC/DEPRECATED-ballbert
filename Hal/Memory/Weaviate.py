@@ -30,6 +30,11 @@ class Weaviate:
                     "name": "identifier",
                 },
                 {
+                    "dataType": ["text"],
+                    "description": "The skill the action is from",
+                    "name": "skill",
+                },
+                {
                     "dataType": ["text[]"],
                     "description": "A list of parameters",
                     "name": "parameters",
@@ -46,7 +51,7 @@ class Weaviate:
                 self.client.schema.delete_class("Action")
                 self.client.schema.create_class(self.class_obj)
 
-    def add_list(self, datas: list):
+    def add_list(self, datas: list, skill_name):
         results = datas.copy()
         print(datas)
         with self.client.batch as batch:
@@ -55,6 +60,7 @@ class Weaviate:
                 properties = {
                     "name": data["name"],
                     "identifier": data["id"],
+                    "skill": skill_name,
                     "parameters": [str({i: item}) for i, item in data["parameters"].items()],
                 }
 
@@ -88,3 +94,16 @@ class Weaviate:
 
     def get_stats(self):
         return self.client.schema()
+
+    def delete(self, where={}):
+        # default QUORUM
+        self.client.batch.consistency_level = weaviate.data.replication.ConsistencyLevel.ALL
+
+        result = self.client.batch.delete_objects(
+            class_name="Action",
+            # same where operator as in the GraphQL API
+            where=where,
+            output="verbose",
+            dry_run=False
+        )
+        return result

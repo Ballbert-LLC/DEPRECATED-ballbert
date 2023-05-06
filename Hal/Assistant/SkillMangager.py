@@ -7,6 +7,8 @@ import uuid
 import yaml
 from git import Repo
 import importlib
+
+from . import Assistant
 from ..Decorators import paramRegistrar, reg
 
 import os
@@ -144,6 +146,8 @@ class SkillMangager():
                                       for key, value in assistant.action_dict.items()}
 
     def add_skill_from_url(self, assistant, url, should_replace=False):
+        requirements_names = []
+
         con = sqlite3.connect("skills.db")
 
         cur = con.cursor()
@@ -175,7 +179,8 @@ class SkillMangager():
 
         # install other requirements
         for requirement in requirements:
-            self.add_skill_from_url(assistant, requirement)
+            requirements_names.append(
+                self.add_skill_from_url(assistant, requirement))
 
         prev_action_dict: dict = assistant.action_dict.copy()
 
@@ -219,7 +224,7 @@ class SkillMangager():
                     new_action_dict[skill_id]["parameters"][_name] = _type
                 assistant.action_dict[skill_id]["parameters"][_name] = _type
 
-        result = assistant.pm.add_list(new_action_dict)
+        result = assistant.pm.add_list(new_action_dict, name)
 
         cur.execute(f"DELETE FROM actions WHERE skill='{name}'")
 
@@ -254,7 +259,7 @@ class SkillMangager():
         # Put into current memory
         self.add_skill(assistant, name, should_replace=should_replace)
 
-        return True
+        return name
 
     def is_folder_valid(self, folder_path):
 
@@ -294,3 +299,85 @@ class SkillMangager():
             return False
 
         return True
+
+    def remove_skill(self, skill_name: str, assistant: Assistant):
+        self.remove_from_memory(skill_name, assistant)
+        self.remove_from_actions_table(skill_name)
+        self.remove_from_installed_skills_table(skill_name)
+        self.remove_from_vector_database(skill_name, assistant)
+        self.delete_files(skill_name)
+
+    def delete_files(self, skill_name):
+        rmtree_hard(os.path.join(repos_path, skill_name))
+
+    def remove_from_memory(self, skill_name: str, assistant: Assistant):
+
+        # action_dict
+        action_dict_copy = assistant.action_dict.copy()
+
+        for key, value in assistant.action_dict.items():
+            key: str
+            skill = key.split(".")[0]
+
+            if skill.lower() == skill_name.lower():
+
+                del action_dict_copy[key]
+
+        assistant.action_dict = action_dict_copy
+
+        # actions
+        for i, action in enumerate(assistant.actions):
+            skill = action[1].split(".")[0]
+
+            if skill.lower() == skill_name.lower():
+                assistant.actions.pop(i)
+
+        # action_functions
+
+        action_functions_copy = assistant.action_functions.copy()
+
+        for key, value in assistant.action_functions.items():
+            key: str
+            skill = key.split(".")[0]
+
+            if skill.lower() == skill_name.lower():
+
+                del action_functions_copy[key]
+
+        assistant.action_functions = action_functions_copy
+
+        # installed_skills
+        for i, skill in enumerate(assistant.installed_skills):
+
+            if skill["name"].lower() == skill_name.lower():
+
+                assistant.installed_skills.pop(i)
+
+    def remove_from_actions_table(self, skill_name: str):
+        con = sqlite3.connect("skills.db")
+        cur = con.cursor()
+
+        cur.execute("DELETE FROM actions WHERE skill=?", (skill_name,))
+
+        con.commit()
+
+    def remove_from_installed_skills_table(self, skill_name: str):
+        con = sqlite3.connect("skills.db")
+        cur = con.cursor()
+
+        cur.execute("DELETE FROM installedSkills WHERE skill=?", (skill_name,))
+
+        con.commit()
+
+    def remove_from_vector_database(self, skill_name: str, assistant: Assistant):
+        assistant.pm.delete({
+            "operator": "Equal",
+            "path": ["skill"],
+            "valueText": skill_name
+        })
+
+    def check_if_skill_is_needed(skill_name: str):
+        pass
+
+    def check_if_skill_has_dependancies(requirements: list[str]):
+        pass

@@ -74,16 +74,18 @@
 
                         <div class="text-light card">
                             <h3 class="card_title">{{item["name"]}}</h3>
-                            <img class="card_image" src="{{url_for('static',  filename=item["image"])}}"></img>
+                            <img class="card_image" src="{{url_for('static',  filename=item["image"])}}"/>
                             <img
                                 class="threeDots"
+                                id="threeDots"
+                                data-menu_id="{{item["name"] + "_submenu"}}"
                                 src="{{ url_for('static', filename= 'dots.png') }}"
                                 alt=""
                             />
-                            <div id="{{item["name"] + "_submenu"}}" class="text-secondary">
-                                <li>Remove Skill</li>
-                                <li>Update Skill</li>
-                                <li>Go To Config</li>
+                            <div id="{{item["name"] + "_submenu"}}" class="text-secondary editMenu">
+                                <li class="edit_action">Remove Skill</li>
+                                <li class="edit_action">Update Skill</li>
+                                <li class="edit_action">Go To Config</li>
                             </div>
                         </div>
                         {%endfor%}
@@ -121,5 +123,29 @@
 
             socket.emit("addSkill", { url: url });
         });
+
+        const threeDotsList = document.querySelectorAll(".threeDots");
+
+        threeDotsList.forEach((element) => {
+            element.addEventListener("click", (e) => {
+                console.log(document.getElementById(e.target.getAttribute("data-menu_id")).style.height);
+                console.log("After");
+
+                if (document.getElementById(e.target.getAttribute("data-menu_id")).style.height != "0px") {
+                    document.getElementById(e.target.getAttribute("data-menu_id")).style.height = "0";
+                    document.getElementById(e.target.getAttribute("data-menu_id")).style.padding = "0";
+                    document.getElementById(e.target.getAttribute("data-menu_id")).style.border = "0";
+
+                    console.log("making zero");
+                } else {
+                    document.getElementById(e.target.getAttribute("data-menu_id")).style.height = "fit-content";
+                    document.getElementById(e.target.getAttribute("data-menu_id")).style.padding = "1rem";
+                    document.getElementById(e.target.getAttribute("data-menu_id")).style.border = "0.2rem solid black";
+
+                    console.log("making out");
+                }
+            });
+        });
+
     </script>
 </html>

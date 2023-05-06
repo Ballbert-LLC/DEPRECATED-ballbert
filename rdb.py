@@ -20,6 +20,12 @@ cursor.execute('SELECT * FROM installedSkills')
 # Fetch all the rows returned by the query
 installed_skills_data = cursor.fetchall()
 
+# Execute a SELECT query on the installedSkills table
+cursor.execute('SELECT * FROM requirements')
+
+# Fetch all the rows returned by the query
+required_data = cursor.fetchall()
+
 # Close the cursor and the database connection
 cursor.close()
 conn.close()
@@ -37,6 +43,10 @@ for row in actions_data:
 
 print("Data from installedSkills table:")
 for row in installed_skills_data:
+    print(row)
+
+print("Data from requirements table:")
+for row in required_data:
     print(row)
 
 # Print out the data

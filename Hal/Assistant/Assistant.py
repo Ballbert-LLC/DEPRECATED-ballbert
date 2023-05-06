@@ -241,3 +241,6 @@ class Assistant:
 
     def add_skill_from_url(self, url):
         self.skill_manager.add_skill_from_url(self, url)
+
+    def remove_skill(self, skill_name):
+        self.skill_manager.remove_skill(skill_name, self)

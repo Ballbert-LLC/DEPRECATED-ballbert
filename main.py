@@ -11,10 +11,13 @@ config = Config()
 
 def run_assistant():
     from Hal import assistant
-    # assistant.add_skill_from_url(
-    #     "https://github.com/seesi8/HalAdvancedMath.git")
+    assistant.add_skill_from_url(
+        "https://github.com/seesi8/HalAdvancedMath.git")
+
+    time.sleep(5)
+    assistant.remove_skill("SimpleMath")
     print(assistant.installed_skills)
-    assistant.text_chat()
+    # assistant.text_chat()
 
 
 def main():

@@ -29,6 +29,8 @@ def rmtree_hard(path, _prev=""):
 config = Config()
 
 
+print(config.debug_mode)
+
 if config.debug_mode:
     os.remove("skills.db")
     open("skills.db", "w").close()
@@ -49,11 +51,14 @@ if config.debug_mode:
 con = sqlite3.connect("skills.db")
 
 cur = con.cursor()
+
 try:
     print("Creating")
     cur.execute(
         "CREATE TABLE actions(skill, action_uuid, action_id, action_name, action_paramiters)")
 
     cur.execute("CREATE TABLE installedSkills(skill, version)")
+
+    cur.execute("CREATE TABLE requirements(required, requiredBy)")
 except:
     print("already exists")
