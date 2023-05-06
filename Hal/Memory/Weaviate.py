@@ -53,7 +53,6 @@ class Weaviate:
 
     def add_list(self, datas: list, skill_name):
         results = datas.copy()
-        print(datas)
         with self.client.batch as batch:
             batch.batch_size = 20
             for skill_id, data in datas.items():
@@ -66,7 +65,6 @@ class Weaviate:
 
                 results[data["id"]]["uuid"] = self.client.batch.add_data_object(
                     properties, "Action")
-        print(results)
         return results
 
     def get(self, data):

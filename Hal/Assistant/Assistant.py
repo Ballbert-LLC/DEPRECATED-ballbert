@@ -79,9 +79,7 @@ class Assistant:
 
         # install skills
         installed_skills_data = cur.fetchall()
-
         for item in installed_skills_data:
-            print(item[0])
             self.skill_manager.add_skill(self, item[0])
 
     def text_to_voice_chat(self):

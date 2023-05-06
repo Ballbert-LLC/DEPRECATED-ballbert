@@ -14,7 +14,8 @@ def run_assistant():
     assistant.add_skill_from_url(
         "https://github.com/seesi8/HalAdvancedMath.git")
 
-    time.sleep(5)
+    time.sleep(2)
+    print("moving on")
     assistant.remove_skill("SimpleMath")
     print(assistant.installed_skills)
     # assistant.text_chat()

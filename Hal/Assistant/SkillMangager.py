@@ -178,16 +178,22 @@ class SkillMangager():
                   os.path.join(repos_path, str(temp_name)))
 
         # install other requirements
+        updated_requirements = requirements.copy()
         for requirement in requirements:
-            requirements_names.append(
-                self.add_skill_from_url(assistant, requirement))
+            req_name = self.add_skill_from_url(assistant, requirement)
+            if name != False:
+                requirements_names.append(req_name)
+            else: 
+                updated_requirements.remove(requirement)
 
+        
         prev_action_dict: dict = assistant.action_dict.copy()
 
         # check if it is already installed
+        print("Name: "+ name)
         if os.path.exists(f"{repos_path}/{name}"):
             rmtree_hard(f"{repos_path}/{temp_name}")
-            print("Already Installed")
+            print("Already Installed "+ name)
             return False
 
         # Save it is name
@@ -258,8 +264,26 @@ class SkillMangager():
         con.commit()
         # Put into current memory
         self.add_skill(assistant, name, should_replace=should_replace)
+        self.add_requirements_to_db(updated_requirements, requirements_names, name)
 
         return name
+
+    def add_requirements_to_db(self, requirements, requirements_names, skill):
+        for i in range(0, len(requirements)):
+            url = requirements[i]
+            name = requirements_names[i]
+            
+            con = sqlite3.connect("skills.db")
+
+            cur = con.cursor()
+            
+            cur.execute(f"""
+                    INSERT INTO requirements (url, name, requiredBy)
+                    VALUES ('{url}', '{name}', '{skill}')
+            """)
+            
+            con.commit()
+            
 
     def is_folder_valid(self, folder_path):
 
@@ -301,11 +325,37 @@ class SkillMangager():
         return True
 
     def remove_skill(self, skill_name: str, assistant: Assistant):
-        self.remove_from_memory(skill_name, assistant)
-        self.remove_from_actions_table(skill_name)
-        self.remove_from_installed_skills_table(skill_name)
-        self.remove_from_vector_database(skill_name, assistant)
-        self.delete_files(skill_name)
+        if not self.check_if_skill_is_needed(skill_name=skill_name):
+            self.remove_from_memory(skill_name, assistant)
+            self.remove_from_actions_table(skill_name)
+            self.remove_from_installed_skills_table(skill_name)
+            self.remove_from_vector_database(skill_name, assistant)
+            self.delete_files(skill_name)
+            dependancies = self.get_dependancies(skill_name)
+            self.remove_from_requirements_table(skill_name)
+            self.remove_dependancies(dependancies, assistant)
+    
+    def get_dependancies(self, skill_name:str):
+        con = sqlite3.connect("skills.db")
+        cur = con.cursor()
+        
+        cur.execute("SELECT * FROM requirements WHERE requiredBy=?", (skill_name,))
+        rows = cur.fetchall()
+        return rows
+    
+    def remove_from_requirements_table(self, skill_name: str):
+        con = sqlite3.connect("skills.db")
+        cur = con.cursor()
+        
+        cur.execute("DELETE FROM requirements WHERE requiredBy=?", (skill_name,))
+        
+        con.commit()
+
+    
+    def remove_dependancies(self, dependancies, assistant):
+        for row in dependancies:
+            name = row[1]
+            self.remove_skill(name, assistant)
 
     def delete_files(self, skill_name):
         rmtree_hard(os.path.join(repos_path, skill_name))
@@ -376,8 +426,14 @@ class SkillMangager():
             "valueText": skill_name
         })
 
-    def check_if_skill_is_needed(skill_name: str):
-        pass
-
-    def check_if_skill_has_dependancies(requirements: list[str]):
-        pass
+    def check_if_skill_is_needed(self, skill_name: str):
+        con = sqlite3.connect("skills.db")
+        cur = con.cursor()
+        
+        cur.execute("SELECT * FROM requirements WHERE name=?", (skill_name,))
+        rows = cur.fetchall()
+        
+        if len(rows) > 0:
+            return True
+        else:
+            return False
