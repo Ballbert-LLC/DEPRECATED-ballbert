@@ -29,55 +29,44 @@ config = Config()
 
 
 class Assistant:
+    _instance = None
 
-    def __init__(self, skills=[]):
-        print("Creating Assistant")
-        for skill in skills:
-            importlib.import_module(skill)
+    def __new__(cls, *args, **kwargs):
+        print(cls)
+        if not cls._instance:
+            print("NEW OEN")
+            cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance.initialized = True
+            # pinecone memory
+            pm = None
+            pm = Weaviate()
 
-        # set a action dictionary
-        action_dict: dict = reg.all
+            con = sqlite3.connect("skills.db")
 
-        # get paramiters from decorator
-        for skill_id, item in action_dict.items():
-            _parameters = tuple(inspect.signature(
-                item["function"]).parameters.items())
+            cur = con.cursor()
 
-            for argument in _parameters:
-                _name = argument[0]
-                _type = f"<{argument[1].annotation}>" if type(
-                    argument[1].annotation) is str else f"<{argument[0]}>"
-                action_dict[skill_id]["parameters"] = {_name: _type}
+            # Execute a SELECT query on the installedSkills table
+            cur.execute('SELECT * FROM installedSkills')
 
-        # get all of the action
-        actions: list[tuple] = [(item["name"], item["id"], item["parameters"])
-                                for skill_id, item in reg.all.items()]
+            cls._instance.pm = pm
+            cls._instance.installed_skills = dict()
+            cls._instance.action_dict = dict()
+            cls._instance.chatbot = Chat_Gpt(
+                config.name, api_key=config.open_ai_api_key)
+            # self.tts = TTS(lang="en-US")
+            cls._instance.skill_manager = SkillMangager()
+            cls._instance.tts = None
+            cls._instance.asr = ASR()
+            cls._instance.speak_mode = False
+            # install skills
+            installed_skills_data = cur.fetchall()
+            for item in installed_skills_data:
+                cls._instance.skill_manager.add_skill(cls._instance, item[0])
+        print(cls._instance)
+        return cls._instance
 
-        # pinecone memory
-        pm = None
-        pm = Weaviate()
-
-        con = sqlite3.connect("skills.db")
-
-        cur = con.cursor()
-
-        # Execute a SELECT query on the installedSkills table
-        cur.execute('SELECT * FROM installedSkills')
-
-        self.pm = pm
-        self.installed_skills = dict()
-        self.action_dict = action_dict
-        self.chatbot = Chat_Gpt(
-            config.name, api_key=config.open_ai_api_key)
-        # self.tts = TTS(lang="en-US")
-        self.skill_manager = SkillMangager()
-        self.tts = None
-        self.asr = ASR()
-        self.speak_mode = False
-        # install skills
-        installed_skills_data = cur.fetchall()
-        for item in installed_skills_data:
-            self.skill_manager.add_skill(self, item[0])
+    def __init__(self):
+        print("Created")
 
     def text_to_voice_chat(self):
         while True:
