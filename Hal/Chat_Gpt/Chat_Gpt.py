@@ -8,14 +8,13 @@ class Chat_Gpt:
 
     Args:
         name (str): name for chatbot
-        actions (str): actions for the chatbot
         possible_parmas (dict): possible params it can have
 
     Returns:
         (Generator[Any | list | dict, None, None] | Any | list | dict): response of chat completion
     """
 
-    def __init__(self, name: str, api_key, actions) -> None:
+    def __init__(self, name: str, api_key) -> None:
         openai.api_key = api_key
         self.messages = []
         self.model = "gpt-3.5-turbo"

@@ -1,7 +1,13 @@
+import ast
+import json
 import multiprocessing
+import os
+import re
+import shutil
 import sys
 import threading
 import time
+import types
 
 
 from Config import Config
@@ -9,34 +15,104 @@ from Config import Config
 config = Config()
 
 
+def rmtree_hard(path, _prev=""):
+    try:
+        shutil.rmtree(path)
+    except PermissionError as e:
+        if e == _prev:
+            return
+        match = re.search(r"Access is denied: '(.*)'", str(e))
+        if match:
+            file_path = match.group(1)
+            os.chmod(
+                file_path, 0o777)
+
+            # Delete the file
+            os.remove(
+                file_path)
+            rmtree_hard(path, _prev=e)
+        else:
+            raise e
+
+
+def convert_dict_to_json_serializable(input_dict):
+    # Convert non-serializable types to serializable equivalents
+    serializable_dict = {}
+    if isinstance(input_dict, dict):
+        for key, value in input_dict.items():
+            if isinstance(value, dict):
+                value = convert_dict_to_json_serializable(value)
+            elif isinstance(value, (list, tuple)):
+                value = [convert_dict_to_json_serializable(v) for v in value]
+            elif isinstance(value, set):
+                value = [convert_dict_to_json_serializable(v) for v in value]
+            elif isinstance(value, bytes):
+                value = value.decode('utf-8')
+            elif isinstance(value, types.FunctionType):
+                value = value.__name__  # Replace function with its name
+            elif isinstance(value, type):
+                value = value.__name__  # Replace class with its name
+            elif isinstance(value, types.FunctionType):
+                value = value.__name__  # Replace function with its name
+            serializable_dict[key] = value
+    else:
+        value = input_dict
+        if isinstance(value, dict):
+            value = convert_dict_to_json_serializable(value)
+        elif isinstance(value, (list, tuple)):
+            value = [convert_dict_to_json_serializable(v) for v in value]
+        elif isinstance(value, set):
+            value = [convert_dict_to_json_serializable(v) for v in value]
+        elif isinstance(value, bytes):
+            value = value.decode('utf-8')
+        elif isinstance(value, types.FunctionType):
+            value = value.__name__  # Replace function with its name
+        elif isinstance(value, type):
+            value = value.__name__  # Replace class with its name
+        elif isinstance(value, types.FunctionType):
+            value = value.__name__  # Replace function with its name
+
+    return serializable_dict
+
+
 def run_assistant():
-    from Hal import assistant
+    from Hal.Hal import assistant
+
     assistant.add_skill_from_url(
         "https://github.com/seesi8/HalAdvancedMath.git")
 
-    time.sleep(2)
-    print("moving on")
-    assistant.remove_skill("SimpleMath")
-    print(assistant.installed_skills)
-    # assistant.text_chat()
+    if config.ws:
+        from Hal.Flask import run
+
+        t = multiprocessing.Process(target=run)
+        t.start()
+        pass
 
 
 def main():
     if "-setup" in sys.argv:
         import setup
 
-    if config.ws:
-        from Hal import run
-
-        t = multiprocessing.Process(target=run)
-        t.start()
-
     try:
         run_assistant()
-    except:
-        t.kill()
-        print("Stoping")
+    except Exception as e:
+        print(e)
+        raise e
+
+
+def setup_and_teardown():
+    if config.debug_mode:
+        main()
+    else:
+        rmtree_hard("./Hal/Flask/Static/images")
+        os.mkdir("./Hal/Flask/Static/images")
+        try:
+            main()
+        except Exception as e:
+            rmtree_hard("./Hal/Flask/Static/images")
+            os.mkdir("./Hal/Flask/Static/images")
+            print(e)
 
 
 if __name__ == "__main__":
-    main()
+    setup_and_teardown()

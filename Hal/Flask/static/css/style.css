@@ -122,3 +122,40 @@ img.threeDots {
     padding: 1rem;
     border-radius: 1rem;
 }
+
+.edit_action {
+    cursor: pointer;
+}
+
+#spinner {
+    position: absolute;
+    right: 45vw;
+    height: 10vw !important;
+    width: 10vw !important;
+    border-width: 0.5rem !important;
+    margin-top: 1rem;
+    display: none;
+}
+
+.form-check-input {
+    width: 2vw;
+    height: 2vw;
+}
+
+.form-check-label {
+    display: inline;
+    padding-left: 1rem;
+}
+
+body {
+    padding-bottom: 1rem;
+}
+
+.config-submit {
+    margin: 1rem 0;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}

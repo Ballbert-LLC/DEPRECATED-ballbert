@@ -29,8 +29,9 @@ config = Config()
 
 
 class Assistant:
-    def __init__(self, skills=[]):
 
+    def __init__(self, skills=[]):
+        print("Creating Assistant")
         for skill in skills:
             importlib.import_module(skill)
 
@@ -64,19 +65,15 @@ class Assistant:
         cur.execute('SELECT * FROM installedSkills')
 
         self.pm = pm
-        self.installed_skills = list()
-        self.actions = actions
+        self.installed_skills = dict()
         self.action_dict = action_dict
         self.chatbot = Chat_Gpt(
-            config.name, api_key=config.open_ai_api_key, actions=self.actions)
+            config.name, api_key=config.open_ai_api_key)
         # self.tts = TTS(lang="en-US")
         self.skill_manager = SkillMangager()
         self.tts = None
         self.asr = ASR()
         self.speak_mode = False
-        self.action_functions = {key: value["function"]
-                                 for key, value in self.action_dict.items()}
-
         # install skills
         installed_skills_data = cur.fetchall()
         for item in installed_skills_data:
@@ -215,8 +212,10 @@ class Assistant:
         log_line(f"A: {total_message}")
 
         if "🖥️" in backend_message:
+            functions = {key: value["function"]
+                         for key, value in self.action_dict.items()}
             backend_res = execute_response(
-                actions=self.action_functions, response=backend_message)
+                actions=functions, response=backend_message)
             action = get_action_from_response(backend_message)
 
             response_message = create_response_message(action, backend_res)
@@ -242,3 +241,6 @@ class Assistant:
 
     def remove_skill(self, skill_name):
         self.skill_manager.remove_skill(skill_name, self)
+
+    def call_function(self, function_id, args=[], kwargs={}):
+        return self.action_dict[function_id]["function"](*args, **kwargs)

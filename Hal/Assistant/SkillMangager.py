@@ -1,3 +1,5 @@
+import ast
+from types import NoneType
 import openai
 import inspect
 import shutil
@@ -32,7 +34,9 @@ class SkillMangager():
 
         prev_action_dict = assistant.action_dict.copy()
 
-        importlib.import_module(f'Skills.{skill}')
+        module = importlib.import_module(f'Skills.{skill}')
+
+        desired_class = getattr(module, skill)
 
         new_action_dict: dict = {}
 
@@ -58,92 +62,111 @@ class SkillMangager():
                     new_action_dict[skill_id]["parameters"][_name] = _type
                 action_dict[skill_id]["parameters"][_name] = _type
 
-        actions: list[tuple] = [(item["name"], item["id"], item["parameters"])
-                                for skill_id, item in reg.all.items()]
-
         # Adds into attributes
 
         con.commit()
 
-        def get_image_url():
-            if os.path.exists(os.path.join(repos_path, skill, "icon.png")):
-                image = os.path.join(repos_path, skill, "icon.png")
-            else:
-                res = ""
+        image = self.get_image_url(skill=skill)
 
-                description = res or None
+        class_instance = desired_class()
 
-                with open(f"{repos_path}/{skill}/config.yaml", 'r') as stream:
-                    data_loaded = yaml.safe_load(stream)
-                    name = data_loaded["name"]
-                    description = data_loaded["description"] if "description" in data_loaded else "No description provided"
+        functions_with_reg_decorator = dict()
 
-                # Open a connection to the database file
-                conn = sqlite3.connect('skills.db')
+        for name, value in inspect.getmembers(class_instance):
+            if inspect.ismethod(value) and hasattr(value, "__func__"):
+                if name in [value["func_name_in_class"] for key, value in reg.all.items()]:
+                    functions_with_reg_decorator[name] = value.__func__
 
-                # Create a cursor object to execute SQL commands
-                cursor = conn.cursor()
+        for func_name, func in functions_with_reg_decorator.items():
+            for action_name, values in action_dict.items():
+                if func_name == values["func_name_in_class"]:
+                    print(func)
 
-                # Execute a SELECT query on the actions table
-                cursor.execute("SELECT * FROM actions WHERE skill = ?",
-                               (name,))
+                    def wrapper_func_factory(func):
 
-                # Fetch all the rows returned by the query
-                actions_data = cursor.fetchall()
+                        def wrapper_func(*args, **kwargs):
+                            signature = inspect.signature(func)
+                            if len(signature.parameters) > 0:
+                                return func(class_instance, *args, **kwargs)
+                            else:
+                                return func(*args, **kwargs)
+                        return wrapper_func
+                    values["function"] = wrapper_func_factory(func)
+                    values["class_instance"] = class_instance
+                    action_dict[action_name] = values
 
-                # Close the cursor and the database connection
-                cursor.close()
-                conn.close()
-
-                des = ""
-                for row in actions_data:
-                    des += f"      Name: {row[3]}, Paramiters: {row[4]}\n"
-
-                result = f"""
-
-                    Name of skill:
-                        {name}
-
-                    Description of skill:
-                        {description}
-
-                    Actions:
-                {des}
-
-                """
-
-                prompt = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": "You are a prompt generator for an image generator that. Your prompts are made to be an turn into an icon for a skill addon with the details in the paramiters the user provides. Constraints: Speak in language that an image generator could understand."},
-                        {"role": "user", "content": result},
-                    ]
-                )
-
-                prompt = prompt["choices"][0]["message"]["content"]
-
-                openai.api_key = config.open_ai_api_key
-
-                response = openai.Image.create(
-                    prompt=prompt,
-                    n=1,
-                    size="1024x1024"
-                )
-                image_url = response['data'][0]['url']
-                image = image_url
-            return image
-
-        image = get_image_url()
-
-        # ALL Image suff
-
-        assistant.installed_skills.append(
-            {"image": image, "name": skill, "version": 0.0})
+        assistant.installed_skills[skill] = {
+            "image": image, "name": skill, "version": 0.0, "actions": functions_with_reg_decorator, "class": class_instance}
 
         assistant.action_dict = action_dict
-        assistant.actions = actions
-        assistant.action_functions = {key: value["function"]
-                                      for key, value in assistant.action_dict.items()}
+
+    def get_image_url(self, skill):
+        if os.path.exists(os.path.join(repos_path, skill, "icon.png")):
+            image = os.path.join(repos_path, skill, "icon.png")
+        else:
+            res = ""
+
+            description = res or None
+
+            with open(f"{repos_path}/{skill}/config.yaml", 'r') as stream:
+                data_loaded = yaml.safe_load(stream)
+                name = data_loaded["name"]
+                description = data_loaded["description"] if "description" in data_loaded else "No description provided"
+
+            # Open a connection to the database file
+            conn = sqlite3.connect('skills.db')
+
+            # Create a cursor object to execute SQL commands
+            cursor = conn.cursor()
+
+            # Execute a SELECT query on the actions table
+            cursor.execute("SELECT * FROM actions WHERE skill = ?",
+                           (name,))
+
+            # Fetch all the rows returned by the query
+            actions_data = cursor.fetchall()
+
+            # Close the cursor and the database connection
+            cursor.close()
+            conn.close()
+
+            des = ""
+            for row in actions_data:
+                des += f"      Name: {row[3]}, Paramiters: {row[4]}\n"
+
+            result = f"""
+
+                Name of skill:
+                    {name}
+
+                Description of skill:
+                    {description}
+
+                Actions:
+            {des}
+
+            """
+
+            prompt = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a prompt generator for an image generator that. Your prompts are made to be an turn into an icon for a skill addon with the details in the paramiters the user provides. Constraints: Speak in language that an image generator could understand."},
+                    {"role": "user", "content": result},
+                ]
+            )
+
+            prompt = prompt["choices"][0]["message"]["content"]
+
+            openai.api_key = config.open_ai_api_key
+
+            response = openai.Image.create(
+                prompt=prompt,
+                n=1,
+                size="1024x1024"
+            )
+            image_url = response['data'][0]['url']
+            image = image_url
+        return image
 
     def add_skill_from_url(self, assistant, url, should_replace=False):
         requirements_names = []
@@ -183,17 +206,15 @@ class SkillMangager():
             req_name = self.add_skill_from_url(assistant, requirement)
             if name != False:
                 requirements_names.append(req_name)
-            else: 
+            else:
                 updated_requirements.remove(requirement)
 
-        
         prev_action_dict: dict = assistant.action_dict.copy()
 
         # check if it is already installed
-        print("Name: "+ name)
         if os.path.exists(f"{repos_path}/{name}"):
             rmtree_hard(f"{repos_path}/{temp_name}")
-            print("Already Installed "+ name)
+            print("Already Installed " + name)
             return False
 
         # Save it is name
@@ -207,6 +228,25 @@ class SkillMangager():
 
         # Create a settings.yaml
         open(f"{repos_path}/{name}/settings.yaml", 'w').close()
+        if os.path.exists(f"{repos_path}/{name}/settingsmeta.yaml"):
+            with open(f"{repos_path}/{name}/settingsmeta.yaml", 'r') as file:
+                data = yaml.safe_load(file)
+
+            settings = {}
+            for section in data["skillMetadata"]['sections']:
+                for field in section['fields']:
+                    if 'name' in field and 'value' in field:
+                        field_name = field['name']
+                        value = field['value']
+                        if value == "true" or value == "True":
+                            value = True
+                        elif value == "false" or value == "False":
+                            value = False
+                        if isinstance(value, NoneType):
+                            settings[field_name] = value
+
+            with open(f"{repos_path}/{name}/settings.yaml", 'w') as file:
+                yaml.dump(settings, file)
 
         new_action_dict: dict = {}
 
@@ -237,7 +277,8 @@ class SkillMangager():
         for action_id, action in result.items():
             cur.execute(f"""
             INSERT INTO actions VALUES
-                ('{name}', '{action["uuid"]}' ,'{action["id"]}', '{action["name"]}', '{str(action["parameters"]).replace("'", '"')}')
+                ('{name}', '{action["uuid"]}' ,'{action["id"]}', '{action["name"]}',
+                 '{str(action["parameters"]).replace("'", '"')}')
             """)
 
         con.commit()
@@ -264,7 +305,8 @@ class SkillMangager():
         con.commit()
         # Put into current memory
         self.add_skill(assistant, name, should_replace=should_replace)
-        self.add_requirements_to_db(updated_requirements, requirements_names, name)
+        self.add_requirements_to_db(
+            updated_requirements, requirements_names, name)
 
         return name
 
@@ -272,18 +314,17 @@ class SkillMangager():
         for i in range(0, len(requirements)):
             url = requirements[i]
             name = requirements_names[i]
-            
+
             con = sqlite3.connect("skills.db")
 
             cur = con.cursor()
-            
+
             cur.execute(f"""
                     INSERT INTO requirements (url, name, requiredBy)
                     VALUES ('{url}', '{name}', '{skill}')
             """)
-            
+
             con.commit()
-            
 
     def is_folder_valid(self, folder_path):
 
@@ -301,17 +342,19 @@ class SkillMangager():
             return False
 
         # Check if the folder contains a class with the same name
-        module_name = name
-        module_path = os.path.join(folder_path, f"{module_name}.py")
-        if not os.path.isfile(module_path):
-            return False
-        spec = importlib.util.spec_from_file_location(module_name, module_path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        if not hasattr(module, name):
+        module_file_path = os.path.join(folder_path, f"{name}.py")
+        if not os.path.isfile(module_file_path):
             return False
 
-        # Check if skill is already installed in the databse
+        # Read the file contents
+        with open(module_file_path, 'r') as module_file:
+            file_contents = module_file.read()
+
+        # Check if the class with the same name exists in the file
+        if f"class {name}" not in file_contents:
+            return False
+
+        # Check if skill is already installed in the database
         conn = sqlite3.connect('skills.db')
         c = conn.cursor()
         value_to_check = name
@@ -334,24 +377,25 @@ class SkillMangager():
             dependancies = self.get_dependancies(skill_name)
             self.remove_from_requirements_table(skill_name)
             self.remove_dependancies(dependancies, assistant)
-    
-    def get_dependancies(self, skill_name:str):
+
+    def get_dependancies(self, skill_name: str):
         con = sqlite3.connect("skills.db")
         cur = con.cursor()
-        
-        cur.execute("SELECT * FROM requirements WHERE requiredBy=?", (skill_name,))
+
+        cur.execute(
+            "SELECT * FROM requirements WHERE requiredBy=?", (skill_name,))
         rows = cur.fetchall()
         return rows
-    
+
     def remove_from_requirements_table(self, skill_name: str):
         con = sqlite3.connect("skills.db")
         cur = con.cursor()
-        
-        cur.execute("DELETE FROM requirements WHERE requiredBy=?", (skill_name,))
-        
+
+        cur.execute("DELETE FROM requirements WHERE requiredBy=?",
+                    (skill_name,))
+
         con.commit()
 
-    
     def remove_dependancies(self, dependancies, assistant):
         for row in dependancies:
             name = row[1]
@@ -375,33 +419,18 @@ class SkillMangager():
 
         assistant.action_dict = action_dict_copy
 
-        # actions
-        for i, action in enumerate(assistant.actions):
-            skill = action[1].split(".")[0]
-
-            if skill.lower() == skill_name.lower():
-                assistant.actions.pop(i)
-
-        # action_functions
-
-        action_functions_copy = assistant.action_functions.copy()
-
-        for key, value in assistant.action_functions.items():
-            key: str
-            skill = key.split(".")[0]
-
-            if skill.lower() == skill_name.lower():
-
-                del action_functions_copy[key]
-
-        assistant.action_functions = action_functions_copy
-
         # installed_skills
-        for i, skill in enumerate(assistant.installed_skills):
+        installed_skills_copy = assistant.installed_skills.copy()
 
-            if skill["name"].lower() == skill_name.lower():
+        for key, value in assistant.installed_skills.items():
+            key: str
+            skill = key
 
-                assistant.installed_skills.pop(i)
+            if skill.lower() == skill_name.lower():
+
+                del installed_skills_copy[key]
+
+        assistant.installed_skills = installed_skills_copy
 
     def remove_from_actions_table(self, skill_name: str):
         con = sqlite3.connect("skills.db")
@@ -429,11 +458,52 @@ class SkillMangager():
     def check_if_skill_is_needed(self, skill_name: str):
         con = sqlite3.connect("skills.db")
         cur = con.cursor()
-        
+
         cur.execute("SELECT * FROM requirements WHERE name=?", (skill_name,))
         rows = cur.fetchall()
-        
+
         if len(rows) > 0:
             return True
         else:
             return False
+
+    def get_settings_meta(self, installed_skills):
+        data = dict()
+        for skill in installed_skills:
+            path = os.path.join(repos_path, skill["name"], "settingsmeta.yaml")
+            if os.path.exists(path):
+                with open(path, 'r') as stream:
+                    data_loaded = yaml.safe_load(stream)
+                    updated_data = data_loaded.copy()
+                    for section_index, section in enumerate(data_loaded["skillMetadata"]["sections"]):
+                        for field_index, field in enumerate(section["fields"]):
+                            if "value" in field:
+
+                                if isinstance(field["value"], NoneType):
+                                    updated_data["skillMetadata"]["sections"][section_index]["fields"][field_index]["value"] = ""
+                            else:
+                                updated_data["skillMetadata"]["sections"][section_index]["fields"][field_index]["value"] = ""
+                            if field["type"] == "checkbox":
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["parentClasses"] = "form-check"
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["inputClasses"] = "form-check-input"
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["labelClasses"] = "form-check-label"
+                            elif field["type"] == "select":
+                                options = field["options"].split(";")
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["options"] = {option.split("|")[0]: option.split("|")[1] for option in options}
+
+                            else:
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["parentClasses"] = ""
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["inputClasses"] = "form-control"
+                                updated_data["skillMetadata"]["sections"][section_index][
+                                    "fields"][field_index]["labelClasses"] = ""
+            else:
+                data_loaded = None
+            if data_loaded:
+                data[skill["name"]] = data_loaded
+        return data

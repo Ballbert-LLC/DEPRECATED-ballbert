@@ -12,7 +12,7 @@ def makeRegistrar():
             skill = func.__qualname__.split('.')[0]
             identifier = f'{skill}.{funcIdentifier}'
             registry[identifier.lower()] = {"id": identifier.lower(
-            ), "name": name.lower(), "function": func}
+            ), "name": name.lower(), "function": func, "skill": skill, "func_name_in_class": func.__name__, "simple_func_ref": func, }
 
             return func
         return registrar

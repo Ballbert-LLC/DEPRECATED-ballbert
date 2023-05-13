@@ -11,7 +11,7 @@ class Action:
         self.uuid = uuid4()
         self.action_id = action_id
         self.params = params
-        self.function = assistant.action_functions[action_id]
+        self.function = assistant.action_dict[action_id]["function"]
 
     def execute(self):
         self.time_finished = datetime.datetime.now()
