@@ -3,9 +3,12 @@ import inspect
 import os
 import shutil
 import sqlite3
+import sys
+import threading
 import uuid
 
 import yaml
+import multiprocessing
 
 from .SkillMangager import SkillMangager
 from ..ASR import ASR
@@ -15,9 +18,8 @@ from Config import Config
 from ..Decorators import paramRegistrar, reg
 from ..Memory import Weaviate
 from ..PromptGenerator import create_response_message
-from ..TTS import TTS
-from ..Utils import (convert_dict_to_lower, execute_response,
-                     get_action_from_response)
+from ..TTS import say_phrase, say_phrase_in_process, stop_saying
+from ..Utils import convert_dict_to_lower, execute_response, get_action_from_response
 from ..Logging import log_line
 from ..Wake_Word import Wake_Word
 
@@ -29,137 +31,79 @@ config = Config()
 
 
 class Assistant:
+    _instance = None
 
-    def __init__(self, skills=[]):
-        print("Creating Assistant")
-        for skill in skills:
-            importlib.import_module(skill)
+    def __new__(cls, *args, **kwargs):
+        print(cls._instance)
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
 
-        # set a action dictionary
-        action_dict: dict = reg.all
-
-        # get paramiters from decorator
-        for skill_id, item in action_dict.items():
-            _parameters = tuple(inspect.signature(
-                item["function"]).parameters.items())
-
-            for argument in _parameters:
-                _name = argument[0]
-                _type = f"<{argument[1].annotation}>" if type(
-                    argument[1].annotation) is str else f"<{argument[0]}>"
-                action_dict[skill_id]["parameters"] = {_name: _type}
-
-        # get all of the action
-        actions: list[tuple] = [(item["name"], item["id"], item["parameters"])
-                                for skill_id, item in reg.all.items()]
-
+    def __init__(self):
         # pinecone memory
         pm = None
         pm = Weaviate()
 
-        con = sqlite3.connect("skills.db")
-
-        cur = con.cursor()
-
-        # Execute a SELECT query on the installedSkills table
-        cur.execute('SELECT * FROM installedSkills')
-
         self.pm = pm
         self.installed_skills = dict()
-        self.action_dict = action_dict
-        self.chatbot = Chat_Gpt(
-            config.name, api_key=config.open_ai_api_key)
-        # self.tts = TTS(lang="en-US")
+        self.action_dict = dict()
+        self.chatbot = Chat_Gpt(config.name, api_key=config.open_ai_api_key)
         self.skill_manager = SkillMangager()
-        self.tts = None
         self.asr = ASR()
         self.speak_mode = False
-        # install skills
-        installed_skills_data = cur.fetchall()
-        for item in installed_skills_data:
-            self.skill_manager.add_skill(self, item[0])
+        self.current_callback = None
 
     def text_to_voice_chat(self):
+        buffer = ""
         while True:
             question = input("Q: ")
-
-            response = self.chatbot.ask(question)
-            message = ""
-
-            buffer = ""
-
-            json_identifier = "JS:"
-            is_json = None
-
-            for i, chunk in enumerate(response):
-                if "content" in chunk["choices"][0]["delta"]:
-                    content = chunk["choices"][0]["delta"]["content"]
-                    message += content
-                    if json_identifier == "" and is_json == None:
-                        is_json = True
-                    elif is_json == None:
-                        for letter in content:
-                            if letter in json_identifier and json_identifier.index(letter) == 0:
-                                json_identifier = json_identifier.replace(
-                                    letter, "", 1)
-
-                            elif json_identifier != "":
-                                is_json = False
-                    if is_json == False and any(s in config.punctuition for s in content):
-                        if buffer:
-                            self.tts.say_phrase(buffer + content)
-                            buffer = ""
-                    else:
-                        buffer += content
-
-            file = open("logs.txt", "w")
-            file.write("Q: " + question)
-            file.write("A: " + message)
+            log_line(f"Q: {question}")
+            for item in self._text_gpt_response(question):
+                buffer += item
+                for punctiation in [".", "?", "!", ",", "-", ";", ":"]:
+                    if punctiation in buffer:
+                        say_phrase(buffer)
+                        buffer = ""
+                print(item, end="", flush=True)
+            print()
 
     def voice_to_voice_chat(self):
-        def callback():
-            wake_word.pause()
-            line = self.asr.get_line()
-            response = self.chatbot.ask(line)
-            message = ""
+        def handle():
+            if self.current_callback != None:
+                self.current_callback()
 
-            buffer = ""
+            try:
+                buffer = ""
 
-            json_identifier = "JS:"
-            is_json = None
-
-            for i, chunk in enumerate(response):
-                if "content" in chunk["choices"][0]["delta"]:
-                    content = chunk["choices"][0]["delta"]["content"]
-                    message += content
-                    if json_identifier == "" and is_json == None:
-                        is_json = True
-                    elif is_json == None:
-                        for letter in content:
-                            if letter in json_identifier and json_identifier.index(letter) == 0:
-                                json_identifier = json_identifier.replace(
-                                    letter, "", 1)
-                            elif json_identifier != "":
-                                is_json = False
-                    if is_json == False and any(s in config.punctuition for s in content):
-                        if buffer:
-                            self.tts.say_phrase(buffer + content)
+                wake_word.pause()
+                question = self.asr.get_speach()
+                log_line(f"Q: {question}")
+                for item in self._text_gpt_response(question):
+                    buffer += item
+                    for punctuation in [".", "?", "!", ",", "-", ";", ":"]:
+                        if punctuation in buffer:
+                            say_phrase_in_process(buffer)
                             buffer = ""
-                    else:
-                        buffer += content
-            if (is_json):
-                self._handle_json(message)
-            wake_word.resume()
+                    print(item, end="", flush=True)
+                print()
+                wake_word.resume()
+            except Exception as e:
+                say_phrase_in_process("sorry please try again")
+                wake_word.resume()
+                log_line(f"Error: {e}")
 
-        wake_word = Wake_Word(callback=callback)
+        wake_word = Wake_Word(callback=handle)
 
-        wake_word.start()
+        def run_wake_word():
+            wake_word.start()
+
+        wake_word_thread = threading.Thread(target=run_wake_word)
+        wake_word_thread.start()
 
     def _handle_json(self, the_json):
         print(the_json)
 
     def _text_gpt_response(self, to_gpt):
-
         response = self.chatbot.ask(to_gpt)
 
         total_message = ""
@@ -172,7 +116,7 @@ class Assistant:
 
         currently_speaking = ""
 
-        speach_control = 0
+        speech_control = 0
 
         for chunk in response:
             if "content" in chunk["choices"][0]["delta"]:
@@ -185,37 +129,44 @@ class Assistant:
                     spoken_message += content
                     currently_speaking += content
                 if should_add_to_backend == False:
-                    print(content, end="", flush=True)
+                    yield content
                 # check for begining
-                if '"speech": ' in total_message and '"' in content and speach_control != -1:
-                    speach_control += 1
+                if (
+                    '"speech": ' in total_message
+                    and '"' in content
+                    and speech_control != -1
+                ):
+                    speech_control += 1
                 # check for content
-                if speach_control > 0:
+                if speech_control > 0:
                     currently_speaking += content
                     spoken_message += content
                 # check for end
-                if speach_control > 0 and '",' in spoken_message:
-                    speach_control = -1
+                if speech_control > 0 and '",' in spoken_message:
+                    speech_control = -1
                 # fix it
                 if '"' in spoken_message:
-                    spoken_message = spoken_message.replace(' "', '')
-                    currently_speaking = currently_speaking.replace(' "', '')
-                    spoken_message = spoken_message.replace('"', '')
-                    currently_speaking = currently_speaking.replace('"', '')
+                    spoken_message = spoken_message.replace(' "', "")
+                    currently_speaking = currently_speaking.replace(' "', "")
+                    spoken_message = spoken_message.replace('"', "")
+                    currently_speaking = currently_speaking.replace('"', "")
                 # fic it
                 if '",' in spoken_message:
-                    spoken_message = spoken_message.replace('",', '')
-                # buffer speach
-                if speach_control == 1:
-                    print(currently_speaking, end="", flush=True)
+                    spoken_message = spoken_message.replace('",', "")
+                # buffer speech
+                if speech_control == 1:
+                    yield currently_speaking
                     currently_speaking = ""
         log_line(f"A: {total_message}")
 
+        # add finish
+        yield "."
+
         if "🖥️" in backend_message:
-            functions = {key: value["function"]
-                         for key, value in self.action_dict.items()}
-            backend_res = execute_response(
-                actions=functions, response=backend_message)
+            functions = {
+                key: value["function"] for key, value in self.action_dict.items()
+            }
+            backend_res = execute_response(actions=functions, response=backend_message)
             action = get_action_from_response(backend_message)
 
             response_message = create_response_message(action, backend_res)
@@ -225,13 +176,13 @@ class Assistant:
 
                 self._text_gpt_response(response_message)
 
-        print()
-
     def text_chat(self):
         while True:
             question = input("Q: ")
             log_line(f"Q: {question}")
-            self._text_gpt_response(question)
+            for item in self._text_gpt_response(question):
+                print(item, end="", flush=True)
+            print()
 
     def send_response(response: Response):
         print(response)
@@ -244,3 +195,26 @@ class Assistant:
 
     def call_function(self, function_id, args=[], kwargs={}):
         return self.action_dict[function_id]["function"](*args, **kwargs)
+
+
+# Module-level variable to store the shared instance
+assistant = None
+
+
+# Initialization function to create the instance
+def initialize_assistant():
+    global assistant
+    if assistant is None:
+        assistant = Assistant()
+        con = sqlite3.connect("skills.db")
+
+        cur = con.cursor()
+
+        # Execute a SELECT query on the installedSkills table
+        cur.execute("SELECT * FROM installedSkills")
+        installed_skills_data = cur.fetchall()
+        for item in installed_skills_data:
+            assistant.skill_manager.add_skill(assistant, item[0])
+        return assistant
+    else:
+        return assistant

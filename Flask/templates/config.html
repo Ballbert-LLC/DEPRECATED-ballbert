@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename= 'css/style.css') }}"
+        />
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+            crossorigin="anonymous"
+        ></script>
+        <title>FlaskBlog</title>
+    </head>
+
+    <body class="bg-dark">
+        <nav class="d-flex flex-row-reverse p-0">
+            <div id="sidebar" class="text-light bg-secondary pt-5 p-4">
+                <a class="item text-light" href="{{url_for('skills')}}"
+                    >Skills</a
+                >
+                <a class="item text-light" href="{{url_for('addons')}}"
+                    >Addons</a
+                >
+                <a class="item text-light" href="{{url_for('config')}}"
+                    >Config</a
+                >
+                <a class="item text-light" href="{{url_for('settings')}}"
+                    >Settings</a
+                >
+            </div>
+            <button id="hamburger" class="m-2">
+                <img
+                    class="hamburgerImage"
+                    src="{{ url_for('static', filename= 'menu.png') }}"
+                    alt=""
+                />
+            </button>
+        </nav>
+
+        <h1 class="text-center text-light p-5">
+            Welcome to <span class="fw-bold">Config</span>
+        </h1>
+
+        <form class="container text-light" id="config-form">
+            {%for skill, setting in settings.items()%}
+            <h2 class="text-primary">{{skill}}</h2>
+            <hr />
+            {%for section in setting["skillMetadata"]["sections"]%}
+            <h3 class="text-info">{{section["name"]}}</h3>
+            {%for field in section["fields"]%}
+            {% if field["type"] != "select" %}
+                <div class="form-group {{field["parentClasses"]}}">
+                    <h4 for="{{skill}}.{{field["name"]}}" class="{{field["labelClasses"]}}">{{field["label"]}}</h4>
+                    {% if field["type"] != "label" %}
+                    {% if field["type"] == "checkbox" %}
+                        <input type='hidden' name='{{skill}}.{{field["name"]}}' value='{{"true" if (field["value"] == True or field["value"] == "True" or field["value"] == "true") else "false"}}'>
+                    {% endif %}
+                    <input
+                        type={{field["type"]}}
+                        class="{{field["inputClasses"]}}"
+                        id="{{skill}}.{{field["name"]}}"
+                        name="{{skill}}.{{field["name"]}}"
+                        value="{{field["value"] if field["type"] != "checkbox" else ""}}"
+                        {{"checked" if (field["value"] == True or field["value"] == "True" or field["value"] == "true") and field["type"] == "checkbox" else ""}}
+                    />
+                    {% endif %}
+                </div>
+                <br />
+            {% else %}
+                <div class="form-group">
+                    <h4 for="{{skill}}.{{field["name"]}}">{{field["label"]}}</h4>
+                    <select multiple class="form-control" id="{{skill}}.{{field["name"]}}" name="{{skill}}.{{field["name"]}}">
+                        {%for option, value in field["options"].items()%}
+                            <option {{"selected" if field["value"] == value}} value={{value}}>{{option}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+            {% endif %}
+            {%endfor%} {%endfor%}
+
+            {%endfor%}
+            <div class="center">
+                <button type="submit" class="btn btn-primary config-submit">Submit</button>
+            </div>
+        </form>
+    </body>
+
+    <script>
+        let sidebarOpen = false;
+        var socket = io();
+
+        document.getElementById("hamburger").addEventListener("click", () => {
+            if (sidebarOpen) {
+                document.getElementById("sidebar").style.width = "0";
+            } else {
+                document.getElementById("sidebar").style.width =
+                    "max(20vw, 10rem)";
+            }
+
+            sidebarOpen = !sidebarOpen;
+        });
+
+        const inputs = document.getElementsByTagName("input");
+
+        // Loop through all input elements
+        for (let i = 0; i < inputs.length; i++) {
+            // Check if the input value is '/'
+            if (inputs[i].value === "/") {
+                // Set the input value to an empty string
+                inputs[i].value = "";
+            }
+        }
+
+
+
+		const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+		function updateInputs() {
+			// Loop through each checkbox input
+			for (let i = 0; i < checkboxes.length; i++) {
+				const checkbox = checkboxes[i];
+
+				// Get all elements with the same name as the checkbox id
+				const inputs = document.getElementsByName(checkbox.id);
+
+				// Loop through each matching element and set its value based on the checkbox state
+				for (let j = 0; j < inputs.length; j++) {
+					const input = inputs[j];
+					input.value = checkbox.checked;
+				}
+			}
+		}
+
+		// Add a change event listener to each checkbox input
+		for (let i = 0; i < checkboxes.length; i++) {
+			const checkbox = checkboxes[i];
+			checkbox.addEventListener('change', updateInputs);
+		}
+
+        document.getElementById("config-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            let values = {};
+            for (const [key, value] of formData.entries()) {
+                const inputElement = e.target.elements[key];
+                console.log(inputElement.type)
+                if (inputElement.type === "number" && !isNaN(value) && value !== "") {
+                    values[key] = parseInt(value);
+                } else {
+                    values[key] = value;
+                }
+            }
+            console.log(values);
+            socket.emit("config", { "values": values });
+        });
+
+
+    </script>
+</html>

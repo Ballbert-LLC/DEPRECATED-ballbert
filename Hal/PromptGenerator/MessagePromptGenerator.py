@@ -2,12 +2,15 @@ import json
 import time
 
 from openai.error import RateLimitError
+
+from Hal.Logging.Logging import log_line
 from ..Classes import Response
 
 from Config import Config
 from ..PromptGenerator import InitialPromptGenerator
 from ..TokenCounter import count_message_tokens, num_tokens
 from ..Utils import create_chat_completion
+
 
 config = Config()
 
@@ -38,6 +41,9 @@ def create_response_message(name, content):
 
 
 def get_prompt_gerarator(user_input):
+    from ..Assistant import initialize_assistant
+
+    assistant = initialize_assistant()
     """
     This function generates a prompt string that includes various constraints,
         commands, resources, and performance evaluations.
@@ -45,8 +51,6 @@ def get_prompt_gerarator(user_input):
     Returns:
         str: The generated prompt string.
     """
-
-    from Hal import assistant
 
     # Initialize the Config object
     # Initialize the PromptGenerator object
@@ -56,30 +60,27 @@ def get_prompt_gerarator(user_input):
     prompt_generator.add_constraint(
         'Exclusively use the commands listed in double quotes e.g. "command name"'
     )
-    prompt_generator.add_constraint(
-        'Only output in the specified JSON format'
-    )
-    prompt_generator.add_constraint(
-        'Only output with the commands'
-    )
+    prompt_generator.add_constraint("Only output in the specified JSON format")
+    prompt_generator.add_constraint("Only output with the commands")
     prompt_generator.add_constraint(
         "All times when you use a command you should start the whole statement with a 🖥️"
     )
     prompt_generator.add_constraint(
-        'Only use commands that are listed in the command list'
+        "Only use commands that are listed in the command list"
     )
     prompt_generator.add_constraint(
-        'When provided with the result of a command you should share the result with the user'
+        "When provided with the result of a command you should share the result with the user"
     )
 
-    prompt_generator.add_constraint(
-        'Follow other constraints'
-    )
+    prompt_generator.add_constraint("Follow other constraints")
 
     # Define the command list
     dict_commands = assistant.pm.get_relevant(user_input, num_relevant=10)
-
+    print(dict_commands)
     commands = []
+
+    if not dict_commands:
+        dict_commands = []
 
     for action in dict_commands:
         name = action["name"]
@@ -98,7 +99,8 @@ def get_prompt_gerarator(user_input):
 
     prompt_generator.add_command("Do Nothing", "system.do_nothing", args=None)
     prompt_generator.add_command(
-        "Speak result to user", "system.speak", args={"speach": "<string>"})
+        "Speak result to user", "system.speak", args={"speech": "<string>"}
+    )
 
     # Add resources to the PromptGenerator object
     prompt_generator.add_resource(
@@ -124,18 +126,15 @@ def get_prompt_gerarator(user_input):
         "Every command has a cost, so be smart and efficient. Aim to complete tasks in"
         " the least number of steps."
     )
-    prompt_generator.add_performance_evaluation(
-        "Only output in specified json format"
-    )
-    prompt_generator.add_performance_evaluation(
-        "Followed all contraints"
-    )
+    prompt_generator.add_performance_evaluation("Only output in specified json format")
+    prompt_generator.add_performance_evaluation("Followed all contraints")
 
     # Generate the prompt string
     return prompt_generator
 
 
 def generate_context(prompt, full_message_history, model):
+    log_line("prompt: " + prompt)
     current_context = [
         create_chat_message("system", prompt),
         create_chat_message(
@@ -158,9 +157,7 @@ def generate_context(prompt, full_message_history, model):
 
 
 # TODO: Change debug from hardcode to argument
-def chat_with_ai(
-    user_input, full_message_history, token_limit
-):
+def chat_with_ai(user_input, full_message_history, token_limit):
     """Interact with the OpenAI API, sending the prompt, user input, message history,
     and permanent memory."""
 
@@ -223,9 +220,7 @@ def chat_with_ai(
             while next_message_to_add_index >= 0:
                 # print (f"CURRENT TOKENS USED: {current_tokens_used}")
                 message_to_add = full_message_history[next_message_to_add_index]
-                tokens_to_add = count_message_tokens(
-                    [message_to_add], model
-                )
+                tokens_to_add = count_message_tokens([message_to_add], model)
                 if current_tokens_used + tokens_to_add > send_token_limit:
                     break
 

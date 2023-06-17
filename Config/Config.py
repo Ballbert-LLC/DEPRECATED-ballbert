@@ -6,8 +6,6 @@ load_dotenv()
 
 class Config:
     def __init__(self) -> None:
-        self.pinecone_api_key = os.getenv("PINECONE_API_KEY")
-        self.pinecone_region = os.getenv("PINECONE_REGION")
         self.open_ai_api_key = os.getenv("OPENAI_API_KEY")
         self.punctuition = [".", "?", "!"]
         self.llm = os.getenv("LLM", "gpt-3.5-turbo")

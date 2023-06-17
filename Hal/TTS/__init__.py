@@ -1,1 +1,1 @@
-from .TTS import TTS
+from .TTS import *

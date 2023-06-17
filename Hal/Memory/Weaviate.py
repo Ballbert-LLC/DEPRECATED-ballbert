@@ -1,4 +1,3 @@
-import pinecone
 import weaviate
 from colorama import Fore, Style
 
@@ -8,7 +7,6 @@ config = Config()
 
 
 class Weaviate:
-
     def __init__(self):
         self.client = weaviate.Client(
             url="http://localhost:8080",  # Replace with your endpoint
@@ -44,7 +42,6 @@ class Weaviate:
         }
 
         if not self.client.schema.contains(self.class_obj):
-
             self.client.schema.create_class(self.class_obj)
         else:
             if config.debug_mode:
@@ -60,11 +57,14 @@ class Weaviate:
                     "name": data["name"],
                     "identifier": data["id"],
                     "skill": skill_name,
-                    "parameters": [str({i: item}) for i, item in data["parameters"].items()],
+                    "parameters": [
+                        str({i: item}) for i, item in data["parameters"].items()
+                    ],
                 }
 
                 results[data["id"]]["uuid"] = self.client.batch.add_data_object(
-                    properties, "Action")
+                    properties, "Action"
+                )
         return results
 
     def get(self, data):
@@ -81,8 +81,7 @@ class Weaviate:
         :param num_relevant: The number of relevant data to return. Defaults to 5
         """
         result = (
-            self.client.query
-            .get("Action", ["name", "identifier", "parameters"])
+            self.client.query.get("Action", ["name", "identifier", "parameters"])
             .with_near_text({"concepts": [str(data)]})
             .with_limit(num_relevant)
             .do()
@@ -95,13 +94,15 @@ class Weaviate:
 
     def delete(self, where={}):
         # default QUORUM
-        self.client.batch.consistency_level = weaviate.data.replication.ConsistencyLevel.ALL
+        self.client.batch.consistency_level = (
+            weaviate.data.replication.ConsistencyLevel.ALL
+        )
 
         result = self.client.batch.delete_objects(
             class_name="Action",
             # same where operator as in the GraphQL API
             where=where,
             output="verbose",
-            dry_run=False
+            dry_run=False,
         )
         return result

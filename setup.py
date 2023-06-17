@@ -1,5 +1,6 @@
 import re
 import sqlite3
+import time
 import uuid
 from Config import Config
 import os
@@ -26,37 +27,35 @@ def rmtree_hard(path, _prev=""):
             raise e
 
 
-config = Config()
+def setup():
+    config = Config()
 
+    if config.debug_mode:
+        os.remove("skills.db")
+        open("skills.db", "w").close()
 
+        if not os.path.exists("./temp"):
+            os.makedirs("./temp")
 
-if config.debug_mode:
-    os.remove("skills.db")
-    open("skills.db", "w").close()
+        init_temp_path = os.path.join("./temp", str(uuid.uuid4()))
+        shutil.copy2("./Skills/__init__.py", init_temp_path)
 
-    if not os.path.exists("./temp"):
-        os.makedirs("./temp")
+        for file in os.listdir("./Skills"):
+            if os.path.isdir(os.path.join(os.path.abspath("./Skills"), file)):
+                rmtree_hard(os.path.join(os.path.abspath("./Skills"), file))
 
-    init_temp_path = os.path.join("./temp", str(uuid.uuid4()))
-    shutil.copy2("./Skills/__init__.py", init_temp_path)
+        shutil.move(init_temp_path, "./Skills/__init__.py")
 
-    for file in os.listdir("./Skills"):
-        if os.path.isdir(os.path.join(os.path.abspath("./Skills"), file)):
-            rmtree_hard(os.path.join(os.path.abspath("./Skills"), file))
+    con = sqlite3.connect("skills.db")
 
-    shutil.move(init_temp_path, "./Skills/__init__.py")
+    cur = con.cursor()
 
+    try:
+        cur.execute(
+            "CREATE TABLE actions(skill, action_uuid, action_id, action_name, action_paramiters)")
 
-con = sqlite3.connect("skills.db")
+        cur.execute("CREATE TABLE installedSkills(skill, version)")
 
-cur = con.cursor()
-
-try:
-    cur.execute(
-        "CREATE TABLE actions(skill, action_uuid, action_id, action_name, action_paramiters)")
-
-    cur.execute("CREATE TABLE installedSkills(skill, version)")
-
-    cur.execute("CREATE TABLE requirements(url, name, requiredBy)")
-except:
-    print("already exists")
+        cur.execute("CREATE TABLE requirements(url, name, requiredBy)")
+    except:
+        print("already exists")

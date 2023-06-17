@@ -1,2 +1,2 @@
-from .Assistant import Assistant
+from .Assistant import *
 from .SkillMangager import SkillMangager
