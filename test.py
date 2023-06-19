@@ -17,17 +17,23 @@ def parse_function_docstring(func):
 # Example function with a docstring
 def example_function(name, priority, sender):
     """
-    Short description
+    Calculate the total price based on the unit price and quantity.
 
-    Long description spanning multiple lines
-    - First line
-    - Second line
-    - Third line
+    Args:
+        unit_price (float): The price per unit of the item.
+        quantity (int, optional): The number of items. Defaults to 1.
 
-    :param str name: description 1
-    :param int priority: description 2
-    :param str sender: description 3
-    :raises ValueError: if name is invalid
+    Returns:
+        float: The total price of the items.
+
+    Raises:
+        ValueError: If the unit price or quantity is negative.
+
+    Examples:
+        >>> calculate_total_price(10.5, 3)
+        31.5
+        >>> calculate_total_price(5.25)
+        5.25
     """
     pass
 
@@ -37,6 +43,6 @@ parsed_docstring = parse_function_docstring(example_function)
 
 # Access the parsed docstring information
 print(parsed_docstring.short_description)
-print(parsed_docstring.long_description)
-print(parsed_docstring.params)
+print(parsed_docstring.examples[0].description)
+print(parsed_docstring.params[1].is_optional)
 print(parsed_docstring.raises)

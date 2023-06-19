@@ -1,4 +1,5 @@
 import ast
+import pickle
 from types import NoneType
 import openai
 import inspect
@@ -30,7 +31,6 @@ class SkillMangager:
 
     def get_actions_dict(self):
         action_dict: dict = reg.all
-        print("Reg", reg.all)
         for skill_id, item in action_dict.items():
             _parameters = tuple(inspect.signature(item["function"]).parameters.items())
 
@@ -121,7 +121,24 @@ class SkillMangager:
             class_functions, action_dict, class_functions
         )
 
+        self.test(action_dict)
+
         assistant.action_dict = action_dict
+
+    def test(self, action_dict):
+        print(action_dict)
+        functions = []
+
+        for key, value in action_dict.items():
+            description = (
+                value["docstring"].short_description
+                + value["docstring"].long_description
+            )
+            new_dict = {
+                "name": key,
+                "description": description,
+                "parameters": {"type": "object", "properties": {}},
+            }
 
     def get_image_url(self, skill, action_dict):
         if os.path.exists(os.path.join(repos_path, skill, "icon.png")):

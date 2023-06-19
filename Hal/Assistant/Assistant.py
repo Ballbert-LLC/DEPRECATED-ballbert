@@ -110,11 +110,6 @@ class Assistant:
     def _text_gpt_response(self, to_gpt):
         self.messages.append({"role": "user", "content": to_gpt})
 
-        functions = []
-
-        for key, value in self.action_dict.items():
-            new_dict = {"name": key, "description": "hi"}
-
         res = openai.ChatCompletion.create(
             model=MODEL,
             messages=self.messages,
