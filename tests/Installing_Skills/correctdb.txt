@@ -1,0 +1,242 @@
+Data from actions table:
+('SimpleMath', 'simplemath.add', 'add', '{"self": "<self>", "a": "<number>", "b": "<number>"}')
+('SimpleMath', 'simplemath.multiply', 'multiply', '{"self": "<self>", "a": "<number>", "b": "<number>"}')
+('SimpleMath', 'simplemath.subtract', 'subtract', '{"self": "<self>", "a": "<number>", "b": "<number>"}')
+('SimpleMath', 'simplemath.divide', 'divide', '{"self": "<self>", "a": "<number>", "b": "<number_not_zero>"}')
+('AdvancedMath', 'advancedmath.exponent', 'exponent', '{"self": "<self>", "base": "<number>", "exp": "<number>"}')
+('AdvancedMath', 'advancedmath.square_root', 'square root', '{"self": "<self>", "base": "<number>"}')
+('AdvancedMath', 'advancedmath.get_my_num', 'get my number', '{"self": "<self>"}')
+('AdvancedMath', 'advancedmath.get_num', 'get number', '{"self": "<self>", "thing": "<thing>"}')
+Data from installedSkills table:
+('SimpleMath',)
+('AdvancedMath',)
+Data from requirements table:
+('https://github.com/seesi8/HalSimpleMath.git', 'AdvancedMath')
+Data from vector database:
+[
+  {
+    "identifier": "advancedmath.exponent",
+    "name": "exponent",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "simplemath.add",
+    "name": "add",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "simplemath.multiply",
+    "name": "multiply",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "advancedmath.get_num",
+    "name": "get number",
+    "parameters": [
+      "{'self': '<self>'}",
+      "{'thing': '<thing>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.get_my_num",
+    "name": "get my number",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "advancedmath.get_num",
+    "name": "get number",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.exponent",
+    "name": "exponent",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.get_num",
+    "name": "get number",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.get_num",
+    "name": "get number",
+    "parameters": [
+      "{'self': '<self>'}",
+      "{'thing': '<thing>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.get_my_num",
+    "name": "get my number",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "advancedmath.square_root",
+    "name": "square root",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.get_my_num",
+    "name": "get my number",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.square_root",
+    "name": "square root",
+    "parameters": [
+      "{'self': '<self>'}",
+      "{'base': '<number>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "simplemath.add",
+    "name": "add",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "advancedmath.square_root",
+    "name": "square root",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "advancedmath.exponent",
+    "name": "exponent",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "simplemath.subtract",
+    "name": "subtract",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  },
+  {
+    "identifier": "advancedmath.square_root",
+    "name": "square root",
+    "parameters": [
+      "{'self': '<self>'}",
+      "{'base': '<number>'}"
+    ],
+    "skill": "AdvancedMath"
+  },
+  {
+    "identifier": "simplemath.divide",
+    "name": "divide",
+    "parameters": [
+      "{'args': '<args>'}",
+      "{'kwargs': '<kwargs>'}"
+    ],
+    "skill": "SimpleMath"
+  }
+]

@@ -6,13 +6,13 @@ import sqlite3
 import sys
 import threading
 import uuid
+import openai
 
 import yaml
 import multiprocessing
 
 from .SkillMangager import SkillMangager
 from ..ASR import ASR
-from ..Chat_Gpt import Chat_Gpt
 from ..Classes import Response
 from Config import Config
 from ..Decorators import paramRegistrar, reg
@@ -25,9 +25,13 @@ from ..Wake_Word import Wake_Word
 
 from git import Repo
 
+MODEL = "gpt-3.5-turbo-0613"
+
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
 
 config = Config()
+
+openai.api_key = config.open_ai_api_key
 
 
 class Assistant:
@@ -44,10 +48,10 @@ class Assistant:
         pm = None
         pm = Weaviate()
 
+        self.messages = []
         self.pm = pm
         self.installed_skills = dict()
         self.action_dict = dict()
-        self.chatbot = Chat_Gpt(config.name, api_key=config.open_ai_api_key)
         self.skill_manager = SkillMangager()
         self.asr = ASR()
         self.speak_mode = False
@@ -104,77 +108,54 @@ class Assistant:
         print(the_json)
 
     def _text_gpt_response(self, to_gpt):
-        response = self.chatbot.ask(to_gpt)
+        self.messages.append({"role": "user", "content": to_gpt})
 
-        total_message = ""
+        functions = []
 
-        spoken_message = ""
+        for key, value in self.action_dict.items():
+            new_dict = {"name": key, "description": "hi"}
 
-        backend_message = ""
+        res = openai.ChatCompletion.create(
+            model=MODEL,
+            messages=self.messages,
+            temperature=0,
+            # functions=functions,
+            stream=True,
+        )
 
-        should_add_to_backend = False
+        function_name = ""
+        arguments = ""
 
-        currently_speaking = ""
+        full_message = ""
 
-        speech_control = 0
+        for item in res:
+            delta = item["choices"][0]["delta"]
 
-        for chunk in response:
-            if "content" in chunk["choices"][0]["delta"]:
-                content = chunk["choices"][0]["delta"]["content"]
-                total_message += content
-                if "🖥" in content or should_add_to_backend:
-                    backend_message += content
-                    should_add_to_backend = True
+            # check for end
+            if delta == {}:
+                if function_name:
+                    self.messages.append(
+                        {
+                            "role": "function_call",
+                            "name": function_name,
+                            "arguments": arguments,
+                        }
+                    )
                 else:
-                    spoken_message += content
-                    currently_speaking += content
-                if should_add_to_backend == False:
-                    yield content
-                # check for begining
-                if (
-                    '"speech": ' in total_message
-                    and '"' in content
-                    and speech_control != -1
-                ):
-                    speech_control += 1
-                # check for content
-                if speech_control > 0:
-                    currently_speaking += content
-                    spoken_message += content
-                # check for end
-                if speech_control > 0 and '",' in spoken_message:
-                    speech_control = -1
-                # fix it
-                if '"' in spoken_message:
-                    spoken_message = spoken_message.replace(' "', "")
-                    currently_speaking = currently_speaking.replace(' "', "")
-                    spoken_message = spoken_message.replace('"', "")
-                    currently_speaking = currently_speaking.replace('"', "")
-                # fic it
-                if '",' in spoken_message:
-                    spoken_message = spoken_message.replace('",', "")
-                # buffer speech
-                if speech_control == 1:
-                    yield currently_speaking
-                    currently_speaking = ""
-        log_line(f"A: {total_message}")
+                    self.messages.append({"role": "assistant", "content": full_message})
 
-        # add finish
+            if "function_call" in delta:
+                function_call = delta["function_call"]
+                if "name" in function_call:
+                    function_name = function_call["name"]
+                elif "arguments" in function_call:
+                    arguments += function_call["arguments"]
+            elif "content" in delta:
+                full_message += delta["content"]
+                yield delta["content"]
+
+        print(function_name, arguments)
         yield "."
-
-        if "🖥️" in backend_message:
-            functions = {
-                key: value["function"] for key, value in self.action_dict.items()
-            }
-            backend_res = execute_response(actions=functions, response=backend_message)
-            action = get_action_from_response(backend_message)
-
-            response_message = create_response_message(action, backend_res)
-
-            if action in self.action_dict:
-                log_line(f"S: {response_message}")
-
-                self._text_gpt_response(response_message)
 
     def text_chat(self):
         while True:
@@ -213,8 +194,16 @@ def initialize_assistant():
         # Execute a SELECT query on the installedSkills table
         cur.execute("SELECT * FROM installedSkills")
         installed_skills_data = cur.fetchall()
+
         for item in installed_skills_data:
+            print(item[0])
             assistant.skill_manager.add_skill(assistant, item[0])
+
+        con.commit()
+
+        con.close()
+
         return assistant
+
     else:
         return assistant

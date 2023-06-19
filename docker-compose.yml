@@ -14,7 +14,7 @@ services:
             - 8080:8080
         restart: on-failure:0
         environment:
-            OPENAI_APIKEY: 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
+            OPENAI_APIKEY: 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
             QUERY_DEFAULTS_LIMIT: 25
             AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
             PERSISTENCE_DATA_PATH: "/var/lib/weaviate"

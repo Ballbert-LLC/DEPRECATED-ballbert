@@ -1,0 +1,251 @@
+{
+    "simplemath.add": {
+        "id": "simplemath.add",
+        "name": "add",
+        "function": "add",
+        "skill": "SimpleMath",
+        "func_name_in_class": "add",
+        "simple_func_ref": "add",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number>"
+        }
+    },
+    "simplemath.multiply": {
+        "id": "simplemath.multiply",
+        "name": "multiply",
+        "function": "multiply",
+        "skill": "SimpleMath",
+        "func_name_in_class": "multiply",
+        "simple_func_ref": "multiply",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number>"
+        }
+    },
+    "simplemath.subtract": {
+        "id": "simplemath.subtract",
+        "name": "subtract",
+        "function": "subtract",
+        "skill": "SimpleMath",
+        "func_name_in_class": "subtract",
+        "simple_func_ref": "subtract",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number>"
+        }
+    },
+    "simplemath.divide": {
+        "id": "simplemath.divide",
+        "name": "divide",
+        "function": "divide",
+        "skill": "SimpleMath",
+        "func_name_in_class": "divide",
+        "simple_func_ref": "divide",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number_not_zero>"
+        }
+    },
+    "advancedmath.exponent": {
+        "id": "advancedmath.exponent",
+        "name": "exponent",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "exponent",
+        "simple_func_ref": "exponent",
+        "parameters": {
+            "self": "<self>",
+            "base": "<number>",
+            "exp": "<number>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    },
+    "advancedmath.square_root": {
+        "id": "advancedmath.square_root",
+        "name": "square root",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "square_root",
+        "simple_func_ref": "square_root",
+        "parameters": {
+            "self": "<self>",
+            "base": "<number>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    },
+    "advancedmath.get_my_num": {
+        "id": "advancedmath.get_my_num",
+        "name": "get my number",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "get_my_num",
+        "simple_func_ref": "get_my_num",
+        "parameters": {
+            "self": "<self>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    },
+    "advancedmath.get_num": {
+        "id": "advancedmath.get_num",
+        "name": "get number",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "get_num",
+        "simple_func_ref": "get_num",
+        "parameters": {
+            "self": "<self>",
+            "thing": "<thing>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    }
+}{
+    "simplemath.add": {
+        "id": "simplemath.add",
+        "name": "add",
+        "function": "add",
+        "skill": "SimpleMath",
+        "func_name_in_class": "add",
+        "simple_func_ref": "add",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number>"
+        }
+    },
+    "simplemath.multiply": {
+        "id": "simplemath.multiply",
+        "name": "multiply",
+        "function": "multiply",
+        "skill": "SimpleMath",
+        "func_name_in_class": "multiply",
+        "simple_func_ref": "multiply",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number>"
+        }
+    },
+    "simplemath.subtract": {
+        "id": "simplemath.subtract",
+        "name": "subtract",
+        "function": "subtract",
+        "skill": "SimpleMath",
+        "func_name_in_class": "subtract",
+        "simple_func_ref": "subtract",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number>"
+        }
+    },
+    "simplemath.divide": {
+        "id": "simplemath.divide",
+        "name": "divide",
+        "function": "divide",
+        "skill": "SimpleMath",
+        "func_name_in_class": "divide",
+        "simple_func_ref": "divide",
+        "parameters": {
+            "self": "<self>",
+            "a": "<number>",
+            "b": "<number_not_zero>"
+        }
+    },
+    "advancedmath.exponent": {
+        "id": "advancedmath.exponent",
+        "name": "exponent",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "exponent",
+        "simple_func_ref": "exponent",
+        "parameters": {
+            "args": "<args>",
+            "kwargs": "<kwargs>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    },
+    "advancedmath.square_root": {
+        "id": "advancedmath.square_root",
+        "name": "square root",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "square_root",
+        "simple_func_ref": "square_root",
+        "parameters": {
+            "args": "<args>",
+            "kwargs": "<kwargs>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    },
+    "advancedmath.get_my_num": {
+        "id": "advancedmath.get_my_num",
+        "name": "get my number",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "get_my_num",
+        "simple_func_ref": "get_my_num",
+        "parameters": {
+            "args": "<args>",
+            "kwargs": "<kwargs>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    },
+    "advancedmath.get_num": {
+        "id": "advancedmath.get_num",
+        "name": "get number",
+        "function": "wrapper_func",
+        "skill": "AdvancedMath",
+        "func_name_in_class": "get_num",
+        "simple_func_ref": "get_num",
+        "parameters": {
+            "args": "<args>",
+            "kwargs": "<kwargs>"
+        },
+        "class_instance": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        }
+    }
+}

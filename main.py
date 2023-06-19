@@ -89,7 +89,6 @@ def run_assistant():
         t = threading.Thread(target=run)
         t.daemon = True
         t.start()
-    print(assistant_instance.action_dict)
 
     assistant_instance.text_chat()
 

@@ -1,0 +1,28 @@
+{
+    "SimpleMath": {
+        "image": "A:\\hal/Skills\\SimpleMath\\icon.png",
+        "name": "SimpleMath",
+        "version": 0.0,
+        "actions": {
+            "add": "add",
+            "divide": "divide",
+            "multiply": "multiply",
+            "subtract": "subtract"
+        },
+        "class": {}
+    },
+    "AdvancedMath": {
+        "image": "A:\\hal/Skills\\AdvancedMath\\icon.png",
+        "name": "AdvancedMath",
+        "version": 0.0,
+        "actions": {
+            "exponent": "exponent",
+            "get_my_num": "get_my_num",
+            "get_num": "get_num",
+            "square_root": "square_root"
+        },
+        "class": {
+            "my_num": 0
+        }
+    }
+}

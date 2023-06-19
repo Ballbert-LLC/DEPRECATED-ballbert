@@ -16,12 +16,10 @@ def rmtree_hard(path, _prev=""):
         match = re.search(r"Access is denied: '(.*)'", str(e))
         if match:
             file_path = match.group(1)
-            os.chmod(
-                file_path, 0o777)
+            os.chmod(file_path, 0o777)
 
             # Delete the file
-            os.remove(
-                file_path)
+            os.remove(file_path)
             rmtree_hard(path, _prev=e)
         else:
             raise e
@@ -52,10 +50,15 @@ def setup():
 
     try:
         cur.execute(
-            "CREATE TABLE actions(skill, action_uuid, action_id, action_name, action_paramiters)")
+            "CREATE TABLE actions(skill, action_uuid, action_id, action_name, action_paramiters)"
+        )
 
         cur.execute("CREATE TABLE installedSkills(skill, version)")
 
         cur.execute("CREATE TABLE requirements(url, name, requiredBy)")
     except:
         print("already exists")
+
+    con.commit()
+
+    con.close()
