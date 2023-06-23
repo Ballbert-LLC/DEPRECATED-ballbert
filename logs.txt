@@ -7443,3 +7443,9 @@ Q: stop repeating me
 Q: i said stop
 Q: flip you
 Q: hi
+Q: [A
+Q: [A
+Q: [A
+Q: [A
+Q: 
+Q: 

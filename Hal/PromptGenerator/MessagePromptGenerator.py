@@ -76,7 +76,6 @@ def get_prompt_gerarator(user_input):
 
     # Define the command list
     dict_commands = assistant.pm.get_relevant(user_input, num_relevant=10)
-    print(dict_commands)
     commands = []
 
     if not dict_commands:

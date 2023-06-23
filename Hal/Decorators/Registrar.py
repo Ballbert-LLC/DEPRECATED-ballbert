@@ -14,6 +14,7 @@ def makeRegistrar():
             skill = func.__qualname__.split(".")[0]
             identifier = f"{skill}.{funcIdentifier}"
             docstring = parse(func.__doc__)
+            print(docstring.params)
             registry[identifier.lower()] = {
                 "id": identifier.lower(),
                 "name": name.lower(),

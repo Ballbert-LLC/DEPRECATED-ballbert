@@ -1,8 +1,9 @@
 import time
-import pyttsx3
+# import pyttsx3
 import multiprocessing
 
-engine = pyttsx3.init()
+#Below causes errors on mac
+engine = None
 lang = "en-us"
 
 current_thread = None

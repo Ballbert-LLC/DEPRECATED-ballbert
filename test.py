@@ -10,39 +10,49 @@ def parse_function_docstring(func):
     :return: The parsed docstring.
     :rtype: Docstring
     """
+    print(func.__doc__)
     docstring = parse(func.__doc__)
     return docstring
 
 
-# Example function with a docstring
-def example_function(name, priority, sender):
+import random
+import time
+from math import sqrt
+
+from Hal.Classes import Response
+from Hal.Decorators import reg
+from Hal.Skill import Skill
+
+def add(self, a, b):
+    """Calculate the distance between two points.
+
+    Parameters
+    ----------
+    x : `float`
+        X-axis coordinate.
+    y : `float`
+        Y-axis coordinate.
+    x0 : `float`, optional
+        X-axis coordinate for the second point (the origin,
+        by default).
+
+        Descriptions can have multiple paragraphs, and lists:
+
+        - First list item.
+        - Second list item.
+    y0 : `float`, optional
+        Y-axis coordinate for the second point (the origin,
+        by default).
+    **kwargs
+        Additional keyword arguments passed to
+        `calcExternalApi`.
     """
-    Calculate the total price based on the unit price and quantity.
-
-    Args:
-        unit_price (float): The price per unit of the item.
-        quantity (int, optional): The number of items. Defaults to 1.
-
-    Returns:
-        float: The total price of the items.
-
-    Raises:
-        ValueError: If the unit price or quantity is negative.
-
-    Examples:
-        >>> calculate_total_price(10.5, 3)
-        31.5
-        >>> calculate_total_price(5.25)
-        5.25
-    """
-    pass
-
+    a = int(a)
+    b = int(b)
+    return Response(suceeded=True, data=a+b)
 
 # Call the parse_function_docstring function with the example_function
-parsed_docstring = parse_function_docstring(example_function)
+parsed_docstring = parse_function_docstring(add)
 
-# Access the parsed docstring information
-print(parsed_docstring.short_description)
-print(parsed_docstring.examples[0].description)
+print(parsed_docstring.style)
 print(parsed_docstring.params[1].is_optional)
-print(parsed_docstring.raises)

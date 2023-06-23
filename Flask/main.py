@@ -104,7 +104,6 @@ def handle_remove(json):
             with open(settingsPath, 'w') as f:
                 yaml.dump(merged_yaml, f, default_flow_style=False)
 
-        print(skill, field, value)
     print("-----------------")
 
 

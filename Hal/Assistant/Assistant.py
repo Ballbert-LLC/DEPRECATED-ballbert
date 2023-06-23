@@ -38,7 +38,6 @@ class Assistant:
     _instance = None
 
     def __new__(cls, *args, **kwargs):
-        print(cls._instance)
         if not cls._instance:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
@@ -149,7 +148,6 @@ class Assistant:
                 full_message += delta["content"]
                 yield delta["content"]
 
-        print(function_name, arguments)
         yield "."
 
     def text_chat(self):
@@ -185,13 +183,14 @@ def initialize_assistant():
         con = sqlite3.connect("skills.db")
 
         cur = con.cursor()
-
-        # Execute a SELECT query on the installedSkills table
-        cur.execute("SELECT * FROM installedSkills")
-        installed_skills_data = cur.fetchall()
+        try:
+            # Execute a SELECT query on the installedSkills table
+            cur.execute("SELECT * FROM installedSkills")
+            installed_skills_data = cur.fetchall()
+        except:
+            installed_skills_data = []
 
         for item in installed_skills_data:
-            print(item[0])
             assistant.skill_manager.add_skill(assistant, item[0])
 
         con.commit()

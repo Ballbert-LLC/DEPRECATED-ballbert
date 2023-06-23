@@ -79,8 +79,8 @@ def run_assistant():
 
     assistant_instance = initialize_assistant()
 
-    # assistant_instance.add_skill_from_url(
-    #     "https://github.com/seesi8/HalAdvancedMath.git")
+    assistant_instance.add_skill_from_url(
+        "https://github.com/seesi8/HalAdvancedMath.git")
 
     # print(assistant_instance.call_function(
     #     "advancedmath.get_num", (10,)).data)

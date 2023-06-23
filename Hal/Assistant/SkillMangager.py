@@ -32,7 +32,7 @@ class SkillMangager:
     def get_actions_dict(self):
         action_dict: dict = reg.all
         for skill_id, item in action_dict.items():
-            _parameters = tuple(inspect.signature(item["function"]).parameters.items())
+            _parameters = action_dict[skill_id]["docstring"].params
 
             action_dict[skill_id]["parameters"] = (
                 action_dict[skill_id]["parameters"]
@@ -40,14 +40,17 @@ class SkillMangager:
                 else {}
             )
 
-            for argument in _parameters:
-                _name = argument[0]
-                _type = (
-                    f"<{argument[1].annotation}>"
-                    if type(argument[1].annotation) is str
-                    else f"<{argument[0]}>"
-                )
-                action_dict[skill_id]["parameters"][_name] = _type
+            for param in _parameters:
+                _name = param.arg_name
+                _type = param.type_name
+                
+                _description = param.description
+                _required = param.is_optional
+                
+                action_dict[skill_id]["parameters"][_name] = {"type": _type, "description": _description, "required": _required}
+            
+            if "self" in action_dict[skill_id]["parameters"]:
+                del action_dict[skill_id]["parameters"]["self"]
         return action_dict
 
     def get_class_function(self, class_instance):
@@ -96,7 +99,7 @@ class SkillMangager:
         assistant -- Name of skill
         Return: return_description
         """
-
+        
         module = importlib.import_module(f"Skills.{skill}")
 
         desired_class = getattr(module, skill)
@@ -122,18 +125,27 @@ class SkillMangager:
         )
 
         self.test(action_dict)
+        
 
         assistant.action_dict = action_dict
 
     def test(self, action_dict):
-        print(action_dict)
         functions = []
+        
 
         for key, value in action_dict.items():
+            required = []
             description = (
-                value["docstring"].short_description
-                + value["docstring"].long_description
+                value["docstring"].short_description or ""
+                + value["docstring"].long_description or ""
             )
+            for param_id, param in value["parameters"].items():
+                print(param["required"])
+                if param["required"]:
+                    
+                    required.append(param_id)
+            
+            print(required)
             new_dict = {
                 "name": key,
                 "description": description,

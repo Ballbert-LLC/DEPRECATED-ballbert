@@ -1,2 +1,2 @@
-from .Pinecone import *
+# from .Pinecone import *
 from .Weaviate import *
