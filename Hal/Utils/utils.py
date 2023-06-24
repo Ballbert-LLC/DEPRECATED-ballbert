@@ -86,9 +86,7 @@ def create_chat_completion(
             break
         except RateLimitError as e:
             if config.debug_mode:
-                print(
-                    "Error: " + e
-                )
+                print("Error: " + e)
         except APIError as e:
             if e.http_status == 502:
                 pass
@@ -97,13 +95,10 @@ def create_chat_completion(
             if attempt == num_retries - 1:
                 raise
         if config.debug_mode:
-            print(
-                "Error: "
-            )
+            print("Error: ")
         time.sleep(backoff)
     if response is None:
-        raise RuntimeError(
-            f"Failed to get response after {num_retries} retries")
+        raise RuntimeError(f"Failed to get response after {num_retries} retries")
 
     return response.choices[0].message["content"]
 
@@ -127,9 +122,7 @@ def create_embedding_with_ada(text) -> list:
             if attempt == num_retries - 1:
                 raise
         if config.debug_mode:
-            print(
-                "Error: "
-            )
+            print("Error: ")
         time.sleep(backoff)
 
 
@@ -150,11 +143,11 @@ def extract_dict(string) -> dict:
     stack = []
     start_index = None
     for i, char in enumerate(string):
-        if char == '{':
+        if char == "{":
             stack.append(char)
             if start_index is None:
                 start_index = i
-        elif char == '}':
+        elif char == "}":
             stack.pop()
             if not stack:
                 end_index = i + 1
@@ -172,6 +165,40 @@ def get_action_from_response(response):
         return dict_response["command"]["name"]
 
     return None
+
+
+def get_functions_list(action_dict):
+    functions = []
+
+    for key, value in action_dict.items():
+        required = []
+        properties = {}
+
+        description = (
+            value["docstring"].short_description
+            or "" + value["docstring"].long_description
+            or ""
+        )
+        for param_id, param in value["parameters"].items():
+            if param["required"]:
+                required.append(param_id)
+            properties[param_id] = {
+                "type": param["type"],
+                "description": param["description"],
+            }
+
+        new_dict = {
+            "name": key,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": properties,
+                "required": required,
+            },
+        }
+
+        functions.append(new_dict)
+    return functions
 
 
 def execute_response(actions, response: dict | str):
@@ -235,10 +262,7 @@ def execute_response(actions, response: dict | str):
     if isinstance(response, str):
         response = extract_dict(response)
 
-    if response["command"] == {} or response["command"] == {
-        "name": "",
-        "args": {}
-    }:
+    if response["command"] == {} or response["command"] == {"name": "", "args": {}}:
         return None
 
     while isinstance(response, dict):
@@ -246,8 +270,7 @@ def execute_response(actions, response: dict | str):
         lowest = get_path(response, path)
         action = lowest["command"]["name"].lower()
         log_line(f"Action: {action}")
-        result_of_action = execute_action(
-            action, actions, lowest["command"]["args"])
+        result_of_action = execute_action(action, actions, lowest["command"]["args"])
         log_line(f"R: {result_of_action}")
 
         response = replace_path(response, path, result_of_action)
@@ -263,12 +286,10 @@ def rmtree_hard(path, _prev=""):
         match = re.search(r"Access is denied: '(.*)'", str(e))
         if match:
             file_path = match.group(1)
-            os.chmod(
-                file_path, 0o777)
+            os.chmod(file_path, 0o777)
 
             # Delete the file
-            os.remove(
-                file_path)
+            os.remove(file_path)
             rmtree_hard(path, _prev=e)
         else:
             raise e

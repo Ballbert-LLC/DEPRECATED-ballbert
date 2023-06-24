@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import json
 import os
 import shutil
 import sqlite3
@@ -19,7 +20,7 @@ from ..Decorators import paramRegistrar, reg
 from ..Memory import Weaviate
 from ..PromptGenerator import create_response_message
 from ..TTS import say_phrase, say_phrase_in_process, stop_saying
-from ..Utils import convert_dict_to_lower, execute_response, get_action_from_response
+from ..Utils import get_functions_list
 from ..Logging import log_line
 from ..Wake_Word import Wake_Word
 
@@ -108,12 +109,17 @@ class Assistant:
 
     def _text_gpt_response(self, to_gpt):
         self.messages.append({"role": "user", "content": to_gpt})
+        functions = get_functions_list(self.action_dict)
+
+        with open("file.json", "a") as file:
+            # write to file
+            file.write(json.dumps(functions, indent=4))
 
         res = openai.ChatCompletion.create(
             model=MODEL,
             messages=self.messages,
             temperature=0,
-            # functions=functions,
+            functions=functions,
             stream=True,
         )
 

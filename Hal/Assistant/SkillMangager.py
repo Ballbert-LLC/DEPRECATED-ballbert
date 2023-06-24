@@ -1,4 +1,5 @@
 import ast
+import json
 import pickle
 from types import NoneType
 import openai
@@ -43,12 +44,16 @@ class SkillMangager:
             for param in _parameters:
                 _name = param.arg_name
                 _type = param.type_name
-                
+
                 _description = param.description
-                _required = param.is_optional
-                
-                action_dict[skill_id]["parameters"][_name] = {"type": _type, "description": _description, "required": _required}
-            
+                _required = not param.is_optional
+
+                action_dict[skill_id]["parameters"][_name] = {
+                    "type": _type,
+                    "description": _description,
+                    "required": _required,
+                }
+
             if "self" in action_dict[skill_id]["parameters"]:
                 del action_dict[skill_id]["parameters"]["self"]
         return action_dict
@@ -99,7 +104,7 @@ class SkillMangager:
         assistant -- Name of skill
         Return: return_description
         """
-        
+
         module = importlib.import_module(f"Skills.{skill}")
 
         desired_class = getattr(module, skill)
@@ -124,33 +129,40 @@ class SkillMangager:
             class_functions, action_dict, class_functions
         )
 
-        self.test(action_dict)
-        
-
         assistant.action_dict = action_dict
 
-    def test(self, action_dict):
+    def get_functions_list(self, action_dict):
         functions = []
-        
 
         for key, value in action_dict.items():
             required = []
+            properties = {}
+
             description = (
-                value["docstring"].short_description or ""
-                + value["docstring"].long_description or ""
+                value["docstring"].short_description
+                or "" + value["docstring"].long_description
+                or ""
             )
             for param_id, param in value["parameters"].items():
-                print(param["required"])
                 if param["required"]:
-                    
                     required.append(param_id)
-            
-            print(required)
+                properties[param_id] = {
+                    "type": param["type"],
+                    "description": param["description"],
+                }
+
             new_dict = {
                 "name": key,
                 "description": description,
-                "parameters": {"type": "object", "properties": {}},
+                "parameters": {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required,
+                },
             }
+
+            functions.append(new_dict)
+        return functions
 
     def get_image_url(self, skill, action_dict):
         if os.path.exists(os.path.join(repos_path, skill, "icon.png")):

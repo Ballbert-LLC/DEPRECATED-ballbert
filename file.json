@@ -1,0 +1,129 @@
+[
+    {
+        "name": "simplemath.add",
+        "description": "Adds two numbers and returns the result.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "a": {
+                    "type": "int",
+                    "description": "The first number to be added."
+                },
+                "b": {
+                    "type": "int",
+                    "description": "The second number to be added."
+                }
+            },
+            "required": ["a", "b"]
+        }
+    },
+    {
+        "name": "simplemath.multiply",
+        "description": "Multiplies two numbers and returns the result.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "a": {
+                    "type": "int",
+                    "description": "The first number to be multiplied."
+                },
+                "b": {
+                    "type": "int",
+                    "description": "The second number to be multiplied."
+                }
+            },
+            "required": ["a", "b"]
+        }
+    },
+    {
+        "name": "simplemath.subtract",
+        "description": "Subtracts one number from another and returns the result.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "a": {
+                    "type": "int",
+                    "description": "The number to be subtracted from."
+                },
+                "b": {
+                    "type": "int",
+                    "description": "The number to subtract."
+                }
+            },
+            "required": ["a", "b"]
+        }
+    },
+    {
+        "name": "simplemath.divide",
+        "description": "Divides one number by another and returns the result.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "a": {
+                    "type": "int",
+                    "description": "The dividend."
+                },
+                "b": {
+                    "type": "int",
+                    "description": "The divisor."
+                }
+            },
+            "required": ["a", "b"]
+        }
+    },
+    {
+        "name": "advancedmath.exponent",
+        "description": "Calculate the exponentiation of base raised to the power of exp.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "type": "int",
+                    "description": "The base number."
+                },
+                "exp": {
+                    "type": "int",
+                    "description": "The exponent number."
+                }
+            },
+            "required": ["base", "exp"]
+        }
+    },
+    {
+        "name": "advancedmath.square_root",
+        "description": "Calculate the square root of a given number.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "type": "int",
+                    "description": "The number to calculate the square root of."
+                }
+            },
+            "required": ["base"]
+        }
+    },
+    {
+        "name": "advancedmath.get_my_num",
+        "description": "Get the value of the 'my_num' attribute.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "advancedmath.get_num",
+        "description": "Get the 'my_number' value and increment 'my_num' attribute.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "thing": {
+                    "type": "any",
+                    "description": "Placeholder argument."
+                }
+            },
+            "required": []
+        }
+    }
+]

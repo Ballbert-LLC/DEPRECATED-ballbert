@@ -10,49 +10,33 @@ def parse_function_docstring(func):
     :return: The parsed docstring.
     :rtype: Docstring
     """
-    print(func.__doc__)
     docstring = parse(func.__doc__)
     return docstring
 
 
-import random
-import time
-from math import sqrt
-
-from Hal.Classes import Response
-from Hal.Decorators import reg
-from Hal.Skill import Skill
-
-def add(self, a, b):
-    """Calculate the distance between two points.
-
-    Parameters
-    ----------
-    x : `float`
-        X-axis coordinate.
-    y : `float`
-        Y-axis coordinate.
-    x0 : `float`, optional
-        X-axis coordinate for the second point (the origin,
-        by default).
-
-        Descriptions can have multiple paragraphs, and lists:
-
-        - First list item.
-        - Second list item.
-    y0 : `float`, optional
-        Y-axis coordinate for the second point (the origin,
-        by default).
-    **kwargs
-        Additional keyword arguments passed to
-        `calcExternalApi`.
+# Example function with a docstring
+def example_function(name, priority, sender):
     """
-    a = int(a)
-    b = int(b)
-    return Response(suceeded=True, data=a+b)
+    Short description
+
+    Long description spanning multiple lines
+    - First line
+    - Second line
+    - Third line
+
+    :param str? name: description 1
+    :param int priority: description 2
+    :param str sender: description 3
+    :raises ValueError: if name is invalid
+    """
+    pass
+
 
 # Call the parse_function_docstring function with the example_function
-parsed_docstring = parse_function_docstring(add)
+parsed_docstring = parse_function_docstring(example_function)
 
-print(parsed_docstring.style)
-print(parsed_docstring.params[1].is_optional)
+# Access the parsed docstring information
+print(parsed_docstring.short_description)
+print(parsed_docstring.long_description)
+print(parsed_docstring.params[0].is_optional)
+print(parsed_docstring.raises)
