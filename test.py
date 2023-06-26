@@ -1,42 +1,46 @@
-from docstring_parser import parse
+import json
+import os
+
+os.environ["debug_mode"] = "True"
+
+from Hal.Assistant.Assistant import initialize_assistant
+from Hal.Utils.utils import rmtree_hard
+from setup import setup
+
+setup()
+
+assistant_instance = initialize_assistant()
+
+assistant_instance.skill_manager.add_skill_from_url(
+    assistant_instance, "https://github.com/seesi8/HalAdvancedMath.git"
+)
 
 
-def parse_function_docstring(func):
-    """
-    Parses the docstring of a given function.
-
-    :param func: The function whose docstring needs to be parsed.
-    :type func: function
-    :return: The parsed docstring.
-    :rtype: Docstring
-    """
-    docstring = parse(func.__doc__)
-    return docstring
-
-
-# Example function with a docstring
-def example_function(name, priority, sender):
-    """
-    Short description
-
-    Long description spanning multiple lines
-    - First line
-    - Second line
-    - Third line
-
-    :param str? name: description 1
-    :param int priority: description 2
-    :param str sender: description 3
-    :raises ValueError: if name is invalid
-    """
-    pass
+def remove_uuid(dictionary):
+    if isinstance(dictionary, dict):
+        for key in list(dictionary.keys()):
+            if key == "uuid":
+                dictionary.pop(key)
+            else:
+                remove_uuid(dictionary[key])
+    elif isinstance(dictionary, list):
+        for item in dictionary:
+            remove_uuid(item)
 
 
-# Call the parse_function_docstring function with the example_function
-parsed_docstring = parse_function_docstring(example_function)
+def serialize_dictionary(dictionary):
+    remove_uuid(dictionary)
 
-# Access the parsed docstring information
-print(parsed_docstring.short_description)
-print(parsed_docstring.long_description)
-print(parsed_docstring.params[0].is_optional)
-print(parsed_docstring.raises)
+    class Encoder(json.JSONEncoder):
+        def default(self, obj):
+            if callable(obj):  # Check if the object is a function
+                return obj.__name__  # Serialize the function as its name
+            elif hasattr(obj, "__dict__"):  # Check if the object is a class instance
+                return obj.__dict__  # Serialize the class instance as its dictionary
+            return super().default(obj)
+
+    serialized = json.dumps(dictionary, cls=Encoder, indent=4)
+    return serialized
+
+
+print(serialize_dictionary(assistant_instance.installed_skills))

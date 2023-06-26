@@ -8,7 +8,8 @@ working_dir = os.path.abspath("./")
 
 sys.path.append(working_dir)
 
-from Hal import assistant, initialize_assistant
+
+from Hal import assistant, initialize_assistant, print_result
 from setup import setup
 from Config import Config
 
@@ -24,7 +25,9 @@ os.environ["DEBUG_MODE"] = "False"
 
 assistant_instance = initialize_assistant()
 
-assistant_instance.add_skill_from_url("https://github.com/seesi8/HalAdvancedMath.git")
+assistant_instance.skill_manager.add_skill_from_url(
+    assistant_instance, "https://github.com/seesi8/HalAdvancedMath.git"
+)
 
 
 def remove_uuid(dictionary):
@@ -110,16 +113,8 @@ def highlight_diff(dict1_str, dict2_str):
 
 os.environ["DEBUG_MODE"] = str(is_debug)
 
-print(
-    (
-        "\033[92m"
-        if correct_actions_dict == action_dict and action_dict == correct_actions_dict
-        else "\033[91m"
-    )
-    + "Without Debug: "
-    + (
-        "passed"
-        if correct_actions_dict == action_dict and action_dict == correct_actions_dict
-        else "failed"
-    )
+
+print_result(
+    correct_actions_dict == action_dict and action_dict == correct_actions_dict,
+    "Without Debug",
 )

@@ -126,6 +126,14 @@ def create_embedding_with_ada(text) -> list:
         time.sleep(backoff)
 
 
+def print_result(result, name):
+    print(
+        ("\033[92m" if result else "\033[91m")
+        + f"{name}: "
+        + ("passed" if result else "failed")
+    )
+
+
 def convert_dict_to_lower(d):
     new_dict = {}
     for key, value in d.items():
@@ -183,9 +191,10 @@ def get_functions_list(action_dict):
             if param["required"]:
                 required.append(param_id)
             properties[param_id] = {
-                "type": param["type"],
                 "description": param["description"],
             }
+            if param["type"]:
+                properties[param_id]["type"] = param["type"]
 
         new_dict = {
             "name": key,

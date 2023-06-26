@@ -9,7 +9,7 @@ working_dir = os.path.abspath("./")
 sys.path.append(working_dir)
 
 
-from Hal import assistant, initialize_assistant
+from Hal import assistant, initialize_assistant, print_result
 from setup import setup
 from Config import Config
 
@@ -103,16 +103,7 @@ def highlight_diff(dict1_str, dict2_str):
 
 os.environ["DEBUG_MODE"] = str(is_debug)
 
-print(
-    (
-        "\033[92m"
-        if correct_actions_dict == action_dict and action_dict == correct_actions_dict
-        else "\033[91m"
-    )
-    + "Without Setup: "
-    + (
-        "passed"
-        if correct_actions_dict == action_dict and action_dict == correct_actions_dict
-        else "failed"
-    )
+print_result(
+    correct_actions_dict == action_dict and action_dict == correct_actions_dict,
+    "Without Setup",
 )

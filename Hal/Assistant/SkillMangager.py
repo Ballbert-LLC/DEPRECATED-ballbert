@@ -73,13 +73,14 @@ class SkillMangager:
         return class_functions
 
     def update_actions_function(self, class_functions, action_dict, class_instance):
-        action_dict = copy.deepcopy(action_dict)
+        new_action_dict = copy.deepcopy(action_dict)
 
         for func_name, func in class_functions.items():
-            for action_name, values in action_dict.items():
+            for action_name, values in new_action_dict.items():
                 new_values = copy.deepcopy(values)
                 if func_name == new_values["func_name_in_class"]:
                     # factory is in order to loose referance to the sub function
+
                     def wrapper_func_factory(func):
                         def wrapper_func(*args, **kwargs):
                             signature = inspect.signature(func)
@@ -92,9 +93,9 @@ class SkillMangager:
 
                     new_values["function"] = wrapper_func_factory(func)
                     new_values["class_instance"] = class_instance
-                    action_dict[action_name] = new_values
+                    new_action_dict[action_name] = new_values
 
-        return action_dict
+        return new_action_dict
 
     def add_skill(self, assistant, skill):
         """Adds a skill to the memeory
@@ -105,11 +106,17 @@ class SkillMangager:
         Return: return_description
         """
 
+        prev_actions_dict = copy.deepcopy(assistant.action_dict)
+
         module = importlib.import_module(f"Skills.{skill}")
 
         desired_class = getattr(module, skill)
 
         action_dict = self.get_actions_dict()
+
+        action_dict = self.get_new_actions_from_current_actions(
+            action_dict, prev_actions_dict
+        )
 
         image = self.get_image_url(skill=skill, action_dict=action_dict)
 
@@ -126,43 +133,19 @@ class SkillMangager:
         }
 
         action_dict = self.update_actions_function(
-            class_functions, action_dict, class_functions
+            class_functions, action_dict, class_instance
         )
 
-        assistant.action_dict = action_dict
-
-    def get_functions_list(self, action_dict):
-        functions = []
-
         for key, value in action_dict.items():
-            required = []
-            properties = {}
+            assistant.action_dict[key] = value
 
-            description = (
-                value["docstring"].short_description
-                or "" + value["docstring"].long_description
-                or ""
-            )
-            for param_id, param in value["parameters"].items():
-                if param["required"]:
-                    required.append(param_id)
-                properties[param_id] = {
-                    "type": param["type"],
-                    "description": param["description"],
-                }
+    def get_new_actions_from_current_actions(self, new_actions_dict, old_actions_dict):
+        updated_actions = {}
+        for key, _ in new_actions_dict.items():
+            if key not in old_actions_dict:
+                updated_actions[key] = new_actions_dict[key]
 
-            new_dict = {
-                "name": key,
-                "description": description,
-                "parameters": {
-                    "type": "object",
-                    "properties": properties,
-                    "required": required,
-                },
-            }
-
-            functions.append(new_dict)
-        return functions
+        return updated_actions
 
     def get_image_url(self, skill, action_dict):
         if os.path.exists(os.path.join(repos_path, skill, "icon.png")):
@@ -472,6 +455,7 @@ class SkillMangager:
         return True
 
     def remove_skill(self, skill_name: str, assistant: Assistant):
+        print(skill_name)
         if not self.check_if_skill_is_needed(skill_name=skill_name):
             self.remove_from_memory(skill_name, assistant)
             self.remove_from_actions_table(skill_name)
@@ -524,7 +508,7 @@ class SkillMangager:
 
         for key, value in assistant.action_dict.items():
             key: str
-            skill = key.split(".")[0]
+            skill = key.split("-")[0]
 
             if skill.lower() == skill_name.lower():
                 del action_dict_copy[key]

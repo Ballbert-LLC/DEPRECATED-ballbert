@@ -7453,3 +7453,152 @@ Q: what functions do you have
 Q: what functions do you have
 Q: what functions do you have
 Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: hi
+Q: what functions do you have
+Q: what functions do you have
+Q: now what functions do you have: also exponent exponent expondent
+Q: now what do you have
+Q: why are they changing
+Q: why do you keep changing
+Q: hi
+Q: what functions do u have
+Q: what now
+Q: 4^2
+Q: 4 to the power of 2
+Q: 4 to the power of two
+Q: 4^2
+Q: 4^2
+Q: 4^2
+Q: 4^2
+Q: 4 to the power of 2
+Q: 4 to the power of 2 
+Q: 4 to the power of 2
+Q: 
+Q: 4 to the power of 2
+Q: hi
+Q: 4 to the power of 2
+Q: four to the power of two
+Q: 4 to the power of two
+Q: four ot the power of two
+Q: hi
+Q: 4^2
+Q: 4^2
+Q: whats up
+Q: hi
+Q: whatsup
+Q: whats yp
+Q: whats up
+Q: hi
+Q: whats up
+Q: whats up
+Q: whats up
+Q: banana
+Q: banana
+Q: hi
+Q: hi
+Q: 4 ^ 2
+Q: 4 ^& 2
+Q: hi
+Q: 4 ^ 2
+Q: 4 ^ 2
+Q: 4 ^ 2
+Q: 4 to the power of 2
+Q: 4 to the power of 2
+Q: 4 to the power of 2
+Q: 4 to the power of 2
+Q: 4 to the power of 2
+Q: hi
+I: {'role': 'user', 'content': 'hi'}
+A: Hello! How can I assist you today?
+Q: whats up
+I: {'role': 'user', 'content': 'whats up'}
+A: Hello! How can I assist you today?
+I: {'role': 'user', 'content': 'whats up'}
+I: {'role': 'user', 'content': 'hi'}
+I: {'role': 'user', 'content': 'hi'}
+A: Hello! How can I assist you today?
+I: {'role': 'user', 'content': '4 to da pow of two'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': 16}
+I: {'role': 'user', 'content': '4 pow 2'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': 16}
+I: {'role': 'user', 'content': '4 to the pow of 2'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': 16}
+I: {'role': 'user', 'content': '4 to da pow o dos'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+I: {'role': 'user', 'content': '4 sqaured'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+I: {'role': 'user', 'content': '4 to the squared'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+A: {
+  "base": 2,
+  "exp": 4
+}
+The exponentiation of 2 raised to the power of 4 is 16.
+I: {'role': 'user', 'content': '4 to the pow of 2'}
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+A: {
+  "base": 2,
+  "exp": 4
+}
+The exponentiation of 2 raised to the power of 4 is 16.
+I: {'role': 'user', 'content': '4 to the pow of 2'}
+M: [{'role': 'user', 'content': '4 to the pow of 2'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: {
+  "base": 2,
+  "exp": 4
+}
+The exponentiation of 2 raised to the power of 4 is 16.
+I: {'role': 'user', 'content': '4 to the pow of 2'}
+M: [{'role': 'user', 'content': '4 to the pow of 2'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': '4 to the pow of 2'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: 4 raised to the power of 2 is equal to 16.
+I: {'role': 'user', 'content': 'four to the pow of 2'}
+M: [{'role': 'user', 'content': 'four to the pow of 2'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four to the pow of 2'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four to the power of 2 is equal to 16.
+I: {'role': 'user', 'content': '4 to the power of 2'}
+M: [{'role': 'user', 'content': '4 to the power of 2'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': '4 to the power of 2'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: 4 to the power of 2 is equal to 16.
+I: {'role': 'user', 'content': 'you are so amazing'}
+M: [{'role': 'user', 'content': '4 to the power of 2'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}, {'role': 'assistant', 'content': '4 to the power of 2 is equal to 16.'}, {'role': 'user', 'content': 'you are so amazing'}]
+A: Thank you! I'm here to help with any questions you have.

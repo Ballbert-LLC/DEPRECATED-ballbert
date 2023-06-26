@@ -1,126 +1,465 @@
 {
-    "simplemath.add": {
-        "id": "simplemath.add",
+    "simplemath-add": {
+        "id": "simplemath-add",
         "name": "add",
-        "function": "add",
+        "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Adds two numbers and returns the result.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "integer", "a"],
+                    "description": "The first number to be added.",
+                    "arg_name": "a",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "b"],
+                    "description": "The second number to be added.",
+                    "arg_name": "b",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The sum of the two numbers.",
+                    "type_name": "number",
+                    "is_generator": false,
+                    "return_name": null
+                },
+                {
+                    "args": ["raises"],
+                    "description": "None\nExample:\n>>> obj = ClassName()\n>>> obj.add(3, 4)\n7",
+                    "type_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "SimpleMath",
         "func_name_in_class": "add",
         "simple_func_ref": "add",
         "parameters": {
-            "self": "<self>",
-            "a": "<number>",
-            "b": "<number>"
-        }
+            "a": {
+                "type": "integer",
+                "description": "The first number to be added.",
+                "required": true
+            },
+            "b": {
+                "type": "integer",
+                "description": "The second number to be added.",
+                "required": true
+            }
+        },
+        "class_instance": {}
     },
-    "simplemath.multiply": {
-        "id": "simplemath.multiply",
+    "simplemath-multiply": {
+        "id": "simplemath-multiply",
         "name": "multiply",
-        "function": "multiply",
+        "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Multiplies two numbers and returns the result.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "self"],
+                    "description": "The object instance.",
+                    "arg_name": "self",
+                    "type_name": null,
+                    "is_optional": null,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "a"],
+                    "description": "The first number to be multiplied.",
+                    "arg_name": "a",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "b"],
+                    "description": "The second number to be multiplied.",
+                    "arg_name": "b",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The product of the two numbers.",
+                    "type_name": "number",
+                    "is_generator": false,
+                    "return_name": null
+                },
+                {
+                    "args": ["raises"],
+                    "description": "None\nExample:\n>>> obj = ClassName()\n>>> obj.multiply(3, 4)\n12",
+                    "type_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "SimpleMath",
         "func_name_in_class": "multiply",
         "simple_func_ref": "multiply",
         "parameters": {
-            "self": "<self>",
-            "a": "<number>",
-            "b": "<number>"
-        }
+            "a": {
+                "type": "integer",
+                "description": "The first number to be multiplied.",
+                "required": true
+            },
+            "b": {
+                "type": "integer",
+                "description": "The second number to be multiplied.",
+                "required": true
+            }
+        },
+        "class_instance": {}
     },
-    "simplemath.subtract": {
-        "id": "simplemath.subtract",
+    "simplemath-subtract": {
+        "id": "simplemath-subtract",
         "name": "subtract",
-        "function": "subtract",
+        "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Subtracts one number from another and returns the result.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "self"],
+                    "description": "The object instance.",
+                    "arg_name": "self",
+                    "type_name": null,
+                    "is_optional": null,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "a"],
+                    "description": "The number to be subtracted from.",
+                    "arg_name": "a",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "b"],
+                    "description": "The number to subtract.",
+                    "arg_name": "b",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The difference between the two numbers.",
+                    "type_name": "number",
+                    "is_generator": false,
+                    "return_name": null
+                },
+                {
+                    "args": ["raises"],
+                    "description": "None\nExample:\n>>> obj = ClassName()\n>>> obj.subtract(7, 3)\n4",
+                    "type_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "SimpleMath",
         "func_name_in_class": "subtract",
         "simple_func_ref": "subtract",
         "parameters": {
-            "self": "<self>",
-            "a": "<number>",
-            "b": "<number>"
-        }
+            "a": {
+                "type": "integer",
+                "description": "The number to be subtracted from.",
+                "required": true
+            },
+            "b": {
+                "type": "integer",
+                "description": "The number to subtract.",
+                "required": true
+            }
+        },
+        "class_instance": {}
     },
-    "simplemath.divide": {
-        "id": "simplemath.divide",
+    "simplemath-divide": {
+        "id": "simplemath-divide",
         "name": "divide",
-        "function": "divide",
+        "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Divides one number by another and returns the result.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "self"],
+                    "description": "The object instance.",
+                    "arg_name": "self",
+                    "type_name": null,
+                    "is_optional": null,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "a"],
+                    "description": "The dividend.",
+                    "arg_name": "a",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "b"],
+                    "description": "The divisor.",
+                    "arg_name": "b",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The quotient of the division.",
+                    "type_name": "number",
+                    "is_generator": false,
+                    "return_name": null
+                },
+                {
+                    "args": ["raises"],
+                    "description": "None\nExample:\n>>> obj = ClassName()\n>>> obj.divide(10, 2)\n5.0",
+                    "type_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "SimpleMath",
         "func_name_in_class": "divide",
         "simple_func_ref": "divide",
         "parameters": {
-            "self": "<self>",
-            "a": "<number>",
-            "b": "<number_not_zero>"
-        }
+            "a": {
+                "type": "integer",
+                "description": "The dividend.",
+                "required": true
+            },
+            "b": {
+                "type": "integer",
+                "description": "The divisor.",
+                "required": true
+            }
+        },
+        "class_instance": {}
     },
-    "advancedmath.exponent": {
-        "id": "advancedmath.exponent",
+    "advancedmath-exponent": {
+        "id": "advancedmath-exponent",
         "name": "exponent",
         "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Calculate the exponentiation of base raised to the power of exp.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "integer", "base"],
+                    "description": "The base number.",
+                    "arg_name": "base",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["param", "integer", "exp"],
+                    "description": "The exponent number.",
+                    "arg_name": "exp",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The response object with the calculated power.",
+                    "type_name": "Response",
+                    "is_generator": false,
+                    "return_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "AdvancedMath",
         "func_name_in_class": "exponent",
         "simple_func_ref": "exponent",
         "parameters": {
-            "self": "<self>",
-            "base": "<number>",
-            "exp": "<number>"
+            "base": {
+                "type": "integer",
+                "description": "The base number.",
+                "required": true
+            },
+            "exp": {
+                "type": "integer",
+                "description": "The exponent number.",
+                "required": true
+            }
         },
         "class_instance": {
-            "exponent": "exponent",
-            "get_my_num": "get_my_num",
-            "get_num": "get_num",
-            "square_root": "square_root"
+            "my_num": 0
         }
     },
-    "advancedmath.square_root": {
-        "id": "advancedmath.square_root",
+    "advancedmath-square_root": {
+        "id": "advancedmath-square_root",
         "name": "square root",
         "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Calculate the square root of a given number.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "integer", "base"],
+                    "description": "The number to calculate the square root of.",
+                    "arg_name": "base",
+                    "type_name": "integer",
+                    "is_optional": false,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The response object with the calculated square root.",
+                    "type_name": "Response",
+                    "is_generator": false,
+                    "return_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "AdvancedMath",
         "func_name_in_class": "square_root",
         "simple_func_ref": "square_root",
         "parameters": {
-            "self": "<self>",
-            "base": "<number>"
+            "base": {
+                "type": "integer",
+                "description": "The number to calculate the square root of.",
+                "required": true
+            }
         },
         "class_instance": {
-            "exponent": "exponent",
-            "get_my_num": "get_my_num",
-            "get_num": "get_num",
-            "square_root": "square_root"
+            "my_num": 0
         }
     },
-    "advancedmath.get_my_num": {
-        "id": "advancedmath.get_my_num",
+    "advancedmath-get_my_num": {
+        "id": "advancedmath-get_my_num",
         "name": "get my number",
         "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Get the value of the 'my_num' attribute.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["return"],
+                    "description": "The response object with the current value of 'my_num'.",
+                    "type_name": "Response",
+                    "is_generator": false,
+                    "return_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "AdvancedMath",
         "func_name_in_class": "get_my_num",
         "simple_func_ref": "get_my_num",
-        "parameters": {
-            "self": "<self>"
-        },
+        "parameters": {},
         "class_instance": {
-            "exponent": "exponent",
-            "get_my_num": "get_my_num",
-            "get_num": "get_num",
-            "square_root": "square_root"
+            "my_num": 0
         }
     },
-    "advancedmath.get_num": {
-        "id": "advancedmath.get_num",
+    "advancedmath-get_num": {
+        "id": "advancedmath-get_num",
         "name": "get number",
         "function": "wrapper_func",
+        "docstring": {
+            "short_description": "Get the 'my_number' value and increment 'my_num' attribute.",
+            "long_description": null,
+            "blank_after_short_description": true,
+            "blank_after_long_description": false,
+            "meta": [
+                {
+                    "args": ["param", "thing"],
+                    "description": "Placeholder argument.",
+                    "arg_name": "thing",
+                    "type_name": null,
+                    "is_optional": null,
+                    "default": null
+                },
+                {
+                    "args": ["return"],
+                    "description": "The response object with the current value of 'my_number'.",
+                    "type_name": "Response",
+                    "is_generator": false,
+                    "return_name": null
+                }
+            ],
+            "style": {
+                "_value_": 1,
+                "_name_": "REST",
+                "__objclass__": "DocstringStyle",
+                "_sort_order_": 0
+            }
+        },
         "skill": "AdvancedMath",
         "func_name_in_class": "get_num",
         "simple_func_ref": "get_num",
         "parameters": {
-            "self": "<self>",
-            "thing": "<thing>"
+            "thing": {
+                "type": null,
+                "description": "Placeholder argument.",
+                "required": true
+            }
         },
         "class_instance": {
-            "exponent": "exponent",
-            "get_my_num": "get_my_num",
-            "get_num": "get_num",
-            "square_root": "square_root"
+            "my_num": 0
         }
     }
 }

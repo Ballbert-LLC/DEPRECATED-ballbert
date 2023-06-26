@@ -20,13 +20,12 @@ from ..Decorators import paramRegistrar, reg
 from ..Memory import Weaviate
 from ..PromptGenerator import create_response_message
 from ..TTS import say_phrase, say_phrase_in_process, stop_saying
-from ..Utils import get_functions_list
 from ..Logging import log_line
 from ..Wake_Word import Wake_Word
+from ..MessageHandler import MessageHandler
 
 from git import Repo
 
-MODEL = "gpt-3.5-turbo-0613"
 
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
 
@@ -61,7 +60,6 @@ class Assistant:
         buffer = ""
         while True:
             question = input("Q: ")
-            log_line(f"Q: {question}")
             for item in self._text_gpt_response(question):
                 buffer += item
                 for punctiation in [".", "?", "!", ",", "-", ";", ":"]:
@@ -81,7 +79,6 @@ class Assistant:
 
                 wake_word.pause()
                 question = self.asr.get_speach()
-                log_line(f"Q: {question}")
                 for item in self._text_gpt_response(question):
                     buffer += item
                     for punctuation in [".", "?", "!", ",", "-", ";", ":"]:
@@ -104,74 +101,18 @@ class Assistant:
         wake_word_thread = threading.Thread(target=run_wake_word)
         wake_word_thread.start()
 
-    def _handle_json(self, the_json):
-        print(the_json)
-
-    def _text_gpt_response(self, to_gpt):
-        self.messages.append({"role": "user", "content": to_gpt})
-        functions = get_functions_list(self.action_dict)
-
-        with open("file.json", "a") as file:
-            # write to file
-            file.write(json.dumps(functions, indent=4))
-
-        res = openai.ChatCompletion.create(
-            model=MODEL,
-            messages=self.messages,
-            temperature=0,
-            functions=functions,
-            stream=True,
-        )
-
-        function_name = ""
-        arguments = ""
-
-        full_message = ""
-
-        for item in res:
-            delta = item["choices"][0]["delta"]
-
-            # check for end
-            if delta == {}:
-                if function_name:
-                    self.messages.append(
-                        {
-                            "role": "function_call",
-                            "name": function_name,
-                            "arguments": arguments,
-                        }
-                    )
-                else:
-                    self.messages.append({"role": "assistant", "content": full_message})
-
-            if "function_call" in delta:
-                function_call = delta["function_call"]
-                if "name" in function_call:
-                    function_name = function_call["name"]
-                elif "arguments" in function_call:
-                    arguments += function_call["arguments"]
-            elif "content" in delta:
-                full_message += delta["content"]
-                yield delta["content"]
-
-        yield "."
-
     def text_chat(self):
         while True:
             question = input("Q: ")
-            log_line(f"Q: {question}")
             for item in self._text_gpt_response(question):
                 print(item, end="", flush=True)
             print()
 
-    def send_response(response: Response):
-        print(response)
+    def _text_gpt_response(self, to_gpt):
+        message_handler = MessageHandler(self, to_gpt)
 
-    def add_skill_from_url(self, url):
-        self.skill_manager.add_skill_from_url(self, url)
-
-    def remove_skill(self, skill_name):
-        self.skill_manager.remove_skill(skill_name, self)
+        for chunk in message_handler.handle_message():
+            yield chunk
 
     def call_function(self, function_id, args=[], kwargs={}):
         return self.action_dict[function_id]["function"](*args, **kwargs)

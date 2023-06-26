@@ -1,4 +1,5 @@
 import json
+import time
 import weaviate
 from colorama import Fore, Style
 
@@ -51,21 +52,25 @@ class Weaviate:
 
     def add_list(self, datas: list, skill_name):
         results = datas.copy()
-        with self.client.batch as batch:
-            batch.batch_size = 20
+        with self.client.batch(
+            batch_size=100, weaviate_error_retries=weaviate.WeaviateErrorRetryConf()
+        ) as batch:
             for skill_id, data in datas.items():
                 properties = {
                     "name": data["name"],
                     "identifier": data["id"],
                     "skill": skill_name,
                     "parameters": [
-                        str({i: item}) for i, item in data["parameters"].items()
+                        f"{i}: {item.get('description')}"
+                        for i, item in data["parameters"].items()
                     ],
                 }
 
                 results[data["id"]]["uuid"] = self.client.batch.add_data_object(
                     properties, "Action"
                 )
+
+                time.sleep(0.1)
         return results
 
     def get(self, data):
@@ -88,7 +93,7 @@ class Weaviate:
             .do()
         )
 
-        return result["data"]["Get"]["Action"]
+        return [item["identifier"] for item in result["data"]["Get"]["Action"]]
 
     def get_stats(self):
         return self.client.schema()

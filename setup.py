@@ -31,7 +31,6 @@ def setup():
     if config.debug_mode:
         os.remove("skills.db")
         open("skills.db", "w").close()
-        print("rming")
 
         if not os.path.exists("./temp"):
             os.makedirs("./temp")
