@@ -1,63 +1,45 @@
-import os
-import shutil
-import uuid
-
+import sys
 import yaml
-from flask import Flask, jsonify, render_template, request
-from flask_socketio import SocketIO, send
-from git import Repo
+import socket
+import json
+
 from Hal import initialize_assistant
 from Config import Config
 
 assistant = initialize_assistant()
 
 repos_path = "./Skills"
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "secret!"
-socketio = SocketIO(app)
 configuration = Config()
-locals_images = []
 
 
-@app.route("/add_skill", methods=["POST"])
-def handle_add():
-    global locals_images
+def handle_add(client, json_data):
     try:
-        json_data = request.get_json()
         if (
             assistant.skill_manager.add_skill_from_url(assistant, json_data["url"])
             != False
         ):
-            locals_images = []
-            prepare_files()
-            return jsonify({"status_code": 200})
+            response = {"status_code": 200}
         else:
-            locals_images = []
-            prepare_files()
-            return jsonify({"status_code": 500})
-
+            response = {"status_code": 500}
     except Exception as e:
         print(e)
-        return jsonify({"status_code": 500})
+        response = {"status_code": 500}
+
+    client.sendall(json.dumps(response).encode())
 
 
-@app.route("/remove_skill", methods=["POST"])
-def handle_remove():
+def handle_remove(client, json_data):
     try:
-        global locals_images
-        json_data = request.get_json()
         assistant.skill_manager.remove_skill(json_data["skill_name"], assistant)
-        locals_images = []
-        prepare_files()
-        return jsonify({"status_code": 200})
+        response = {"status_code": 200}
     except Exception as e:
-        return jsonify({"status_code": 500, "error": str(e)})
+        response = {"status_code": 500, "error": str(e)}
+
+    client.sendall(json.dumps(response).encode())
 
 
-@app.route("/config", methods=["POST"])
-def handle_config():
+def handle_config(client, json_data):
     try:
-        json_data = request.get_json()
         values = json_data["values"]
 
         for name, value in values.items():
@@ -68,57 +50,59 @@ def handle_config():
             if value == "True" or value == "true":
                 value = True
 
-            if os.path.exists(settingsPath):
-                with open(settingsPath, "r") as f:
-                    existing_yaml = yaml.safe_load(f)
+            if socket.gethostname() == "YOUR_HOSTNAME":
+                if os.path.exists(settingsPath):
+                    with open(settingsPath, "r") as f:
+                        existing_yaml = yaml.safe_load(f)
 
-                if not existing_yaml or isinstance(existing_yaml, str):
-                    existing_yaml = {}
+                    if not existing_yaml or isinstance(existing_yaml, str):
+                        existing_yaml = {}
 
-                obj = {field: value}
+                    obj = {field: value}
 
-                # Merge existing YAML with new data
-                merged_yaml = {**existing_yaml, **obj}
+                    # Merge existing YAML with new data
+                    merged_yaml = {**existing_yaml, **obj}
 
-                # Write merged YAML to output file
-                with open(settingsPath, "w") as f:
-                    yaml.dump(merged_yaml, f, default_flow_style=False)
+                    # Write merged YAML to output file
+                    with open(settingsPath, "w") as f:
+                        yaml.dump(merged_yaml, f, default_flow_style=False)
 
-        return jsonify({"status_code": 200})
+        response = {"status_code": 200}
     except Exception as e:
-        return jsonify({"status_code": 500, "error": str(e)})
+        response = {"status_code": 500, "error": str(e)}
+
+    client.sendall(json.dumps(response).encode())
 
 
-def prepare_files():
-    print("assistant:", assistant.installed_skills)
-    for key, item in assistant.installed_skills.items():
-        result = item.copy()
+def handle_request(client):
+    request_data = client.recv(4096).decode()
+    json_data = json.loads(request_data)
 
-        new_file_name = str(uuid.uuid4())
-        shutil.copyfile(
-            item["image"], os.path.join("./Flask/Static/images", new_file_name)
-        )
+    endpoint = json_data.get("endpoint")
 
-        result["image"] = new_file_name
-        locals_images.append(result)
+    if endpoint == "/add_skill":
+        handle_add(client, json_data)
+    elif endpoint == "/remove_skill":
+        handle_remove(client, json_data)
+    elif endpoint == "/config":
+        handle_config(client, json_data)
+    else:
+        response = {"status_code": 404}
+        client.sendall(json.dumps(response).encode())
+
+    client.close()
 
 
 def run():
     print("bouta run")
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(("0.0.0.0", 5000))
+    server.listen(5)
 
-    prepare_files()
+    while True:
+        client, address = server.accept()
+        handle_request(client)
 
-    # causes problems
-    should_reload = False
 
-    if configuration.debug_mode and should_reload:
-        socketio.run(
-            app,
-            use_reloader=True,
-            extra_files=[
-                "A:\\hal\\Hal\\Flask\\templates\\index.html",
-                "A:\\hal\\Hal\\Flask\\templates\\config.html",
-            ],
-        )
-    else:
-        socketio.run(app, host="0.0.0.0")
+if __name__ == "__main__":
+    run()
