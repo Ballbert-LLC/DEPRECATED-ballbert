@@ -13,6 +13,13 @@ import types
 from Config import Config
 
 config = Config()
+from fastapi import FastAPI
+from Flask.main import router
+
+app = FastAPI()
+
+# Mount the router from the api module
+app.include_router(router)
 
 
 def rmtree_hard(path, _prev=""):
@@ -73,9 +80,20 @@ def convert_dict_to_json_serializable(input_dict):
     return serializable_dict
 
 
+def run_web():
+    import uvicorn
+
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=5000,
+        ssl_keyfile="Certs/ca-key.pem",
+        ssl_certfile="Certs/ca.pem",
+    )
+
+
 def run_assistant():
     from Hal import assistant, initialize_assistant
-    from Flask import run
 
     assistant_instance = initialize_assistant()
 
@@ -86,9 +104,11 @@ def run_assistant():
     print(assistant_instance.call_function("simplemath-multiply", (10, 10)).data)
 
     if config.ws:
-        t = threading.Thread(target=run)
+        t = threading.Thread(target=run_web)
         t.daemon = True
         t.start()
+
+    time.sleep(10)
 
     assistant_instance.text_chat()
 
