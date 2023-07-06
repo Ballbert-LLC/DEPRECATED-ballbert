@@ -110,7 +110,9 @@ class MessageHandler:
 
     def handle_function(self, message, function_name):
         self.add_function_to_messages(message, function_name)
-        functions = self.get_functions(message)
+        functions = self.get_functions(
+            f"{self.gpt_response}, {function_name}:{message}"
+        )
         res = self.ask_gpt(functions)
         for chunk in res:
             chunk_result = self.handle_chunk(chunk)
@@ -118,6 +120,14 @@ class MessageHandler:
                 yield chunk_result
 
         yield "."
+
+    def handle_generatior(self, generator):
+        for item in generator:
+            if isinstance(item, Generator):
+                for sub_item in self.handle_generatior(item):
+                    yield sub_item
+            else:
+                yield item
 
     def handle_message(self):
         self.add_to_messages(self.gpt_response)
@@ -127,7 +137,7 @@ class MessageHandler:
         for chunk in res:
             chunk_result = self.handle_chunk(chunk)
             if isinstance(chunk_result, Generator):
-                for item in chunk_result:
+                for item in self.handle_generatior(chunk_result):
                     yield item
             elif chunk_result:
                 yield chunk_result

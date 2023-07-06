@@ -7605,3 +7605,114 @@ A: Thank you! I'm here to help with any questions you have.
 I: {'role': 'user', 'content': 'saml3651'}
 M: [{'role': 'user', 'content': 'saml3651'}]
 A: I'm sorry, but I'm not sure what you mean by "saml3651". Can you please provide more context or clarify your request?
+I: {'role': 'user', 'content': '4 to the power of 2'}
+M: [{'role': 'user', 'content': '4 to the power of 2'}]
+I: {'role': 'user', 'content': '4 to the power of 2'}
+M: [{'role': 'user', 'content': '4 to the power of 2'}]
+I: {'role': 'user', 'content': '4 squared'}
+M: [{'role': 'user', 'content': '4 squared'}]
+I: {'role': 'user', 'content': '4 squared'}
+M: [{'role': 'user', 'content': '4 squared'}]
+I: {'role': 'user', 'content': '4 squared'}
+M: [{'role': 'user', 'content': '4 squared'}]
+I: {'role': 'user', 'content': '4 squared'}
+M: [{'role': 'user', 'content': '4 squared'}]
+I: {'role': 'user', 'content': '4 squared'}
+M: [{'role': 'user', 'content': '4 squared'}]
+I: {'role': 'user', 'content': '4 squasre'}
+M: [{'role': 'user', 'content': '4 squasre'}]
+I: {'role': 'user', 'content': 'four sqaued'}
+M: [{'role': 'user', 'content': 'four sqaued'}]
+I: {'role': 'user', 'content': 'four squared'}
+M: [{'role': 'user', 'content': 'four squared'}]
+I: {'role': 'user', 'content': 'four squared'}
+M: [{'role': 'user', 'content': 'four squared'}]
+I: {'role': 'user', 'content': 'four squared'}
+M: [{'role': 'user', 'content': 'four squared'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four squared'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four squared is equal to 16.
+I: {'role': 'user', 'content': 'four squared'}
+M: [{'role': 'user', 'content': 'four squared'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four squared'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four squared is equal to 16.
+I: {'role': 'user', 'content': 'four squared'}
+M: [{'role': 'user', 'content': 'four squared'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four squared'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four squared is equal to 16.
+I: {'role': 'user', 'content': 'four squared'}
+M: [{'role': 'user', 'content': 'four squared'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four squared'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four squared is equal to 16.
+I: {'role': 'user', 'content': 'four quared'}
+M: [{'role': 'user', 'content': 'four quared'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four quared'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four squared is equal to 16.
+I: {'role': 'user', 'content': 'four sqaured'}
+M: [{'role': 'user', 'content': 'four sqaured'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}
+M: [{'role': 'user', 'content': 'four sqaured'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '16'}]
+A: Four squared is equal to 16.
+I: {'role': 'user', 'content': 'wasup'}
+M: [{'role': 'user', 'content': 'wasup'}]
+A: Hello! How can I assist you today?
+I: {'role': 'user', 'content': 'my bad four sqaured'}
+M: [{'role': 'user', 'content': 'wasup'}, {'role': 'assistant', 'content': 'Hello! How can I assist you today?'}, {'role': 'user', 'content': 'my bad four sqaured'}]
+FN: advancedmath-square_root
+Arg: {'base': 4}
+I: {'role': 'function', 'name': 'advancedmath-square_root', 'content': '2.0'}
+M: [{'role': 'user', 'content': 'wasup'}, {'role': 'assistant', 'content': 'Hello! How can I assist you today?'}, {'role': 'user', 'content': 'my bad four sqaured'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4\n}', 'name': 'advancedmath-square_root'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-square_root', 'content': '2.0'}]
+A: No problem! The square root of 4 is 2.0.
+I: {'role': 'user', 'content': 'do four times four then to the power of 10'}
+M: [{'role': 'user', 'content': 'do four times four then to the power of 10'}]
+FN: simplemath-multiply
+Arg: {'a': 4, 'b': 4}
+I: {'role': 'function', 'name': 'simplemath-multiply', 'content': '16'}
+M: [{'role': 'user', 'content': 'do four times four then to the power of 10'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "a": 4,\n  "b": 4\n}', 'name': 'simplemath-multiply'}, 'content': ''}, {'role': 'function', 'name': 'simplemath-multiply', 'content': '16'}]
+FN: advancedmath-exponent
+Arg: {'base': 16, 'exp': 10}
+I: {'role': 'user', 'content': '4 times 4 to the tenth power'}
+M: [{'role': 'user', 'content': '4 times 4 to the tenth power'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 10}
+I: {'role': 'user', 'content': '(4 x 4) ^10'}
+M: [{'role': 'user', 'content': '(4 x 4) ^10'}]
+FN: advancedmath-exponent
+Arg: {'base': 4, 'exp': 10}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '1048576'}
+M: [{'role': 'user', 'content': '(4 x 4) ^10'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 10\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '1048576'}]
+A: The result of (4 x 4) ^ 10 is 1,048,576.
+I: {'role': 'user', 'content': '5 times 4 then that to the power of 2'}
+M: [{'role': 'user', 'content': '(4 x 4) ^10'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 10\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '1048576'}, {'role': 'assistant', 'content': 'The result of (4 x 4) ^ 10 is 1,048,576.'}, {'role': 'user', 'content': '5 times 4 then that to the power of 2'}]
+FN: simplemath-multiply
+Arg: {'a': 5, 'b': 4}
+I: {'role': 'function', 'name': 'simplemath-multiply', 'content': '20'}
+M: [{'role': 'user', 'content': '(4 x 4) ^10'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 10\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '1048576'}, {'role': 'assistant', 'content': 'The result of (4 x 4) ^ 10 is 1,048,576.'}, {'role': 'user', 'content': '5 times 4 then that to the power of 2'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "a": 5,\n  "b": 4\n}', 'name': 'simplemath-multiply'}, 'content': ''}, {'role': 'function', 'name': 'simplemath-multiply', 'content': '20'}]
+FN: advancedmath-exponent
+Arg: {'base': 20, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '400'}
+M: [{'role': 'user', 'content': '(4 x 4) ^10'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 4,\n  "exp": 10\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '1048576'}, {'role': 'assistant', 'content': 'The result of (4 x 4) ^ 10 is 1,048,576.'}, {'role': 'user', 'content': '5 times 4 then that to the power of 2'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "a": 5,\n  "b": 4\n}', 'name': 'simplemath-multiply'}, 'content': ''}, {'role': 'function', 'name': 'simplemath-multiply', 'content': '20'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 20,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '400'}]
+A: The result of (5 x 4) ^ 2 is 400.
+I: {'role': 'user', 'content': 'what is 10 squared'}
+M: [{'role': 'user', 'content': 'what is 10 squared'}]
+FN: advancedmath-exponent
+Arg: {'base': 10, 'exp': 2}
+I: {'role': 'function', 'name': 'advancedmath-exponent', 'content': '100'}
+M: [{'role': 'user', 'content': 'what is 10 squared'}, {'role': 'assistant', 'function_call': {'arguments': '{\n  "base": 10,\n  "exp": 2\n}', 'name': 'advancedmath-exponent'}, 'content': ''}, {'role': 'function', 'name': 'advancedmath-exponent', 'content': '100'}]
+A: 10 squared is equal to 100.

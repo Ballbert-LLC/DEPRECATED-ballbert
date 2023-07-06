@@ -1,6 +1,7 @@
 import ast
 import json
 import pickle
+import socket
 from types import NoneType
 import openai
 import inspect
@@ -149,7 +150,20 @@ class SkillMangager:
 
     def get_image_url(self, skill, action_dict):
         if os.path.exists(os.path.join(repos_path, skill, "icon.png")):
-            image = os.path.join(repos_path, skill, "icon.png")
+            shutil.copyfile(
+                os.path.join(repos_path, skill, "icon.png"),
+                os.path.join(
+                    os.path.abspath("./"),
+                    "Flask",
+                    "static",
+                    "images",
+                    f"{skill}_icon.png",
+                ),
+            )
+
+            IPAddr = socket.gethostbyname(socket.gethostname())
+
+            image = f"http://{IPAddr}:5000/images/{skill}_icon.png"
         else:
             res = ""
 
@@ -296,6 +310,8 @@ class SkillMangager:
                             value = False
                         if not isinstance(value, NoneType):
                             settings[field_name] = value
+                        else:
+                            settings[field_name] = None
             with open(f"{repos_path}/{name}/settings.yaml", "w") as file:
                 yaml.dump(settings, file)
 
@@ -464,7 +480,10 @@ class SkillMangager:
             self.delete_files(skill_name)
             dependancies = self.get_dependancies(skill_name)
             self.remove_from_requirements_table(skill_name)
-            self.remove_dependancies(dependancies, assistant)
+            # self.remove_dependancies(dependancies, assistant)
+            return {"status_code": 200}
+        else:
+            return {"status_code": 409}
 
     def get_dependancies(self, skill_name: str):
         con = sqlite3.connect("skills.db")
@@ -584,21 +603,7 @@ class SkillMangager:
                                 updated_data["skillMetadata"]["sections"][
                                     section_index
                                 ]["fields"][field_index]["value"] = ""
-                            if field["type"] == "checkbox":
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index]["parentClasses"] = "form-check"
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index][
-                                    "inputClasses"
-                                ] = "form-check-input"
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index][
-                                    "labelClasses"
-                                ] = "form-check-label"
-                            elif field["type"] == "select":
+                            if field["type"] == "select":
                                 options = field["options"].split(";")
                                 updated_data["skillMetadata"]["sections"][
                                     section_index
@@ -606,21 +611,47 @@ class SkillMangager:
                                     option.split("|")[0]: option.split("|")[1]
                                     for option in options
                                 }
-
-                            else:
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index]["parentClasses"] = ""
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index][
-                                    "inputClasses"
-                                ] = "form-control"
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index]["labelClasses"] = ""
             else:
                 data_loaded = None
             if data_loaded:
                 data[skill["name"]] = data_loaded
         return data
+
+    def remove_classes_and_functions(self, dictionary):
+        # Iterate over the dictionary items
+        dict_copy = copy.deepcopy(dictionary)
+
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                # Recursively call the function for nested dictionaries
+                dict_copy[key] = self.remove_classes_and_functions(value)
+                if key in dict_copy and "actions" in dict_copy[key]:
+                    dict_copy[key]["actions"] = list(dictionary[key]["actions"].keys())
+            elif callable(value):
+                # Remove classes and functions
+                del dict_copy[key]
+
+        return dict_copy
+
+    def get_installed_skills(self, assistant: Assistant):
+        return self.remove_classes_and_functions(assistant.installed_skills)
+
+    def get_config(self, skill_name):
+        path = os.path.join(repos_path, skill_name, "settings.yaml")
+        if os.path.exists(path):
+            with open(path) as file:
+                documents = yaml.full_load(file)
+                return documents
+
+    def get_setting(self, skill_name, field_name):
+        config = self.get_config(skill_name)
+        return config[field_name]
+
+    def get_settings_meta_for_skill(self, skill_name, assistant):
+        settings = self.get_settings_meta(assistant.installed_skills)[skill_name]
+        for section in settings["skillMetadata"]["sections"]:
+            for field in section["fields"]:
+                if "name" in field:
+                    value = self.get_setting(skill_name, field["name"])
+                    field["value"] = value
+        return settings

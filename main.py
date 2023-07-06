@@ -15,6 +15,7 @@ from Config import Config
 config = Config()
 from fastapi import FastAPI
 from Flask.main import router
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -87,8 +88,6 @@ def run_web():
         "main:app",
         host="0.0.0.0",
         port=5000,
-        ssl_keyfile="Certs/ca-key.pem",
-        ssl_certfile="Certs/ca.pem",
     )
 
 
@@ -101,16 +100,14 @@ def run_assistant():
         assistant_instance, "https://github.com/seesi8/HalAdvancedMath.git"
     )
 
-    print(assistant_instance.call_function("simplemath-multiply", (10, 10)).data)
-
     if config.ws:
         t = threading.Thread(target=run_web)
         t.daemon = True
         t.start()
 
-    time.sleep(10)
+    time.sleep(1)
 
-    assistant_instance.text_chat()
+    assistant_instance.voice_to_voice_chat()
 
 
 def main():
