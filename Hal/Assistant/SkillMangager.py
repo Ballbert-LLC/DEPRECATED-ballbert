@@ -252,7 +252,7 @@ class SkillMangager:
         updated_requirements = requirements.copy()
         for requirement in requirements:
             req_name = self.add_skill_from_url(assistant, requirement)
-            if name != False:
+            if req_name != False:
                 requirements_names.append(req_name)
             else:
                 updated_requirements.remove(requirement)
