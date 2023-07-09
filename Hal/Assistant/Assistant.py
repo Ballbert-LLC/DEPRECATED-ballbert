@@ -1,37 +1,36 @@
 import importlib
 import inspect
 import json
+import multiprocessing
 import os
 import shutil
 import sqlite3
 import sys
 import threading
 import uuid
+
 import openai
-
 import yaml
-import multiprocessing
-
-from .SkillMangager import SkillMangager
-from ..ASR import ASR
-from ..Classes import Response
-from Config import Config
-from ..Decorators import paramRegistrar, reg
-from ..Memory import Weaviate
-from ..PromptGenerator import create_response_message
-from ..TTS import say_phrase, say_phrase_in_process, stop_saying
-from ..Logging import log_line
-from ..Wake_Word import Wake_Word
-from ..MessageHandler import MessageHandler
-
 from git import Repo
 
+from Config import Config
+
+from ..ASR import ASR
+from ..Classes import Response
+from ..Decorators import paramRegistrar, reg
+from ..Logging import log_line
+from ..Memory import Weaviate
+from ..MessageHandler import MessageHandler
+from ..TTS import TTS
+from ..Utils import generate_system_message
+from ..Voice import Voice
+from .SkillMangager import SkillMangager
 
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
 
 config = Config()
 
-openai.api_key = config.open_ai_api_key
+openai.api_key = config["OPENAI_API_KEY"]
 
 
 class Assistant:
@@ -47,59 +46,54 @@ class Assistant:
         pm = None
         pm = Weaviate()
 
-        self.messages = []
+        self.messages = [generate_system_message()]
         self.pm = pm
         self.installed_skills = dict()
         self.action_dict = dict()
         self.skill_manager = SkillMangager()
-        self.asr = ASR()
+        self.voice = None
+        self.tts = None
         self.speak_mode = False
         self.current_callback = None
-
-    def text_to_voice_chat(self):
-        buffer = ""
-        while True:
-            question = input("Q: ")
-            for item in self._text_gpt_response(question):
-                buffer += item
-                for punctiation in [".", "?", "!", ",", "-", ";", ":"]:
-                    if punctiation in buffer:
-                        say_phrase(buffer)
-                        buffer = ""
-                print(item, end="", flush=True)
-            print()
-
-    def voice_to_voice_chat(self):
-        def handle():
-            if self.current_callback != None:
-                self.current_callback()
-
-            try:
-                buffer = ""
-
-                wake_word.pause()
-                question = self.asr.get_speach()
-                for item in self._text_gpt_response(question):
-                    buffer += item
-                    for punctuation in [".", "?", "!", ",", "-", ";", ":"]:
-                        if punctuation in buffer:
-                            say_phrase_in_process(buffer)
-                            buffer = ""
+    
+    def voice_to_text_chat(self):
+        self.voice = Voice()
+        def callback(res, err):
+            if err:
+                print(err)
+            elif res:
+                res: str = res
+                for item in self._text_gpt_response(res):
                     print(item, end="", flush=True)
                 print()
-                wake_word.resume()
-            except Exception as e:
-                say_phrase_in_process("sorry please try again")
-                wake_word.resume()
-                log_line(f"Error: {e}")
+        
+        
+        self.voice.start(callback)
 
-        wake_word = Wake_Word(callback=handle)
-
-        def run_wake_word():
-            wake_word.start()
-
-        wake_word_thread = threading.Thread(target=run_wake_word)
-        wake_word_thread.start()
+    def sentance_gen(self, res):
+        buffer = ""
+        index = 0
+        for content in self._text_gpt_response(res):
+            for char in content:
+                if char in [".", "!", "?"]:
+                    buffer += char
+                    yield (buffer, index)
+                    index += 1
+                    buffer = ""
+                else:
+                    buffer += char
+                    
+    def voice_to_voice_chat(self): 
+        self.tts = TTS()
+        self.voice = Voice()
+        
+        def callback(res, err):
+            gen  = self.sentance_gen(res)
+            
+            self.tts.speak_gen(gen)
+        
+        
+        self.voice.start(callback)
 
     def text_chat(self):
         while True:
@@ -107,6 +101,14 @@ class Assistant:
             for item in self._text_gpt_response(question):
                 print(item, end="", flush=True)
             print()
+            
+    def text_to_voice(self):
+        self.tts = TTS()
+        while True:
+            question = input("Q: ")
+            gen  = self.sentance_gen(question)
+            
+            self.tts.speak_gen(gen)
 
     def _text_gpt_response(self, to_gpt):
         message_handler = MessageHandler(self, to_gpt)

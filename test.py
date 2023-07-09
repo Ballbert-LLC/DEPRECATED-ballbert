@@ -1,22 +1,16 @@
-# import all the modules that we will need to use
-from TTS.utils.manage import ModelManager
-from TTS.utils.synthesizer import Synthesizer
+from phonetics import metaphone
 
-path = "/path/to/pip/site-packages/TTS/.models.json"
+def phoneticize_text(text):
+    words = text.split()
+    phonetic_words = []
 
-model_manager = ModelManager(path)
+    for word in words:
+        phonetic_word = metaphone(word)
+        phonetic_words.append(phonetic_word)
 
-model_path, config_path, model_item = model_manager.download_model(
-    "tts_models/en/ljspeech/tacotron2-DDC"
-)
+    return ' '.join(phonetic_words)
 
-voc_path, voc_config_path, _ = model_manager.download_model(
-    model_item["default_vocoder"]
-)
-
-syn = Synthesizer(
-    tts_checkpoint=model_path,
-    tts_config_path=config_path,
-    vocoder_checkpoint=voc_path,
-    vocoder_config=voc_config_path,
-)
+# Example usage
+text = "Hello, how are you?"
+phonetic_text = phoneticize_text(text)
+print(phonetic_text)

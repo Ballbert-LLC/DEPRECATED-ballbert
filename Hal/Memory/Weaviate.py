@@ -46,7 +46,7 @@ class Weaviate:
         if not self.client.schema.contains(self.class_obj):
             self.client.schema.create_class(self.class_obj)
         else:
-            if config.debug_mode:
+            if config["SETUP_MODE"]:
                 self.client.schema.delete_class("Action")
                 self.client.schema.create_class(self.class_obj)
 

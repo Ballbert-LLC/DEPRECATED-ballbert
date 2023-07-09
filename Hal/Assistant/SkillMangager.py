@@ -209,7 +209,7 @@ class SkillMangager:
 
             prompt = prompt["choices"][0]["message"]["content"]
 
-            openai.api_key = config.open_ai_api_key
+            openai.api_key = config["OPENAI_API_KEY"]
 
             response = openai.Image.create(prompt=prompt, n=1, size="1024x1024")
 
@@ -378,8 +378,11 @@ class SkillMangager:
         self.create_settings_meta(name)
         self.dump_meta_to_yaml(name)
         self.add_skill(assistant, name)
+        print("OD", prev_action_dict)
         new_action_dict: dict = self.get_new_actions(assistant, prev_action_dict)
+        print("ND", new_action_dict)
         actions_with_uuids = assistant.pm.add_list(new_action_dict, name)
+        print("AU", actions_with_uuids)
         self.insert_actions(actions_with_uuids, name)
         self.add_to_installed_skills(name)
         self.add_requirements_to_db(requirements, requirements_names, name)
@@ -655,3 +658,4 @@ class SkillMangager:
                     value = self.get_setting(skill_name, field["name"])
                     field["value"] = value
         return settings
+ 

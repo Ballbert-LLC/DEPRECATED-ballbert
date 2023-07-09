@@ -39,7 +39,6 @@ class MessageHandler:
 
     def ask_gpt(self, functions):
         log_line(f"I: {self.assistant.messages[-1]}")
-        log_line(f"M: {self.assistant.messages}")
 
         def run():
             return openai.ChatCompletion.create(
@@ -113,13 +112,21 @@ class MessageHandler:
         functions = self.get_functions(
             f"{self.gpt_response}, {function_name}:{message}"
         )
+        current_chunk = ""
         res = self.ask_gpt(functions)
         for chunk in res:
             chunk_result = self.handle_chunk(chunk)
+            if isinstance(chunk_result, Generator):
+                for item in self.handle_generatior(chunk_result):
+                    current_chunk = item
+                    yield item
             if chunk_result:
+                current_chunk = chunk_result
                 yield chunk_result
-
-        yield "."
+        
+        if isinstance(current_chunk, str):
+            if not current_chunk[-1] in ".?!'":
+                yield "."
 
     def handle_generatior(self, generator):
         for item in generator:
@@ -134,12 +141,17 @@ class MessageHandler:
         functions = self.get_functions(self.gpt_response)
         res = self.ask_gpt(functions)
 
+        current_chunk = ""
+        
         for chunk in res:
             chunk_result = self.handle_chunk(chunk)
             if isinstance(chunk_result, Generator):
                 for item in self.handle_generatior(chunk_result):
+                    current_chunk = item
                     yield item
             elif chunk_result:
+                current_chunk = chunk_result
                 yield chunk_result
-
-        yield "."
+        if isinstance(current_chunk, str):
+            if not current_chunk[-1] in ".?!'":
+                yield "."

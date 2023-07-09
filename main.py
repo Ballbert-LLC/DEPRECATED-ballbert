@@ -100,7 +100,7 @@ def run_assistant():
         assistant_instance, "https://github.com/seesi8/HalAdvancedMath.git"
     )
 
-    if config.ws:
+    if config["WS"]:
         t = threading.Thread(target=run_web)
         t.daemon = True
         t.start()
@@ -111,7 +111,7 @@ def run_assistant():
 
 
 def main():
-    if "-setup" in sys.argv:
+    if config["SETUP_MODE"]:
         import setup
 
         try:

@@ -15,7 +15,7 @@ from Config import Config
 
 config = Config()
 
-is_debug = config.debug_mode
+is_debug = config["DEBUG_MODE"]
 
 os.environ["DEBUG_MODE"] = "True"
 
