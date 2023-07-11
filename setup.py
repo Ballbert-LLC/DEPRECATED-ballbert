@@ -31,9 +31,7 @@ def rmtree_hard(path, _prev=""):
 def setup():
     config = Config()
 
-    print("DEBUG MODE")
-    os.remove("./skills.db")
-    open("skills.db", "w").close()
+    os.remove("skills.db")
 
     if not os.path.exists("./temp"):
         os.makedirs("./temp")
@@ -65,8 +63,6 @@ def setup():
     con.commit()
 
     con.close()
-    
-
 
     sr_mics = {}
     pv_mics = {}
@@ -74,7 +70,8 @@ def setup():
     def sr_microphones():
         mic_list = sr.Microphone.list_microphone_names()
         for index, mic_name in enumerate(mic_list):
-            sr_mics[mic_name]=  index
+            if mic_name not in sr_mics:
+                sr_mics[mic_name] = index
 
     # Call the function to list the microphones
     sr_microphones()
@@ -84,17 +81,16 @@ def setup():
         for index, device in enumerate(audio_devices):
             pv_mics[device] = index
 
-
     # Call the function to list the microphones
     pv_microphones()
 
     def get_common_values(dict1, dict2):
         common_values = []
-        
+
         for value in dict1.keys():
             if value in dict2.keys():
                 common_values.append(value)
-        
+
         return common_values
 
     common = get_common_values(sr_mics, pv_mics)
@@ -108,7 +104,6 @@ def setup():
 
     pv_mic = pv_mics[device]
     sr_mic = sr_mics[device]
-    
+
     config["PV_MIC"] = pv_mic
     config["SR_MIC"] = sr_mic
-    

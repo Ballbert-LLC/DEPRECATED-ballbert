@@ -14,13 +14,11 @@ from Config import Config
 
 config = Config()
 from fastapi import FastAPI
-from Flask.main import router
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
 # Mount the router from the api module
-app.include_router(router)
 
 
 def rmtree_hard(path, _prev=""):
@@ -83,6 +81,9 @@ def convert_dict_to_json_serializable(input_dict):
 
 def run_web():
     import uvicorn
+    from Flask.main import router
+
+    app.include_router(router)
 
     uvicorn.run(
         "main:app",
@@ -96,10 +97,6 @@ def run_assistant():
 
     assistant_instance = initialize_assistant()
 
-    assistant_instance.skill_manager.add_skill_from_url(
-        assistant_instance, "https://github.com/seesi8/HalAdvancedMath.git"
-    )
-
     if config["WS"]:
         t = threading.Thread(target=run_web)
         t.daemon = True
@@ -107,10 +104,15 @@ def run_assistant():
 
     time.sleep(1)
 
+    assistant_instance.skill_manager.add_skill_from_url(
+        assistant_instance, "https://github.com/seesi8/Personality.git"
+    )
+
     assistant_instance.voice_to_voice_chat()
 
 
 def main():
+    print(config)
     if config["SETUP_MODE"]:
         import setup
 

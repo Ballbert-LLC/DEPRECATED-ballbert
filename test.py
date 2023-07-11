@@ -1,16 +1,13 @@
-from phonetics import metaphone
+import speech_recognition as sr
 
-def phoneticize_text(text):
-    words = text.split()
-    phonetic_words = []
+r = sr.Recognizer()
 
-    for word in words:
-        phonetic_word = metaphone(word)
-        phonetic_words.append(phonetic_word)
+with sr.Microphone() as s:
+    r.adjust_for_ambient_noise(s)
 
-    return ' '.join(phonetic_words)
+    while True:
+        audio = r.listen(s)
 
-# Example usage
-text = "Hello, how are you?"
-phonetic_text = phoneticize_text(text)
-print(phonetic_text)
+        speech = r.recognize_google(audio, language="en-us")
+
+        print("Você disse: ", speech)

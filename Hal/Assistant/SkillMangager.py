@@ -289,6 +289,7 @@ class SkillMangager:
         # Make sure it is valid
         if not self.is_folder_valid(f"{repos_path}/{name}"):
             rmtree_hard(os.path.join(repos_path, name))
+            print("invalid")
             raise Exception("Invallid Package")
 
     def create_settings_meta(self, name):
@@ -299,21 +300,24 @@ class SkillMangager:
             with open(f"{repos_path}/{name}/settingsmeta.yaml", "r") as file:
                 data = yaml.safe_load(file)
             settings = {}
-            for section in data["skillMetadata"]["sections"]:
-                for field in section["fields"]:
-                    if "name" in field and "value" in field:
-                        field_name = field["name"]
-                        value = field["value"]
-                        if value == "true" or value == "True":
-                            value = True
-                        elif value == "false" or value == "False":
-                            value = False
-                        if not isinstance(value, NoneType):
-                            settings[field_name] = value
-                        else:
-                            settings[field_name] = None
-            with open(f"{repos_path}/{name}/settings.yaml", "w") as file:
-                yaml.dump(settings, file)
+            if data and "skillMetadata" in data and "sections" in data["skillMetadata"]:
+                for section in data["skillMetadata"]["sections"]:
+                    for field in section["fields"]:
+                        if "name" in field and "value" in field:
+                            field_name = field["name"]
+                            value = field["value"]
+                            if value == "true" or value == "True":
+                                value = True
+                            elif value == "false" or value == "False":
+                                value = False
+                            if not isinstance(value, NoneType):
+                                settings[field_name] = value
+                            else:
+                                settings[field_name] = None
+                with open(f"{repos_path}/{name}/settings.yaml", "w") as file:
+                    yaml.dump(settings, file)
+            else:
+                open(f"{repos_path}/{name}/settings.yaml", "w").close()
 
     def get_new_actions(self, assistant, prev_action_dict):
         new_action_dict = {}
@@ -446,11 +450,13 @@ class SkillMangager:
         # Check if the name matches a file in the folder
         file_names = os.listdir(folder_path)
         if f"{name}.py" not in file_names:
+            print("name not in file names")
             return False
 
         # Check if the folder contains a class with the same name
         module_file_path = os.path.join(folder_path, f"{name}.py")
         if not os.path.isfile(module_file_path):
+            print("module file path not a file")
             return False
 
         # Read the file contents
@@ -459,6 +465,7 @@ class SkillMangager:
 
         # Check if the class with the same name exists in the file
         if f"class {name}" not in file_contents:
+            print("class name not in file contents")
             return False
 
         # Check if skill is already installed in the database
@@ -469,6 +476,7 @@ class SkillMangager:
         result = c.fetchone()[0]
         conn.close()
         if result > 0:
+            print("skill already installed")
             return False
 
         return True
@@ -658,4 +666,3 @@ class SkillMangager:
                     value = self.get_setting(skill_name, field["name"])
                     field["value"] = value
         return settings
- 
