@@ -1,8 +1,11 @@
 import os
 import dotenv
 
+
 class Config:
     def __init__(self, dotenv_path="./.env"):
+        if not os.path.exists(dotenv_path):
+            open(dotenv_path, "w").close()
         self.populate_values()
         self.dotenv_path = dotenv_path
 
@@ -34,7 +37,7 @@ class Config:
             except ValueError:
                 pass
         self.data = data
-    
+
     def __delitem__(self, key):
         self.populate_values()
         del self.data[key]
@@ -62,4 +65,3 @@ class Config:
     def items(self):
         self.populate_values()
         return self.data.items()
-    
