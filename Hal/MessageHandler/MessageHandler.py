@@ -6,8 +6,9 @@ import openai
 from Hal import Assistant
 from ..Utils import get_functions_list
 from ..Logging import log_line
+from Config import Config
 
-MODEL = "gpt-3.5-turbo-0613"
+config = Config()
 
 
 class MessageHandler:
@@ -42,9 +43,9 @@ class MessageHandler:
 
         def run():
             return openai.ChatCompletion.create(
-                model=MODEL,
+                model=config["LLM"],
                 messages=self.assistant.messages,
-                temperature=0,
+                temperature=config["TEMPATURE"],
                 functions=functions,
                 stream=True,
             )
@@ -123,7 +124,7 @@ class MessageHandler:
             if chunk_result:
                 current_chunk = chunk_result
                 yield chunk_result
-        
+
         if isinstance(current_chunk, str):
             if not current_chunk[-1] in ".?!'":
                 yield "."
@@ -142,7 +143,7 @@ class MessageHandler:
         res = self.ask_gpt(functions)
 
         current_chunk = ""
-        
+
         for chunk in res:
             chunk_result = self.handle_chunk(chunk)
             if isinstance(chunk_result, Generator):

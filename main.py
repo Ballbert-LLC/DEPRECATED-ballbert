@@ -96,10 +96,9 @@ def run_assistant():
 
     assistant_instance = initialize_assistant()
 
-    if config["WS"]:
-        t = threading.Thread(target=run_web)
-        t.daemon = True
-        t.start()
+    t = threading.Thread(target=run_web)
+    t.daemon = True
+    t.start()
 
     time.sleep(1)
 
