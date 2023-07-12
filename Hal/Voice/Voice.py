@@ -1,3 +1,4 @@
+import platform
 import pvporcupine
 import speech_recognition as sr
 from pvrecorder import PvRecorder
@@ -10,9 +11,21 @@ config = Config()
 class Voice:
     def __init__(self) -> None:
         print(config["PORQUPINE_API_KEY"])
+
+        system = platform.system()
+
+        if system == "Linux":
+            path = "./Hal/Voice/Ball-Bert_en_raspberry-pi_v2_2_0.ppn"
+        elif system == "Windows":
+            path = "./Hal/Voice/Ball-Bert_en_windows_v2_2_0.ppn"
+        elif system == "Darwin":
+            path = "./Hal/Voice/Ball-Bert_en_mac_v2_2_0.ppn"
+        else:
+            raise Exception("Unsupported system")
+
         self.porcupine = pvporcupine.create(
             access_key=config["PORQUPINE_API_KEY"],
-            keyword_paths=["./Hal/Voice/Ball-Bert_en_windows_v2_2_0.ppn"],
+            keyword_paths=[path],
         )
 
         # Create PvRecorder object with a larger buffer size

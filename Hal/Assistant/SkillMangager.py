@@ -8,7 +8,6 @@ import inspect
 import shutil
 import sqlite3
 import uuid
-import copy
 
 
 import yaml
@@ -25,6 +24,27 @@ from ..Utils import rmtree_hard
 config = Config()
 
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
+
+
+def deepcopy(original_dict):
+    """
+    Performs a deep copy of a dictionary.
+
+    Args:
+        original_dict (dict): The original dictionary to be copied.
+
+    Returns:
+        dict: A deep copy of the original dictionary.
+    """
+    copied_dict = {}
+    for key, value in original_dict.items():
+        if isinstance(value, dict):
+            copied_dict[key] = deepcopy(value)
+        elif isinstance(value, list):
+            copied_dict[key] = value.copy()
+        else:
+            copied_dict[key] = value
+    return copied_dict
 
 
 class SkillMangager:
@@ -74,11 +94,11 @@ class SkillMangager:
         return class_functions
 
     def update_actions_function(self, class_functions, action_dict, class_instance):
-        new_action_dict = copy.deepcopy(action_dict)
+        new_action_dict = deepcopy(action_dict)
 
         for func_name, func in class_functions.items():
             for action_name, values in new_action_dict.items():
-                new_values = copy.deepcopy(values)
+                new_values = deepcopy(values)
                 if func_name == new_values["func_name_in_class"]:
                     # factory is in order to loose referance to the sub function
 
@@ -107,7 +127,7 @@ class SkillMangager:
         Return: return_description
         """
 
-        prev_actions_dict = copy.deepcopy(assistant.action_dict)
+        prev_actions_dict = deepcopy(assistant.action_dict)
 
         module = importlib.import_module(f"Skills.{skill}")
 
@@ -374,7 +394,7 @@ class SkillMangager:
         except:
             temp_name = self.rename_temp()
         requirements_names = self.install_requirements(assistant, requirements, name)
-        prev_action_dict: dict = copy.deepcopy(assistant.action_dict)
+        prev_action_dict: dict = deepcopy(assistant.action_dict)
         try:
             self.rename_to_perm_name(name, temp_name)
         except:
@@ -382,11 +402,8 @@ class SkillMangager:
         self.create_settings_meta(name)
         self.dump_meta_to_yaml(name)
         self.add_skill(assistant, name)
-        print("OD", prev_action_dict)
         new_action_dict: dict = self.get_new_actions(assistant, prev_action_dict)
-        print("ND", new_action_dict)
         actions_with_uuids = assistant.pm.add_list(new_action_dict, name)
-        print("AU", actions_with_uuids)
         self.insert_actions(actions_with_uuids, name)
         self.add_to_installed_skills(name)
         self.add_requirements_to_db(requirements, requirements_names, name)
@@ -400,7 +417,7 @@ class SkillMangager:
         requirements = self.get_requirements()
         temp_name = self.rename_temp()
         requirements_names = self.install_requirements(assistant, requirements, name)
-        prev_action_dict: dict = copy.deepcopy(assistant.action_dict)
+        prev_action_dict: dict = deepcopy(assistant.action_dict)
         try:
             self.rename_to_perm_name(name, temp_name)
         except:
@@ -600,28 +617,35 @@ class SkillMangager:
             if os.path.exists(path):
                 with open(path, "r") as stream:
                     data_loaded = yaml.safe_load(stream)
-                    updated_data = data_loaded.copy()
-                    for section_index, section in enumerate(
-                        data_loaded["skillMetadata"]["sections"]
+                    if (
+                        data_loaded
+                        and "skillMetadata" in data_loaded
+                        and "sections" in data_loaded["skillMetadata"]
                     ):
-                        for field_index, field in enumerate(section["fields"]):
-                            if "value" in field:
-                                if isinstance(field["value"], NoneType):
+                        updated_data = data_loaded.copy()
+                        for section_index, section in enumerate(
+                            data_loaded["skillMetadata"]["sections"]
+                        ):
+                            for field_index, field in enumerate(section["fields"]):
+                                if "value" in field:
+                                    if isinstance(field["value"], NoneType):
+                                        updated_data["skillMetadata"]["sections"][
+                                            section_index
+                                        ]["fields"][field_index]["value"] = ""
+                                else:
                                     updated_data["skillMetadata"]["sections"][
                                         section_index
                                     ]["fields"][field_index]["value"] = ""
-                            else:
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index]["value"] = ""
-                            if field["type"] == "select":
-                                options = field["options"].split(";")
-                                updated_data["skillMetadata"]["sections"][
-                                    section_index
-                                ]["fields"][field_index]["options"] = {
-                                    option.split("|")[0]: option.split("|")[1]
-                                    for option in options
-                                }
+                                if field["type"] == "select":
+                                    options = field["options"].split(";")
+                                    updated_data["skillMetadata"]["sections"][
+                                        section_index
+                                    ]["fields"][field_index]["options"] = {
+                                        option.split("|")[0]: option.split("|")[1]
+                                        for option in options
+                                    }
+                        else:
+                            data_loaded = None
             else:
                 data_loaded = None
             if data_loaded:
@@ -630,18 +654,21 @@ class SkillMangager:
 
     def remove_classes_and_functions(self, dictionary):
         # Iterate over the dictionary items
-        dict_copy = copy.deepcopy(dictionary)
+        dict_copy = deepcopy(dictionary)
 
         for key, value in dictionary.items():
-            if isinstance(value, dict):
-                # Recursively call the function for nested dictionaries
+            if isinstance(dict_copy[key], dict):
                 dict_copy[key] = self.remove_classes_and_functions(value)
                 if key in dict_copy and "actions" in dict_copy[key]:
                     dict_copy[key]["actions"] = list(dictionary[key]["actions"].keys())
-            elif callable(value):
+            elif callable(value) or inspect.isclass(value):
                 # Remove classes and functions
                 del dict_copy[key]
-
+            else:
+                try:
+                    json.dumps(value)
+                except (TypeError, OverflowError):
+                    del dict_copy[key]
         return dict_copy
 
     def get_installed_skills(self, assistant: Assistant):

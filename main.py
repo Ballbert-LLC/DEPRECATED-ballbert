@@ -13,12 +13,6 @@ import types
 from Config import Config
 
 config = Config()
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-
-app = FastAPI()
-
-# Mount the router from the api module
 
 
 def rmtree_hard(path, _prev=""):
@@ -81,12 +75,17 @@ def convert_dict_to_json_serializable(input_dict):
 
 def run_web():
     import uvicorn
+    from fastapi import FastAPI
+    from fastapi.staticfiles import StaticFiles
+
+    app = FastAPI()
+
+    # Mount the router from the api module
     from Flask.main import router
 
     app.include_router(router)
-
     uvicorn.run(
-        "main:app",
+        app,
         host="0.0.0.0",
         port=5000,
     )
