@@ -1,7 +1,6 @@
 import json
 import time
 import weaviate
-from colorama import Fore, Style
 
 from Config import Config
 

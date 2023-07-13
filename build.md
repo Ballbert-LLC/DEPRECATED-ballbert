@@ -15,26 +15,29 @@ Do you want to continue? [Y/n]
 **install docker**
 
 ```
-    sudo apt-get update
-    sudo apt-get install ca-certificates curl gnupg
+    # Install some required packages first
+    sudo apt update
+    sudo apt install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg2 \
+        software-properties-common
 
-    sudo install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/raspbian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    # Get the Docker signing key for packages
+    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo apt-key add -
 
-    echo \
-    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/raspbian \
-    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    # Add the Docker official repos
+    echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+        $(lsb_release -cs) stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list
 
-    sudo apt-get update
-
-    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    # Install Docker
+    sudo apt update
+    sudo apt install -y --no-install-recommends \
+        docker-ce \
+        cgroupfs-mount
 ```
-
-Do you want to continue? [Y/n]
-
-`Y`
 
 ```
     sudo apt-get update
@@ -46,3 +49,21 @@ Do you want to continue? [Y/n]
 `Y`
 
 `sudo apt-get install build-essential libssl-dev libffi-dev python-dev`
+
+```
+    python-dotenv
+    fastapi
+    uvicorn
+    sqlite3
+    pvporcupine
+    openai
+    pvrecorder
+    PyYAML
+    docstring-parser
+    weaviate
+    tiktoken
+    git
+    simpleaudio
+    google-cloud-texttospeech
+    pydub
+```

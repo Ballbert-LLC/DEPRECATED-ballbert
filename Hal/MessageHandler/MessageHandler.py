@@ -1,6 +1,5 @@
 import json
 from typing import Generator
-from flask import Response
 import openai
 
 from Hal import Assistant
@@ -76,9 +75,9 @@ class MessageHandler:
                 if self.function_name:
                     self.arguments = json.loads(self.arguments)
 
-                    function_result: Response = self.assistant.action_dict[
-                        self.function_name
-                    ]["function"](**self.arguments).data
+                    function_result = self.assistant.action_dict[self.function_name][
+                        "function"
+                    ](**self.arguments).data
 
                     log_line(f"FN: {self.function_name}")
                     log_line(f"Arg: {self.arguments}")
