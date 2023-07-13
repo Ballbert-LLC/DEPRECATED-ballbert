@@ -35,3 +35,14 @@ Do you want to continue? [Y/n]
 Do you want to continue? [Y/n]
 
 `Y`
+
+```
+    sudo apt-get update
+    sudo apt-get install python3-pip
+```
+
+Do you want to continue? [Y/n]
+
+`Y`
+
+`sudo apt-get install build-essential libssl-dev libffi-dev python-dev`
