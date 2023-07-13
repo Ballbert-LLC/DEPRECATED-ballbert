@@ -135,7 +135,6 @@ Pygments==2.14.0
 pygtrie==2.5.0
 pyparsing==3.0.9
 pyrsistent==0.19.3
-python-dateutil==2.6.1
 python-dotenv==1.0.0
 python-engineio==4.4.1
 python-git==2018.2.1
