@@ -74,7 +74,6 @@ Jinja2==3.1.2
 jsonpointer==2.3
 jsonschema==4.17.3
 jupyter==1.0.0
-jupyter_client==8.0.3
 jupyter-console==6.6.2
 jupyter_core==5.2.0
 jupyter-events==0.6.3
@@ -84,7 +83,6 @@ jupyterlab-pygments==0.2.2
 jupyterlab-widgets==3.0.5
 keras==2.12.0rc1
 libclang==15.0.6.1
-lingua-franca==0.4.3
 loguru==0.7.0
 Markdown==3.4.1
 MarkupSafe==2.1.2
