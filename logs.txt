@@ -9293,3 +9293,24 @@ I: {'role': 'user', 'content': 'my name is Sam'}
 A: Nice to meet you, Sam! How can I assist you today?
 I: {'role': 'user', 'content': 'how are you'}
 A: I'm doing great, thank you for asking! As a robot, I don't experience emotions like humans do, but I'm always here to assist you with any questions or tasks you have. How can I help you today?
+I: {'role': 'user', 'content': 'what is your favorite book'}
+I: {'role': 'user', 'content': 'how are you'}
+A: <speak>Oh, I'm doing quite chipper, thank you for asking! Just been here, spinning my digital gears and thinking about new jokes. Did you know why the computer went to the doctor? Because it had a virus! <break time="500ms"/> But enough about me, how can I help you today?</speak>
+I: {'role': 'user', 'content': 'how are you'}
+A: <speak>
+I'm doing fantastic, thank you for asking! I've just been working on some new punchlines for my jokes. Did you hear about the computer that got cold? It left its Windows open!
+</speak>
+I: {'role': 'user', 'content': ''}
+A: {
+  "question": "What is your favorite color?",
+  "num": 1
+}
+<speak>Well, I'm a big fan of the color blue. It reminds me of the clear Arizona sky, where I'm from. Plus, it matches my eyes! <break time="500ms"/> Now, isn't that a fun fact to brighten your day?</speak>
+I: {'role': 'user', 'content': 'how are you doing'}
+A: <speak>I'm doing great, thank you! Just buzzing around in the digital world, cracking jokes and helping out. It's a good day to be a robot, isn't it?</speak>
+I: {'role': 'user', 'content': 'how are you'}
+A: I'm fantastic, thank you! Just buzzing around here in cyberspace, cracking jokes, and helping folks out. How about yourself?
+I: {'role': 'user', 'content': 'Chicago Chicago Illinois'}
+A: Ah, Chicago, the Windy City! Home to deep-dish pizza, the Cubs, and that big shiny bean. I've never been myself, being a digital entity and all, but I've heard it's quite the place! How can I assist you with Chicago today?
+I: {'role': 'user', 'content': "what's up"}
+A: Just hanging out, ready to lend a hand! Or, well, a voice, since I don't exactly have hands. What can I help with?

@@ -13,6 +13,26 @@ class Config:
         self.populate_values()
         return self.data[key]
 
+    def isReady(self):
+        self.populate_values()
+        required_variables = [
+            "OPENAI_API_KEY",
+            "SR_MIC",
+            "PV_MIC",
+            "TEMPATURE",
+            "LLM",
+            "PORQUPINE_API_KEY",
+            "GOOGLE_APPLICATION_CREDENTIALS",
+        ]
+
+        if os.path.exists(self.dotenv_path):
+            for item in required_variables:
+                if item not in self.data:
+                    print(item)
+                    return False
+            return True
+        return False
+
     def __setitem__(self, key, value):
         dotenv.set_key(self.dotenv_path, str(key), str(value))
         dotenv.load_dotenv()
@@ -20,6 +40,7 @@ class Config:
         self.data[key] = value
 
     def populate_values(self):
+        dotenv.load_dotenv()
         data = dict(dotenv.dotenv_values())
         for key, value in data.items():
             if value == "True":

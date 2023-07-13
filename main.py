@@ -96,12 +96,6 @@ def run_assistant():
 
     assistant_instance = initialize_assistant()
 
-    t = threading.Thread(target=run_web)
-    t.daemon = True
-    t.start()
-
-    time.sleep(1)
-
     assistant_instance.skill_manager.add_skill_from_url(
         assistant_instance, "https://github.com/seesi8/Personality.git"
     )
@@ -111,16 +105,24 @@ def run_assistant():
 
 def main():
     print(config)
-    if config["SETUP_MODE"]:
+    t = threading.Thread(target=run_web)
+    t.daemon = True
+    t.start()
+
+    time.sleep(1)
+
+    if (not ("SETUP_MODE" in config)) or config["SETUP_MODE"]:
         import setup
 
         try:
             setup.setup()
+            print("Setup complete")
         except:
             pass
 
     try:
         run_assistant()
+        pass
     except Exception as e:
         print(e)
         raise e

@@ -11,7 +11,10 @@ config = Config()
 class Weaviate:
     def __init__(self):
         self.client = weaviate.Client(
-            url="http://localhost:8080",  # Replace with your endpoint
+            url="http://localhost:8080",
+            additional_headers={
+                "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
+            },
         )
         self.vec_num = 0
         self.class_obj = {
@@ -46,7 +49,7 @@ class Weaviate:
         if not self.client.schema.contains(self.class_obj):
             self.client.schema.create_class(self.class_obj)
         else:
-            if config["SETUP_MODE"]:
+            if (not ("SETUP_MODE" in config)) or config["SETUP_MODE"]:
                 self.client.schema.delete_class("Action")
                 self.client.schema.create_class(self.class_obj)
 

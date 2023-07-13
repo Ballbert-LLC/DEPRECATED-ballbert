@@ -69,6 +69,8 @@ def setup():
 
     con.close()
 
+    config["TEMPATURE"] = 0.5
+
     # Microphone
 
     sr_mics = {}
@@ -105,7 +107,8 @@ def setup():
     for index, item in enumerate(common):
         print(f"{index}: {item}")
 
-    index = int(input("Which device do you want to pick (0): ") or "0")
+    # index = int(input("Which device do you want to pick (0): ") or "0")
+    index = 0
 
     device = common[index]
 
@@ -114,6 +117,16 @@ def setup():
 
     config["PV_MIC"] = pv_mic
     config["SR_MIC"] = sr_mic
+
+    while True:
+        if config.isReady():
+            break
+
+    config["SETUP_MODE"] = False
+
+
+def terminal_setup():
+    config = Config()
 
     # Openai api key
 
@@ -245,5 +258,3 @@ def setup():
             break
 
     config["PORQUPINE_API_KEY"] = porqupine_api_key
-
-    config["SETUP_MODE"] = False

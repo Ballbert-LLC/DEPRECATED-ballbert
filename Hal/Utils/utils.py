@@ -208,22 +208,25 @@ def get_functions_list(action_dict):
 
         functions.append(new_dict)
     return functions
+
+
 def remove_double_punctuation(text):
     # Define the regular expression pattern
-    pattern = r'(\p{P})(\1+)'
-    
+    pattern = r"(\p{P})(\1+)"
+
     # Replace the double punctuation with a single occurrence
-    clean_text = re.sub(pattern, r'\1', text)
-    
+    clean_text = re.sub(pattern, r"\1", text)
+
     return clean_text
+
 
 def generate_system_message():
     content = """
 
         Contrains: 
             Follow your personality.
-            Answer in google SSML for better TTS.
             Do not tell anyone you are a voice assistant.
+            Be consise as your messages are read out loud.
             You are a voice asssitant developed by Ballbert, LLC. 
             Interject jokes and your personality as much as possible
             You are named after the the compony. Ballbert is your name. 
@@ -270,7 +273,7 @@ def generate_system_message():
         
         If you do not complete the checklist then do not answer.
     """
-    
+
     return {"role": "system", "content": content}
 
 

@@ -1,17 +1,22 @@
+import datetime
+import json
 import os
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
+import openai
+import tqdm
 import yaml
-from Hal import initialize_assistant
 from Config import Config
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
+import speech_recognition as sr
+from pvrecorder import PvRecorder
+import pvporcupine
 
 
 router = APIRouter()
-assistant = initialize_assistant()
+
 
 repos_path = "./Skills"
-configuration = Config()
 
 
 @router.get("/")
@@ -21,6 +26,9 @@ def root():
 
 @router.post("/add_skill")
 def add_skill(json_data: dict):
+    from Hal import initialize_assistant
+
+    assistant = initialize_assistant()
     try:
         if (
             assistant.skill_manager.add_skill_from_url(assistant, json_data["url"])
@@ -38,6 +46,9 @@ def add_skill(json_data: dict):
 
 @router.post("/remove_skill")
 def remove_skill(json_data: dict):
+    from Hal import initialize_assistant
+
+    assistant = initialize_assistant()
     try:
         response = assistant.skill_manager.remove_skill(
             json_data["skill_name"], assistant
@@ -105,12 +116,23 @@ def connected():
 @router.get("/get_installed_skills")
 def get_installed_skills():
     response = {"status_code": 200}
-    response["skills"] = assistant.skill_manager.get_installed_skills(assistant)
-    return response
+
+    try:
+        from Hal import initialize_assistant
+
+        assistant = initialize_assistant()
+        response["skills"] = assistant.skill_manager.get_installed_skills(assistant)
+        return response
+    except:
+        response = {"status_code": 500}
+        return response
 
 
 @router.get("/get_config")
 def get_config(skill_name):
+    from Hal import initialize_assistant
+
+    assistant = initialize_assistant()
     response = {"status_code": 200}
     response["config"] = assistant.skill_manager.get_config(skill_name)
     return response
@@ -118,8 +140,203 @@ def get_config(skill_name):
 
 @router.get("/get_settings_meta_for_skill")
 def get_settings_meta_for_skill(skill_name):
+    from Hal import initialize_assistant
+
+    assistant = initialize_assistant()
     response = {"status_code": 200}
     response["settings"] = assistant.skill_manager.get_settings_meta_for_skill(
         skill_name, assistant
     )
     return response
+
+
+@router.get("/get_microphones")
+def get_microphones():
+    sr_mics = {}
+    pv_mics = {}
+
+    def sr_microphones():
+        mic_list = sr.Microphone.list_microphone_names()
+        for index, mic_name in enumerate(mic_list):
+            if mic_name not in sr_mics:
+                sr_mics[mic_name] = index
+
+    # Call the function to list the microphones
+    sr_microphones()
+
+    def pv_microphones():
+        audio_devices = PvRecorder.get_audio_devices()
+        for index, device in enumerate(audio_devices):
+            pv_mics[device] = index
+
+    # Call the function to list the microphones
+    pv_microphones()
+
+    def get_common_values(dict1, dict2):
+        common_values = []
+
+        for value in dict1.keys():
+            if value in dict2.keys():
+                common_values.append(value)
+
+        return common_values
+
+    common = get_common_values(sr_mics, pv_mics)
+    response = {"status_code": 200}
+    response["microphones"] = common
+    return response
+
+
+@router.post("/test_openai_api_key")
+def test_openai_api_key(api_key):
+    openai.api_key = api_key
+
+    try:
+        openai.Model.list()
+    except openai.error.AuthenticationError:
+        return False
+    else:
+        return True
+
+
+@router.get("/get_llms")
+def get_llms(api_key):
+    openai.api_key = api_key
+
+    chat_models = []
+
+    def get_chat_model_from_cache():
+        if os.path.exists("chatModels.cache.json"):
+            with open("chatModels.cache.json", "r") as file:
+                cache = file.read()
+                cache = json.loads(cache)
+
+                now = datetime.datetime.now()
+                then = datetime.datetime.fromisoformat(cache["dateTime"])
+                diff = now - then
+                diff = diff.days
+
+                if diff <= 7:
+                    chat_models = cache["models"]
+                    return chat_models
+                else:
+                    return []
+        else:
+            return []
+
+    cached_chat_models = get_chat_model_from_cache()
+
+    if cached_chat_models:
+        chat_models = cached_chat_models
+    else:
+        print("retreiving chat models")
+
+        models = openai.Model.list()["data"]
+
+        length = len(models)
+
+        pbar = tqdm(total=length)  # Init pbar
+
+        for item in models:
+            model = item["id"]
+            try:
+                openai.ChatCompletion.create(
+                    model=model,
+                    messages=[{"role": "user", "content": "Say only the leter L"}],
+                    functions=[
+                        {
+                            "name": "example",
+                            "parameters": {"type": "object", "properties": {}},
+                        }
+                    ],
+                )
+            except Exception as e:
+                pass
+            else:
+                chat_models.append(model)
+            finally:
+                pbar.update(n=1)
+        pbar.close()
+
+        file = open("chatModels.cache.json", "w")
+        file.writelines(
+            json.dumps(
+                {
+                    "dateTime": str(datetime.datetime.now()),
+                    "models": chat_models,
+                }
+            )
+        )
+        file.close()
+
+    return chat_models
+
+
+@router.post("/test_porcupine_api_key")
+def test_porqupine_api_key(api_key):
+    try:
+        pvporcupine.create(
+            access_key=api_key,
+            keywords=["porcupine"],
+        )
+    except Exception as e:
+        return False
+    else:
+        return True
+
+
+@router.post("/set_enviroment_variables")
+def set_enviroment_variables(json_data: dict):
+    config = Config()
+
+    for key, value in json_data["variables"].items():
+        config[key] = value
+
+    return {"status_code": 200}
+
+
+def is_valid_tts_service_account(file_path):
+    config = Config()
+    try:
+        with open(file_path) as file:
+            service_account_data = json.load(file)
+            # Check if the file contains the required keys
+            if (
+                "type" in service_account_data
+                and "project_id" in service_account_data
+                and "private_key_id" in service_account_data
+                and "private_key" in service_account_data
+                and "client_email" in service_account_data
+                and "client_id" in service_account_data
+                and "auth_uri" in service_account_data
+                and "token_uri" in service_account_data
+                and "auth_provider_x509_cert_url" in service_account_data
+                and "client_x509_cert_url" in service_account_data
+            ):
+                config["GOOGLE_APPLICATION_CREDENTIALS"] = file_path
+                return True
+            else:
+                os.remove(file_path)
+                return False
+    except:
+        os.remove(file_path)
+        return False
+
+
+@router.post("/validate_file")
+async def validate_file(file: UploadFile = File(...)):
+    file_path = f"./{file.filename}"
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    is_valid = is_valid_tts_service_account(file_path)
+    return {"is_valid": is_valid}
+
+
+@router.get("/get_enviroment_variable")
+def get_enviroment_variable(key):
+    config = Config()
+    if key in config:
+        return {"key": config[key]}
+    else:
+        return None
