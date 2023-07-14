@@ -73,50 +73,50 @@ def setup():
 
     # Microphone
 
-    sr_mics = {}
-    pv_mics = {}
+    # sr_mics = {}
+    # pv_mics = {}
 
-    def sr_microphones():
-        mic_list = sr.Microphone.list_microphone_names()
-        for index, mic_name in enumerate(mic_list):
-            if mic_name not in sr_mics:
-                sr_mics[mic_name] = index
+    # def sr_microphones():
+    #     mic_list = sr.Microphone.list_microphone_names()
+    #     for index, mic_name in enumerate(mic_list):
+    #         if mic_name not in sr_mics:
+    #             sr_mics[mic_name] = index
 
-    # Call the function to list the microphones
-    sr_microphones()
+    # # Call the function to list the microphones
+    # sr_microphones()
 
-    def pv_microphones():
-        audio_devices = PvRecorder.get_audio_devices()
-        for index, device in enumerate(audio_devices):
-            pv_mics[device] = index
+    # def pv_microphones():
+    #     audio_devices = PvRecorder.get_audio_devices()
+    #     for index, device in enumerate(audio_devices):
+    #         pv_mics[device] = index
 
-    # Call the function to list the microphones
-    pv_microphones()
+    # # Call the function to list the microphones
+    # pv_microphones()
 
-    def get_common_values(dict1, dict2):
-        common_values = []
+    # def get_common_values(dict1, dict2):
+    #     common_values = []
 
-        for value in dict1.keys():
-            if value in dict2.keys():
-                common_values.append(value)
+    #     for value in dict1.keys():
+    #         if value in dict2.keys():
+    #             common_values.append(value)
 
-        return common_values
+    #     return common_values
 
-    common = get_common_values(sr_mics, pv_mics)
+    # common = get_common_values(sr_mics, pv_mics)
 
-    for index, item in enumerate(common):
-        print(f"{index}: {item}")
+    # for index, item in enumerate(common):
+    #     print(f"{index}: {item}")
 
     # index = int(input("Which device do you want to pick (0): ") or "0")
-    index = 0
+    # index = 0
 
-    device = common[index]
+    # device = common[index]
 
-    pv_mic = pv_mics[device]
-    sr_mic = sr_mics[device]
+    # pv_mic = pv_mics[device]
+    # sr_mic = sr_mics[device]
 
-    config["PV_MIC"] = pv_mic
-    config["SR_MIC"] = sr_mic
+    config["PV_MIC"] = 1
+    config["SR_MIC"] = 1
 
     while True:
         if config.isReady():
