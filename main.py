@@ -117,8 +117,8 @@ def main():
         try:
             setup.setup()
             print("Setup complete")
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
     try:
         run_assistant()
