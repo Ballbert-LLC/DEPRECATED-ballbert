@@ -2,7 +2,6 @@ import ast
 import json
 import pickle
 import socket
-from types import NoneType
 import openai
 import inspect
 import shutil
@@ -24,6 +23,8 @@ from ..Utils import rmtree_hard
 config = Config()
 
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
+
+NoneType = type(None)
 
 
 def deepcopy(original_dict):
