@@ -35,18 +35,15 @@ class Voice:
             frame_length=self.porcupine.frame_length,
         )
 
-        recognizer = sr.Recognizer()
-
         # print(sr.Microphone.list_microphone_names()[config["SR_MIC"]])
         # with sr.Microphone(config["SR_MIC"]) as source:
         #     recognizer.adjust_for_ambient_noise(source)
 
-        self.recognizer = recognizer
-        self.recognizer.energy_threshold = 3000
-
     def start(self, callback):
         # Start recording
         self.recorder.start()
+        recognizer = sr.Recognizer()
+        recognizer.energy_threshold = 3000
 
         while True:
             # Read PCM audio data
@@ -63,7 +60,7 @@ class Voice:
                 with sr.Microphone(config["SR_MIC"]) as source:
                     try:
                         # Capture speech input
-                        audio = self.recognizer.listen(
+                        audio = recognizer.listen(
                             source,
                         )
 
