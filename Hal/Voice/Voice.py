@@ -37,7 +37,7 @@ class Voice:
 
         self.recognizer = sr.Recognizer()
 
-        with sr.Microphone() as source:
+        with sr.Microphone(config["SR_MIC"]) as source:
             self.recognizer.adjust_for_ambient_noise(source)
 
         self.recognizer.energy_threshold = 3000
@@ -58,7 +58,7 @@ class Voice:
 
                 self.recorder.stop()
                 # Start transcribing the user's speech
-                with sr.Microphone() as source:
+                with sr.Microphone(config["SR_MIC"]) as source:
                     try:
                         # Capture speech input
                         audio = self.recognizer.listen(
