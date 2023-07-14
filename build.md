@@ -12,7 +12,7 @@ Do you want to continue? [Y/n]
 
 `cd hal`
 
-**install docker**
+**Install Docker**
 
 ```
     # Install some required packages first
@@ -48,22 +48,20 @@ Do you want to continue? [Y/n]
 
 `Y`
 
+**Install Audio Dependancies**
+
 `sudo apt-get install build-essential libssl-dev libffi-dev python-dev`
 
-```
-    python-dotenv
-    fastapi
-    uvicorn
-    sqlite3
-    pvporcupine
-    openai
-    pvrecorder
-    PyYAML
-    docstring-parser
-    weaviate
-    tiktoken
-    git
-    simpleaudio
-    google-cloud-texttospeech
-    pydub
-```
+`sudo apt install python3-pyaudio`
+
+`sudo apt-get install -y python3-dev libasound2-dev`
+
+`pip install --upgrade pip setuptools`
+
+`pip install simpleaudio`
+
+`pip install PyAudio`
+
+**Install Regular Dependancies**
+
+`pip install -r requirements.txt`

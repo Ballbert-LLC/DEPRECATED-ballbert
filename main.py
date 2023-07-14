@@ -111,7 +111,7 @@ def main():
 
     time.sleep(1)
 
-    if (not ("SETUP_MODE" in config)) or config["SETUP_MODE"]:
+    while not ((not ("SETUP_MODE" in config)) or config["SETUP_MODE"]):
         import setup
 
         try:
