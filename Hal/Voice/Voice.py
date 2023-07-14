@@ -37,6 +37,7 @@ class Voice:
 
         self.recognizer = sr.Recognizer()
 
+        print(sr.Microphone.list_microphone_names()[config["SR_MIC"]])
         with sr.Microphone(config["SR_MIC"]) as source:
             self.recognizer.adjust_for_ambient_noise(source)
 
