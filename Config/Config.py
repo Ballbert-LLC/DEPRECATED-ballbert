@@ -28,7 +28,6 @@ class Config:
         if os.path.exists(self.dotenv_path):
             for item in required_variables:
                 if item not in self.data:
-                    print(item)
                     return False
             return True
         return False
