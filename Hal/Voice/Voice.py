@@ -37,9 +37,9 @@ class Voice:
 
         recognizer = sr.Recognizer()
 
-        print(sr.Microphone.list_microphone_names()[config["SR_MIC"]])
-        with sr.Microphone(config["SR_MIC"]) as source:
-            recognizer.adjust_for_ambient_noise(source)
+        # print(sr.Microphone.list_microphone_names()[config["SR_MIC"]])
+        # with sr.Microphone(config["SR_MIC"]) as source:
+        #     recognizer.adjust_for_ambient_noise(source)
 
         self.recognizer = recognizer
         self.recognizer.energy_threshold = 3000
