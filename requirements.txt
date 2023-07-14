@@ -147,7 +147,7 @@ scipy==1.10.1
 Send2Trash==1.8.0
 setuptools==67.6.1
 simple-websocket==0.10.0
-simpleaudio==1.0.4
+# simpleaudio==1.0.4
 six==1.16.0
 sklearn==0.0.post1
 smmap==5.0.0
