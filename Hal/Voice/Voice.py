@@ -40,7 +40,7 @@ class Voice:
         #     recognizer.adjust_for_ambient_noise(source)
 
     def start(self, callback):
-        mic = sr.Microphone(device_index=1)
+        mic = sr.Microphone()
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 300
 
@@ -50,7 +50,6 @@ class Voice:
             while True:
                 self.recorder.start()
 
-                # Read PCM audio data
                 audio_frames = self.recorder.read()
 
                 # Process audio with Porcupine
