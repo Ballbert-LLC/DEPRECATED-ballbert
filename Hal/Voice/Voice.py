@@ -6,6 +6,7 @@ from pvrecorder import PvRecorder
 import threading
 from Config import Config
 import numpy as np
+import soxr
 
 config = Config()
 
@@ -60,18 +61,18 @@ class Voice:
 
     def test(self, callback):
         # the mics sample rate is 44100
-        mic = sr.Microphone(device_index=1, sample_rate=16000)
+        mic = sr.Microphone(device_index=1)
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 300
-
-        # porcupines sampel rate is 16000
 
         with mic as source:
             while True:
                 # Start recording
-                audio_frames = source.stream.read(512)
+                audio_frames = source.stream.read(1410)
 
                 np_audio_data = np.frombuffer(audio_frames, dtype=np.int16)
+
+                np_audio_data = soxr.resample(np_audio_data, 44100, 16000)
 
                 keyword_index = self.porcupine.process(np_audio_data)
                 if keyword_index >= 0:
