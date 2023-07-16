@@ -66,7 +66,7 @@ class Voice:
 
                         print("audio", audio, "type", type(audio))
                         # Use Google Speech Recognition to transcribe audio
-                        text = self.recognizer.recognize_google(audio)
+                        text = recognizer.recognize_google(audio)
                         print("text", text)
                         callback(text, None)
 

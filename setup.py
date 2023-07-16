@@ -36,7 +36,7 @@ def rmtree_hard(path, _prev=""):
 def setup():
     config = Config()
 
-    os.remove("skills.db")
+    open("skills.db", "w").close()
 
     if not os.path.exists("./temp"):
         os.makedirs("./temp")

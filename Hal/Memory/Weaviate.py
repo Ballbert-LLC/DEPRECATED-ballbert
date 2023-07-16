@@ -1,4 +1,5 @@
 import json
+import platform
 import time
 import weaviate
 
@@ -9,12 +10,20 @@ config = Config()
 
 class Weaviate:
     def __init__(self):
-        self.client = weaviate.Client(
-            embedded_options=weaviate.EmbeddedOptions(),
-            additional_headers={
-                "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
-            },
-        )
+        if platform.system() == "Windows":
+            self.client = weaviate.Client(
+                additional_headers={
+                    "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
+                },
+                url="http://localhost:8080",
+            )
+        else:
+            self.client = weaviate.Client(
+                embedded_options=weaviate.EmbeddedOptions(),
+                additional_headers={
+                    "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
+                },
+            )
         self.vec_num = 0
         self.class_obj = {
             "class": "Action",

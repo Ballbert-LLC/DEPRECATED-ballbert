@@ -10,12 +10,17 @@ from google.cloud import texttospeech
 from pydub import AudioSegment
 from pydub.playback import play
 import multiprocessing
+from Config import Config
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./hal-assistant-383917-8b11225b2c1a.json"
+config = Config()
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config["GOOGLE_APPLICATION_CREDENTIALS"]
+
 
 class CustomManager(BaseManager):
     # nothing
     pass
+
 
 class UnfixedList(list):
     def __init__(self, iter=[], *args, **kwargs):
@@ -68,10 +73,10 @@ class UnfixedList(list):
         return len(self) == 0
 
 
-class TTS():
+class TTS:
     def __init__(self) -> None:
         self.sentances = UnfixedList()
-        CustomManager.register('TTS', TTS)
+        CustomManager.register("TTS", TTS)
 
     def add_sentance(self, index, text):
         self.sentances.set(index, text)
@@ -82,30 +87,28 @@ class TTS():
         input_text = texttospeech.SynthesisInput(text=text)
 
         voice = texttospeech.VoiceSelectionParams(
-            language_code="en-US",
-            ssml_gender=texttospeech.SsmlVoiceGender.MALE
+            language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.MALE
         )
 
         audio_config = texttospeech.AudioConfig(
-            audio_encoding=texttospeech.AudioEncoding.LINEAR16,
-            sample_rate_hertz = 24000
+            audio_encoding=texttospeech.AudioEncoding.LINEAR16, sample_rate_hertz=24000
         )
 
         response = client.synthesize_speech(
-            input=input_text,
-            voice=voice,
-            audio_config=audio_config
+            input=input_text, voice=voice, audio_config=audio_config
         )
 
         audio_bytes = response.audio_content
         return audio_bytes
 
     def _play_text(self, audio):
-        #have to cut off begining to prevent weird popping
+        # have to cut off begining to prevent weird popping
         start_after = 46
         # Create a simpleaudio WaveObject from the audio content
-        wave_obj = sa.WaveObject(audio[start_after:], num_channels=1, bytes_per_sample=2, sample_rate=24000)
-        
+        wave_obj = sa.WaveObject(
+            audio[start_after:], num_channels=1, bytes_per_sample=2, sample_rate=24000
+        )
+
         # Play the audio
         play_obj = wave_obj.play()
         play_obj.wait_done()
@@ -127,6 +130,7 @@ class TTS():
 
     def add_exit_code(self):
         self.sentances.append("%EXIT%")
+
     def speak_gen(self, gen):
         with CustomManager() as manager:
             ttsManger = manager.TTS()
@@ -134,7 +138,6 @@ class TTS():
             process2 = Process(target=ttsManger.start_loop, args=())
 
             process2.start()
-            
 
             for item in gen:
                 audio = ttsManger.proccess_text(item[0])
@@ -146,5 +149,4 @@ class TTS():
                 if not process2.is_alive():
                     process2.join()
                     break
-                time.sleep(.1) 
-
+                time.sleep(0.1)
