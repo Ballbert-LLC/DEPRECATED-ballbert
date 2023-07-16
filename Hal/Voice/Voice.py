@@ -56,7 +56,7 @@ class Voice:
                 print("Keyword detected")
 
                 self.recorder.stop()
-                # Start transcribing the user's speech
+                print(config["SR_MIC"], type(config["SR_MIC"]))
                 with sr.Microphone(config["SR_MIC"]) as source:
                     # try:
                     #     # Capture speech input
