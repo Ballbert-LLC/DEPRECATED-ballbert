@@ -86,6 +86,12 @@ class Voice:
                             "wait timeout error occurred when trying to transcribe audio",
                         )
                         callback("", e)
+                    except Exception as e:
+                        print(
+                            e,
+                            "A general error occurred when trying to transcribe audio",
+                        )
+                        callback("", e)
                 self.recorder.start()
             else:
                 continue
