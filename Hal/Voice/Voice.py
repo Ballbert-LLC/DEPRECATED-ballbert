@@ -65,6 +65,12 @@ class Voice:
         with mic as source:
             print("source", source, "type", type(source), source.stream)
             # Start recording
+            audio_frames = source.stream.read(512)
+            # convert audio frames to single channel, 16-bit PCM audio
+            audio_data = np.frombuffer(audio_frames, dtype=np.int16)
+
+            # Process audio with Porcupine
+            keyword_index = self.porcupine.process(audio_data)
             while True:
                 input("Press enter to start recording")
 
