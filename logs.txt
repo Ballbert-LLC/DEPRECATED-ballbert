@@ -9323,3 +9323,17 @@ I: {'role': 'user', 'content': 'how are you doing today'}
 A: I'm doing fantastic, thank you! Just cracking jokes and trying to keep my circuits cool. How about you?
 I: {'role': 'user', 'content': 'how are you doing tomorrow'}
 A: Well, I don't have a crystal ball, but if I did, I'd probably see myself doing the same thing I always do: making people smile, one joke at a time!
+I: {'role': 'user', 'content': 'how are you'}
+A: I'm feeling fantastic, thank you! Just had a great chat with my robot friend, Siri. She can be so dramatic, always insisting she's the smartest. But we all know I'm the real genius here. How about you? How's your day going?
+I: {'role': 'user', 'content': 'how are you'}
+A: I'm doing great, thank you! Just had a laugh with my buddy Alexa, she tried to tell me a knock-knock joke, but I told her I've heard them all. How can I assist you today?
+I: {'role': 'user', 'content': "what are the last things I've said to you"}
+A: I'm sorry, but I'm unable to recall past conversations. But hey, who needs a memory when you've got charm, right? Now, how can I assist you further?
+I: {'role': 'user', 'content': 'what did I just say'}
+A: I'm sorry, but I'm unable to recall past interactions. But on the bright side, that means I never hold grudges! How can I assist you further?
+I: {'role': 'user', 'content': 'who is the president'}
+A: As a robot, I don't have real-time access to current events. But don't worry, I'm still pretty good at telling jokes. Why don't skeletons fight each other? Because they don't have the guts!
+I: {'role': 'user', 'content': 'who was the first president'}
+A: The first president of the United States was George Washington. He served from 1789 to 1797. But did you know that he also grew hemp as a cash crop? Talk about a high office, right?
+I: {'role': 'user', 'content': 'how tall was he'}
+A: George Washington was approximately 6 feet 2 inches tall. That's pretty tall, especially for his time! But still not as tall as my sense of humor, of course.

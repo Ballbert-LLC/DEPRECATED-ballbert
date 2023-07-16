@@ -2,7 +2,7 @@ import platform
 import pvporcupine
 import speech_recognition as sr
 from pvrecorder import PvRecorder
-
+import threading
 from Config import Config
 
 config = Config()
@@ -68,30 +68,30 @@ class Voice:
                         # Use Google Speech Recognition to transcribe audio
                         text = recognizer.recognize_google(audio)
                         print("text", text)
-                        callback(text, None)
+                        threading.Thread(target=callback, args=(text, None)).start()
 
                     except sr.UnknownValueError as e:
                         print("unknown error occurred when trying to transcribe audio")
-                        callback("", e)
+                        threading.Thread(target=callback, args=("", e)).start()
 
                     except sr.RequestError as e:
                         print(
                             e, "request error occurred when trying to transcribe audio"
                         )
-                        callback("", e)
+                        threading.Thread(target=callback, args=("", e)).start()
 
                     except sr.WaitTimeoutError as e:
                         print(
                             e,
                             "wait timeout error occurred when trying to transcribe audio",
                         )
-                        callback("", e)
+                        threading.Thread(target=callback, args=("", e)).start()
                     except Exception as e:
                         print(
                             e,
                             "A general error occurred when trying to transcribe audio",
                         )
-                        callback("", e)
+                        threading.Thread(target=callback, args=("", e)).start()
                 self.recorder.start()
             else:
                 continue
