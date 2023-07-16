@@ -21,10 +21,10 @@ class Voice:
         else:
             raise Exception("Unsupported system")
 
-        # self.porcupine = pvporcupine.create(
-        #     access_key=config["PORQUPINE_API_KEY"],
-        #     keyword_paths=[path],
-        # )
+        self.porcupine = pvporcupine.create(
+            access_key=config["PORQUPINE_API_KEY"],
+            keyword_paths=[path],
+        )
 
         # self.recorder = PvRecorder(
         #     device_index=config["PV_MIC"],
