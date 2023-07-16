@@ -7,4 +7,4 @@ def sample_callback(text, _):
     print(text)
 
 
-voice.start(sample_callback)
+voice.test(sample_callback)
