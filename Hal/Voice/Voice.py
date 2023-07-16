@@ -40,13 +40,16 @@ class Voice:
         #     recognizer.adjust_for_ambient_noise(source)
 
     def start(self, callback):
-        with sr.Microphone(device_index=1) as source:
+        mic = sr.Microphone(device_index=1)
+        recognizer = sr.Recognizer()
+        recognizer.energy_threshold = 300
+
+        with mic as source:
             print("source", source, "type", type(source), source.stream)
             # Start recording
-            self.recorder.start()
-            recognizer = sr.Recognizer()
-            recognizer.energy_threshold = 3000
             while True:
+                self.recorder.start()
+
                 # Read PCM audio data
                 audio_frames = self.recorder.read()
 
@@ -90,6 +93,5 @@ class Voice:
                     #     )
                     #     threading.Thread(target=callback, args=("", e)).start()
 
-                    self.recorder.start()
                 else:
                     continue
