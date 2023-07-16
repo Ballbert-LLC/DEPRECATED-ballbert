@@ -26,10 +26,10 @@ class Voice:
             keyword_paths=[path],
         )
 
-        # self.recorder = PvRecorder(
-        #     device_index=config["PV_MIC"],
-        #     frame_length=self.porcupine.frame_length,
-        # )
+        self.recorder = PvRecorder(
+            device_index=config["PV_MIC"],
+            frame_length=self.porcupine.frame_length,
+        )
 
     # def start(self, callback):
     #     mic = sr.Microphone(device_index=1)
