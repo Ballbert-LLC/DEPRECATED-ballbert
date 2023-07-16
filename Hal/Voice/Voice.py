@@ -45,61 +45,40 @@ class Voice:
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 3000
 
-        while True:
-            # Read PCM audio data
-            audio_frames = self.recorder.read()
+        def start():
+            while True:
+                input("Press Enter to continue...")
+                # Create a recognizer object
+                r = sr.Recognizer()
 
-            # Process audio with Porcupine
-            keyword_index = self.porcupine.process(audio_frames)
+                # Define the microphone as the source
+                mic = sr.Microphone(device_index=1)
 
-            if keyword_index >= 0:
-                print("Keyword detected")
+                # Adjust the microphone sensitivity if needed
+                mic.energy_threshold = 5000
 
-                self.recorder.stop()
-                print(config["SR_MIC"], type(config["SR_MIC"]))
-                with sr.Microphone(device_index=1) as source:
-                    # try:
-                    #     # Capture speech input
-                    #     audio = recognizer.listen(
-                    #         source,
-                    #     )
+                # Print the list of available microphones (optional)
+                # print(sr.Microphone.list_microphone_names())
 
-                    #     print("audio", audio, "type", type(audio))
-                    # except sr.UnknownValueError as e:
-                    #     print("unknown error occurred when trying to transcribe audio")
-                    #     threading.Thread(target=callback, args=("", e)).start()
+                # Start recording from the microphone
+                with mic as source:
+                    print("Say something...")
+                    audio = r.listen(source)
 
-                    # except sr.RequestError as e:
-                    #     print(
-                    #         e, "request error occurred when trying to transcribe audio"
-                    #     )
-                    #     threading.Thread(target=callback, args=("", e)).start()
-
-                    # except sr.WaitTimeoutError as e:
-                    #     print(
-                    #         e,
-                    #         "wait timeout error occurred when trying to transcribe audio",
-                    #     )
-                    #     threading.Thread(target=callback, args=("", e)).start()
-                    # except Exception as e:
-                    #     print(
-                    #         e,
-                    #         "A general error occurred when trying to transcribe audio",
-                    #     )
-                    #     threading.Thread(target=callback, args=("", e)).start()
-
-                    audio = recognizer.listen(
-                        source,
-                    )
                 try:
-                    # Use Google Speech Recognition to transcribe audio
-                    text = recognizer.recognize_google(audio)
-                    print("text", text)
-                    threading.Thread(target=callback, args=(text, None)).start()
-                except Exception as e:
-                    print(e)
-                    threading.Thread(target=callback, args=("", e)).start()
+                    # Use Google Speech Recognition to transcribe the audio
+                    text = r.recognize_google(audio)
+                    print("Transcription: " + text)
+                    callback(text, None)
 
-                self.recorder.start()
-            else:
-                continue
+                except sr.UnknownValueError:
+                    print("Google Speech Recognition could not understand audio")
+                    callback("", "Google Speech Recognition could not understand audio")
+
+                except sr.RequestError as e:
+                    print(
+                        "Could not request results from Google Speech Recognition service; {0}".format(
+                            e
+                        )
+                    )
+                    callback("", e)
