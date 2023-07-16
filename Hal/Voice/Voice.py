@@ -41,43 +41,61 @@ class Voice:
 
     def start(self, callback):
         # Start recording
-        # self.recorder.start()
+        self.recorder.start()
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 3000
 
         while True:
-            input("Press Enter to continue...")
-            # Create a recognizer object
-            r = sr.Recognizer()
+            # Read PCM audio data
+            audio_frames = self.recorder.read()
 
-            # Define the microphone as the source
-            mic = sr.Microphone(device_index=1)
+            # Process audio with Porcupine
+            keyword_index = self.porcupine.process(audio_frames)
 
-            # Adjust the microphone sensitivity if needed
-            mic.energy_threshold = 5000
+            if keyword_index >= 0:
+                print("Keyword detected")
 
-            # Print the list of available microphones (optional)
-            # print(sr.Microphone.list_microphone_names())
+                self.recorder.stop()
+                print(config["SR_MIC"], type(config["SR_MIC"]))
+                with sr.Microphone(device_index=1) as source:
+                    try:
+                        # Capture speech input
+                        audio = recognizer.listen(
+                            source,
+                        )
 
-            # Start recording from the microphone
-            with mic as source:
-                print("Say something...")
-                audio = r.listen(source)
+                        print("audio", audio, "type", type(audio))
+                    except sr.UnknownValueError as e:
+                        print("unknown error occurred when trying to transcribe audio")
+                        threading.Thread(target=callback, args=("", e)).start()
 
-            try:
-                # Use Google Speech Recognition to transcribe the audio
-                text = r.recognize_google(audio)
-                print("Transcription: " + text)
-                callback(text, None)
+                    except sr.RequestError as e:
+                        print(
+                            e, "request error occurred when trying to transcribe audio"
+                        )
+                        threading.Thread(target=callback, args=("", e)).start()
 
-            except sr.UnknownValueError:
-                print("Google Speech Recognition could not understand audio")
-                callback("", "Google Speech Recognition could not understand audio")
+                    except sr.WaitTimeoutError as e:
+                        print(
+                            e,
+                            "wait timeout error occurred when trying to transcribe audio",
+                        )
+                        threading.Thread(target=callback, args=("", e)).start()
+                    except Exception as e:
+                        print(
+                            e,
+                            "A general error occurred when trying to transcribe audio",
+                        )
+                        threading.Thread(target=callback, args=("", e)).start()
+                try:
+                    # Use Google Speech Recognition to transcribe audio
+                    text = recognizer.recognize_google(audio)
+                    print("text", text)
+                    threading.Thread(target=callback, args=(text, None)).start()
+                except Exception as e:
+                    print(e)
+                    threading.Thread(target=callback, args=("", e)).start()
 
-            except sr.RequestError as e:
-                print(
-                    "Could not request results from Google Speech Recognition service; {0}".format(
-                        e
-                    )
-                )
-                callback("", e)
+                self.recorder.start()
+            else:
+                continue
