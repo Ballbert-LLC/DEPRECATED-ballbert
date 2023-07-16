@@ -58,35 +58,39 @@ class Voice:
                 self.recorder.stop()
                 # Start transcribing the user's speech
                 with sr.Microphone(config["SR_MIC"]) as source:
-                    try:
-                        # Capture speech input
-                        audio = recognizer.listen(
-                            source,
-                        )
+                    # try:
+                    #     # Capture speech input
+                    #     audio = recognizer.listen(
+                    #         source,
+                    #     )
 
-                        print("audio", audio, "type", type(audio))
-                    except sr.UnknownValueError as e:
-                        print("unknown error occurred when trying to transcribe audio")
-                        threading.Thread(target=callback, args=("", e)).start()
+                    #     print("audio", audio, "type", type(audio))
+                    # except sr.UnknownValueError as e:
+                    #     print("unknown error occurred when trying to transcribe audio")
+                    #     threading.Thread(target=callback, args=("", e)).start()
 
-                    except sr.RequestError as e:
-                        print(
-                            e, "request error occurred when trying to transcribe audio"
-                        )
-                        threading.Thread(target=callback, args=("", e)).start()
+                    # except sr.RequestError as e:
+                    #     print(
+                    #         e, "request error occurred when trying to transcribe audio"
+                    #     )
+                    #     threading.Thread(target=callback, args=("", e)).start()
 
-                    except sr.WaitTimeoutError as e:
-                        print(
-                            e,
-                            "wait timeout error occurred when trying to transcribe audio",
-                        )
-                        threading.Thread(target=callback, args=("", e)).start()
-                    except Exception as e:
-                        print(
-                            e,
-                            "A general error occurred when trying to transcribe audio",
-                        )
-                        threading.Thread(target=callback, args=("", e)).start()
+                    # except sr.WaitTimeoutError as e:
+                    #     print(
+                    #         e,
+                    #         "wait timeout error occurred when trying to transcribe audio",
+                    #     )
+                    #     threading.Thread(target=callback, args=("", e)).start()
+                    # except Exception as e:
+                    #     print(
+                    #         e,
+                    #         "A general error occurred when trying to transcribe audio",
+                    #     )
+                    #     threading.Thread(target=callback, args=("", e)).start()
+
+                    audio = recognizer.listen(
+                        source,
+                    )
                 try:
                     # Use Google Speech Recognition to transcribe audio
                     text = recognizer.recognize_google(audio)
