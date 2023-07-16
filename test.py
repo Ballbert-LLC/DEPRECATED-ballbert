@@ -11,7 +11,7 @@ list_microphones()
 
 
 class ASR:
-    def start():
+    def start(self):
         while True:
             input("Press Enter to continue...")
             # Create a recognizer object
