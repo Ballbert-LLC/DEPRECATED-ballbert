@@ -44,7 +44,6 @@ class Voice:
         self.recorder.start()
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 3000
-
         with sr.Microphone(device_index=1) as source:
             while True:
                 # Read PCM audio data
@@ -57,36 +56,35 @@ class Voice:
                     print("Keyword detected")
 
                     self.recorder.stop()
-
+                    print(config["SR_MIC"], type(config["SR_MIC"]))
                     try:
                         # Capture speech input
-                        audio = recognizer.listen(source)
+                        audio = recognizer.listen(
+                            source,
+                        )
                         print("audio", audio, "type", type(audio))
                     except sr.UnknownValueError as e:
-                        print("Unknown error occurred when trying to transcribe audio")
+                        print("unknown error occurred when trying to transcribe audio")
                         threading.Thread(target=callback, args=("", e)).start()
-                        continue
+
                     except sr.RequestError as e:
                         print(
-                            "Request error occurred when trying to transcribe audio:", e
+                            e, "request error occurred when trying to transcribe audio"
                         )
                         threading.Thread(target=callback, args=("", e)).start()
-                        continue
+
                     except sr.WaitTimeoutError as e:
                         print(
-                            "Wait timeout error occurred when trying to transcribe audio:",
                             e,
+                            "wait timeout error occurred when trying to transcribe audio",
                         )
                         threading.Thread(target=callback, args=("", e)).start()
-                        continue
                     except Exception as e:
                         print(
-                            "A general error occurred when trying to transcribe audio:",
                             e,
+                            "A general error occurred when trying to transcribe audio",
                         )
                         threading.Thread(target=callback, args=("", e)).start()
-                        continue
-
                     try:
                         # Use Google Speech Recognition to transcribe audio
                         text = recognizer.recognize_google(audio)
