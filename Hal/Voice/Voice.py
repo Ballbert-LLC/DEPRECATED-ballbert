@@ -41,7 +41,7 @@ class Voice:
 
     def start(self, callback):
         with sr.Microphone(device_index=1) as source:
-            print("source", source, "type", type(source))
+            print("source", source, "type", type(source), source.stream)
             # Start recording
             self.recorder.start()
             recognizer = sr.Recognizer()
