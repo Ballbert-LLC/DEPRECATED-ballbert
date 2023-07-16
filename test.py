@@ -1,21 +1,5 @@
-from Hal.Voice import Voice
-import speech_recognition as sr
+from Hal.VoiceTest import VoiceTest
 
+voice_test = VoiceTest()
 
-def list_microphones():
-    mic_list = sr.Microphone.list_working_microphones()
-    print(mic_list)
-
-
-list_microphones()
-
-voice = Voice()
-
-
-# def callback(text, error):
-#     print(text)
-
-
-# voice.start(callback=callback)
-
-voice.test()
+voice_test.test()
