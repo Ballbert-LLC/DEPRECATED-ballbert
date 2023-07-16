@@ -58,7 +58,7 @@ class Voice:
     #                 continue
 
     def test(self, callback):
-        mic = sr.Microphone(device_index=1, sample_rate=self.porcupine.sample_rate)
+        mic = sr.Microphone(device_index=1)
         recognizer = sr.Recognizer()
 
         with mic as source:
