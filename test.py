@@ -3,7 +3,7 @@ from Hal.Voice import Voice
 voice = Voice()
 
 
-def callback(text):
+def callback(text, error):
     print(text)
 
 
