@@ -71,6 +71,7 @@ class Voice:
 
                 # Process audio with Porcupine
                 keyword_index = self.porcupine.process(audio_data)
+                print(keyword_index)
                 if keyword_index >= 0:
                     print("Keyword detected")
                     audio = recognizer.listen(
