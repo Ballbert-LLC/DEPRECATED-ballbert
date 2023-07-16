@@ -6,10 +6,6 @@ from pvrecorder import PvRecorder
 import threading
 from Config import Config
 import numpy as np
-import resampy
-import scipy.signal as sps
-import librosa
-import samplerate
 
 config = Config()
 
