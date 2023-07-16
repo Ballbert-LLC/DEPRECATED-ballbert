@@ -63,22 +63,20 @@ class Voice:
         recognizer.energy_threshold = 300
 
         with mic as source:
-            print("source", source, "type", type(source), source.stream)
-            # Start recording
-            audio_frames = source.stream.read(512)
-            # convert audio frames to single channel, 16-bit PCM audio
-            audio_data = np.frombuffer(audio_frames, dtype=np.int16)
-
-            # Process audio with Porcupine
-            keyword_index = self.porcupine.process(audio_data)
             while True:
-                input("Press enter to start recording")
+                # Start recording
+                audio_frames = source.stream.read(512)
+                # convert audio frames to single channel, 16-bit PCM audio
+                audio_data = np.frombuffer(audio_frames, dtype=np.int16)
 
-                print("Keyword detected")
-                audio = recognizer.listen(
-                    source=source,
-                )
+                # Process audio with Porcupine
+                keyword_index = self.porcupine.process(audio_data)
+                if keyword_index >= 0:
+                    print("Keyword detected")
+                    audio = recognizer.listen(
+                        source=source,
+                    )
 
-                text = recognizer.recognize_google(audio)
+                    text = recognizer.recognize_google(audio)
 
-                threading.Thread(target=callback, args=(text, None)).start()
+                    threading.Thread(target=callback, args=(text, None)).start()
