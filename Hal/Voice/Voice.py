@@ -9,65 +9,57 @@ config = Config()
 
 
 class Voice:
-    def __init__(self) -> None:
-        print(config["PORQUPINE_API_KEY"])
+    # def __init__(self) -> None:
+    #     system = platform.system()
 
-        system = platform.system()
+    #     if system == "Linux":
+    #         path = "./Hal/Voice/Ball-Bert_en_raspberry-pi_v2_2_0.ppn"
+    #     elif system == "Windows":
+    #         path = "./Hal/Voice/Ball-Bert_en_windows_v2_2_0.ppn"
+    #     elif system == "Darwin":
+    #         path = "./Hal/Voice/Ball-Bert_en_mac_v2_2_0.ppn"
+    #     else:
+    #         raise Exception("Unsupported system")
 
-        if system == "Linux":
-            path = "./Hal/Voice/Ball-Bert_en_raspberry-pi_v2_2_0.ppn"
-        elif system == "Windows":
-            path = "./Hal/Voice/Ball-Bert_en_windows_v2_2_0.ppn"
-        elif system == "Darwin":
-            path = "./Hal/Voice/Ball-Bert_en_mac_v2_2_0.ppn"
-        else:
-            raise Exception("Unsupported system")
+    #     self.porcupine = pvporcupine.create(
+    #         access_key=config["PORQUPINE_API_KEY"],
+    #         keyword_paths=[path],
+    #     )
 
-        self.porcupine = pvporcupine.create(
-            access_key=config["PORQUPINE_API_KEY"],
-            keyword_paths=[path],
-        )
+    #     self.recorder = PvRecorder(
+    #         device_index=config["PV_MIC"],
+    #         frame_length=self.porcupine.frame_length,
+    #     )
 
-        # Create PvRecorder object with a larger buffer size
-        print(config["PV_MIC"], self.porcupine.frame_length)
-        self.recorder = PvRecorder(
-            device_index=config["PV_MIC"],
-            frame_length=self.porcupine.frame_length,
-        )
+    # def start(self, callback):
+    #     mic = sr.Microphone(device_index=1)
+    #     recognizer = sr.Recognizer()
+    #     recognizer.energy_threshold = 300
 
-        # print(sr.Microphone.list_microphone_names()[config["SR_MIC"]])
-        # with sr.Microphone(config["SR_MIC"]) as source:
-        #     recognizer.adjust_for_ambient_noise(source)
+    #     with mic as source:
+    #         print("source", source, "type", type(source), source.stream)
+    #         # Start recording
+    #         while True:
+    #             self.recorder.start()
 
-    def start(self, callback):
-        mic = sr.Microphone(device_index=1)
-        recognizer = sr.Recognizer()
-        recognizer.energy_threshold = 300
+    #             audio_frames = self.recorder.read()
 
-        with mic as source:
-            print("source", source, "type", type(source), source.stream)
-            # Start recording
-            while True:
-                self.recorder.start()
+    #             # Process audio with Porcupine
+    #             keyword_index = self.porcupine.process(audio_frames)
 
-                audio_frames = self.recorder.read()
+    #             if keyword_index >= 0:
+    #                 self.recorder.stop()
 
-                # Process audio with Porcupine
-                keyword_index = self.porcupine.process(audio_frames)
+    #                 audio = recognizer.listen(
+    #                     source=source,
+    #                 )
 
-                if keyword_index >= 0:
-                    self.recorder.stop()
+    #                 text = recognizer.recognize_google(audio)
 
-                    audio = recognizer.listen(
-                        source=source,
-                    )
+    #                 threading.Thread(target=callback, args=(text, None)).start()
 
-                    text = recognizer.recognize_google(audio)
-
-                    threading.Thread(target=callback, args=(text, None)).start()
-
-                else:
-                    continue
+    #             else:
+    #                 continue
 
     def test(self):
         recognizer = sr.Recognizer()

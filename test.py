@@ -1,5 +1,5 @@
-from Hal.VoiceTest import VoiceTest
+from Hal.Voice import Voice
 
-voice_test = VoiceTest()
+voice = Voice()
 
-voice_test.test()
+voice.test()
