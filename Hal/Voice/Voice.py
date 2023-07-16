@@ -41,7 +41,7 @@ class Voice:
 
     def start(self, callback):
         # Start recording
-        self.recorder.start()
+        # self.recorder.start()
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 3000
 
