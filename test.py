@@ -2,4 +2,9 @@ from Hal.Voice import Voice
 
 voice = Voice()
 
-voice.test()
+
+def sample_callback(text, _):
+    print(text)
+
+
+voice.start(sample_callback)
