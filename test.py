@@ -9,11 +9,11 @@ def list_microphones():
 
 list_microphones()
 
-# voice = Voice()
+voice = Voice()
 
 
-# def callback(text, error):
-#     print(text)
+def callback(text, error):
+    print(text)
 
 
-# voice.start(callback=callback)
+voice.start(callback=callback)
