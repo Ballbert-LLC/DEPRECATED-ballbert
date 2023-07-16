@@ -58,6 +58,7 @@ class Voice:
     #                 continue
 
     def test(self, callback):
+        print("sample_rate", self.porcupine.sample_rate)
         mic = sr.Microphone(device_index=1)
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 300
@@ -71,7 +72,6 @@ class Voice:
 
                 # Process audio with Porcupine
                 keyword_index = self.porcupine.process(audio_data)
-                print(keyword_index)
                 if keyword_index >= 0:
                     print("Keyword detected")
                     audio = recognizer.listen(
