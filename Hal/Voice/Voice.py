@@ -33,7 +33,7 @@ class Voice:
         # the mics sample rate is 44100
         mic = sr.Microphone(device_index=1)
         recognizer = sr.Recognizer()
-        recognizer.energy_threshold = 300
+        recognizer.energy_threshold = 3000
 
         with mic as source:
             while True:
@@ -52,5 +52,7 @@ class Voice:
                     )
 
                     text = recognizer.recognize_google(audio)
+
+                    print("text", text)
 
                     threading.Thread(target=callback, args=(text, None)).start()
