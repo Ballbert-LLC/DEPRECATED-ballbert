@@ -57,7 +57,7 @@ class Voice:
 
                 self.recorder.stop()
                 print(config["SR_MIC"], type(config["SR_MIC"]))
-                with sr.Microphone(config["SR_MIC"]) as source:
+                with sr.Microphone(device_index=config["SR_MIC"]) as source:
                     # try:
                     #     # Capture speech input
                     #     audio = recognizer.listen(
