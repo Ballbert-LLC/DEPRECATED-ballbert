@@ -59,7 +59,8 @@ class Voice:
 
     def test(self, callback):
         print("sample_rate", self.porcupine.sample_rate)
-        mic = sr.Microphone(device_index=1, sample_rate=16000)
+        mic = sr.Microphone(device_index=1)
+        print("sample_rate2", mic.SAMPLE_RATE)
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 300
 
