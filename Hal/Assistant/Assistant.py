@@ -8,6 +8,9 @@ import sqlite3
 import sys
 import threading
 import uuid
+import asyncio
+import websockets
+
 
 import openai
 import yaml
@@ -55,25 +58,25 @@ class Assistant:
         self.tts = None
         self.speak_mode = False
         self.current_callback = None
-    
-    def voice_to_text_chat(self):
+
+    async def voice_to_text_chat(self):
         self.voice = Voice()
-        def callback(res, err):
+
+        async def callback(res, err):
             if err:
                 print(err)
             elif res:
                 res: str = res
-                for item in self._text_gpt_response(res):
+                async for item in self._text_gpt_response(res):
                     print(item, end="", flush=True)
                 print()
-        
-        
+
         self.voice.start(callback)
 
-    def sentance_gen(self, res):
+    async def sentance_gen(self, res):
         buffer = ""
         index = 0
-        for content in self._text_gpt_response(res):
+        async for content in self._text_gpt_response(res):
             for char in content:
                 if char in [".", "!", "?"]:
                     buffer += char
@@ -82,38 +85,37 @@ class Assistant:
                     buffer = ""
                 else:
                     buffer += char
-                    
-    def voice_to_voice_chat(self): 
+
+    async def voice_to_voice_chat(self):
         self.tts = TTS()
         self.voice = Voice()
-        
+
         def callback(res, err):
-            gen  = self.sentance_gen(res)
-            
+            gen = self.sentance_gen(res)
+
             self.tts.speak_gen(gen)
-        
-        
+
         self.voice.start(callback)
 
-    def text_chat(self):
+    async def text_chat(self):
         while True:
             question = input("Q: ")
-            for item in self._text_gpt_response(question):
+            async for item in self._text_gpt_response(question):
                 print(item, end="", flush=True)
             print()
-            
-    def text_to_voice(self):
+
+    async def text_to_voice(self):
         self.tts = TTS()
         while True:
             question = input("Q: ")
-            gen  = self.sentance_gen(question)
-            
+            gen = self.sentance_gen(question)
+
             self.tts.speak_gen(gen)
 
-    def _text_gpt_response(self, to_gpt):
+    async def _text_gpt_response(self, to_gpt):
         message_handler = MessageHandler(self, to_gpt)
 
-        for chunk in message_handler.handle_message():
+        async for chunk in message_handler.handle_message():
             yield chunk
 
     def call_function(self, function_id, args=[], kwargs={}):

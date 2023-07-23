@@ -1,3 +1,4 @@
+import asyncio
 import platform
 import pvporcupine
 import pyaudio
@@ -35,6 +36,9 @@ class Voice:
         recognizer = sr.Recognizer()
         recognizer.energy_threshold = 3000
 
+        def make_callback(text, err):
+            asyncio.run(callback)
+
         with mic as source:
             while True:
                 # Start recording
@@ -55,4 +59,4 @@ class Voice:
 
                     print("text", text)
 
-                    threading.Thread(target=callback, args=(text, None)).start()
+                    threading.Thread(target=make_callback, args=(text, None)).start()

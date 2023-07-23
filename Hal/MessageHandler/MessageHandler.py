@@ -1,6 +1,7 @@
 import json
 from typing import Generator
 import openai
+import websockets
 
 from Hal import Assistant
 from ..Utils import get_functions_list
@@ -128,30 +129,50 @@ class MessageHandler:
             if not current_chunk[-1] in ".?!'":
                 yield "."
 
-    def handle_generatior(self, generator):
+    def handle_generator(self, generator):
         for item in generator:
             if isinstance(item, Generator):
-                for sub_item in self.handle_generatior(item):
+                for sub_item in self.handle_generator(item):
                     yield sub_item
             else:
                 yield item
 
-    def handle_message(self):
-        self.add_to_messages(self.gpt_response)
-        functions = self.get_functions(self.gpt_response)
-        res = self.ask_gpt(functions)
+    async def handle_message(self):
+        async with websockets.connect("ws://localhost:8765") as websocket:
 
-        current_chunk = ""
+            async def send_to_websocket(item, is_final):
+                json_data = json.dumps(
+                    {"type": "assistant", "message": item, "is_final": is_final}
+                )
 
-        for chunk in res:
-            chunk_result = self.handle_chunk(chunk)
-            if isinstance(chunk_result, Generator):
-                for item in self.handle_generatior(chunk_result):
-                    current_chunk = item
-                    yield item
-            elif chunk_result:
-                current_chunk = chunk_result
-                yield chunk_result
-        if isinstance(current_chunk, str):
-            if not current_chunk[-1] in ".?!'":
-                yield "."
+                await websocket.send(json_data)
+
+            async def send_user_to_ws(item):
+                json_data = json.dumps({"type": "user", "message": self.gpt_response})
+
+                await websocket.send(json_data)
+
+            send_user_to_ws(self.gpt_response)
+
+            self.add_to_messages(self.gpt_response)
+            functions = self.get_functions(self.gpt_response)
+            res = self.ask_gpt(functions)
+
+            current_chunk = ""
+
+            for chunk in res:
+                chunk_result = self.handle_chunk(chunk)
+                if isinstance(chunk_result, Generator):
+                    for item in self.handle_generator(chunk_result):
+                        current_chunk = item
+                        yield item
+                        await send_to_websocket(item, False)
+                elif chunk_result:
+                    current_chunk = chunk_result
+                    yield chunk_result
+                    await send_to_websocket(chunk_result, False)
+
+            if isinstance(current_chunk, str):
+                if current_chunk and not current_chunk[-1] in ".?!'":
+                    yield "."
+            await send_to_websocket("", True)

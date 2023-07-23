@@ -1,4 +1,5 @@
 import ast
+import asyncio
 import json
 import threading
 import os
@@ -100,17 +101,24 @@ def run_assistant():
         assistant_instance, "https://github.com/seesi8/Personality.git"
     )
 
-    assistant_instance.voice_to_voice_chat()
+    asyncio.run(assistant_instance.text_chat())
 
 
 def main():
-    print(config)
+    # Start the web server
     t = threading.Thread(target=run_web)
     t.daemon = True
     t.start()
 
+    # Start the gui
+    import GUI
+
+    GUI.run_main()
+
+    # Sleep
     time.sleep(1)
 
+    # Start Setup Mode
     while (not ("SETUP_MODE" in config)) or config["SETUP_MODE"]:
         import setup
 

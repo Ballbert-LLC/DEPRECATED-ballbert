@@ -1,4 +1,8 @@
 *.env
 *.json
+*.db
+Skills/
 bfg.jar
 logs.txt
+temp/
+*/__pycache__/

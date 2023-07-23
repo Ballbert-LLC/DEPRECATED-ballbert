@@ -233,10 +233,6 @@ def get_llms(api_key):
 
         models = openai.Model.list()["data"]
 
-        length = len(models)
-
-        pbar = tqdm(total=length)  # Init pbar
-
         for item in models:
             model = item["id"]
             try:
@@ -254,9 +250,6 @@ def get_llms(api_key):
                 pass
             else:
                 chat_models.append(model)
-            finally:
-                pbar.update(n=1)
-        pbar.close()
 
         file = open("chatModels.cache.json", "w")
         file.writelines(
