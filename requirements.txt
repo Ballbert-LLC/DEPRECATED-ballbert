@@ -55,7 +55,6 @@ grpcio-status==1.54.0
 guidance==0.0.49
 gunicorn==20.1.0
 h11==0.14.0
-h5py==3.8.0
 httplib2==0.22.0
 idna==3.4
 install==1.3.5
