@@ -1,67 +1,14 @@
-**install git**
-
-`sudo apt install git`
-
-Do you want to continue? [Y/n]
-
-`Y`
-
-**Clone repo**
-
-`git clone https://github.com/seesi8/hal.git`
-
-`cd hal`
-
-**Install Docker**
-
-```
-    # Install some required packages first
-    sudo apt update
-    sudo apt install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg2 \
-        software-properties-common
-
-    # Get the Docker signing key for packages
-    curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo apt-key add -
-
-    # Add the Docker official repos
-    echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-        $(lsb_release -cs) stable" | \
-        sudo tee /etc/apt/sources.list.d/docker.list
-
-    # Install Docker
-    sudo apt update
-    sudo apt install -y --no-install-recommends \
-        docker-ce \
-        cgroupfs-mount
-```
-
-```
-    sudo apt-get update
-    sudo apt-get install python3-pip
-```
-
-Do you want to continue? [Y/n]
-
-`Y`
-
-**Install Audio Dependancies**
-
-`sudo apt-get install build-essential libssl-dev libffi-dev python-dev`
-
-`sudo apt install python3-pyaudio`
-
-`sudo apt-get install -y python3-dev libasound2-dev`
-
-`pip install --upgrade pip setuptools`
-
-`pip install simpleaudio`
-
-`pip install PyAudio`
-
-**Install Regular Dependancies**
-
-`pip install -r requirements.txt`
+hytools.net,67.205.10.40 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBA0frlfw21lDt1PSo+cpiADdKLwM6dqKwhrHXy2CnNA+8s21vvctk5sTqWKP+dSRV7zLREZYCxdBP8LJ+Zgc4RU=
+octopi.local,fe80::8008:a476:84f2:864e%15 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBA3UwbQeWRkgJfOsZpygGvUcOe4I+IrjJZWP9KrWI+E1vrfFxg0RX1v0lL0eRgNVTcm4bvviRWhXgkZaKjs+Iys=
+192.168.86.37 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBA3UwbQeWRkgJfOsZpygGvUcOe4I+IrjJZWP9KrWI+E1vrfFxg0RX1v0lL0eRgNVTcm4bvviRWhXgkZaKjs+Iys=
+fe80::8008:a476:84f2:864e%13 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBA3UwbQeWRkgJfOsZpygGvUcOe4I+IrjJZWP9KrWI+E1vrfFxg0RX1v0lL0eRgNVTcm4bvviRWhXgkZaKjs+Iys=
+github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+AAAAB3NzaC1yc2EAAAADAQABAAABgQCzfJjs/6yUQR66SLL5z0d2R98S8AYEqWxplBjKbLJ65B8w4xhIEp63E6XHU5IIkYJRFsojYfiOAPQaAENyMrKi58QvHSIhVRzf/ICFfrGfQ7A12oP/eo8Rk78YCSlUSpBXP6HSyEWNFXhgWsKrH5tkOYQDynji2tyrlCTDOP9AWedIN3M9aG7gyI47pr60Ab4rljDjggX698SJdiRbMiuK9Y89klfXzQIFwe07DSRLDuDlpvXcnHIJminB/Z/1XjXb/JNTVQDV1FdEepLhoBtLXS/CQHfGlpLp2oCdECmUPdvByWJGwXbggvxMpZBGfKtrgKM+ZEMB4D5H4oW3ApahuT53mmXkoA+tF6aZpiO6X1vIoLm+qnT36h/Ff5NxsQ5Q9V4S9Xma+0a5BtniFP8lU5wVxkfG4buesM5Rm5so/29U3TQNWx/LYeYJIz3aGkiW5912B4jLgbXD2jzwZDWvarHNv/HgJH59SwRPdv5v6WUMp+6RC6HMQ9QH2tpcjNc=
+AAAAB3NzaC1yc2EAAAADAQABAAABgQDbCLFjEYS9cSfK59Un6DLnQwvfqxjGjFZIfzhr0zO4OtFnMh7PWnZhvfrl4Hi/grSZZvMyTVMLVWlUXjjhA/vnZjYGHyXxtRJNGnX9eFASV7h0wMTBmVaT5F2zX+Zd6V8w4T0YyrcxzWLd0f3H9jVJzVrPoMhxXPCpAJJN9VKDHtM9itCmRq5Vzw24/m3/31rvno1Y828YMHY28w6IlRQRs7Coow7eRCayd5R9KhbRy7gC7oad4htcsUQbIwRarBPIwFWGM8gajhtHrkcds8+Tv2DdHDymE+TGU/wx3LvzpBdfBBUbGaUmbrTlLg6B3RlJWFgL2/f+tbpmBy3xg4NqrYqGOZeeCSWz7Ay2Ehllf/ujZ6I8afe1bCuhso4usNEFDDQonoqMhiN8/s8N+xyQIFhM0rCeKupFs1xM8bRTMu6bNS0QpAD8enOkPZd6ag8c3RqXx8QrwVt2syPeMkvLmOoXbHYlvCDSijb/zOkY03UYlWgycB8qxe6+q/x29Rs=
+9U4JvxDdFVKurZZgA5eKhilNcp9A0susKO0v+r4X6MthhX46XcWn4PQ11SWIfA8juo8KmwvNR8iujvm+z47xxJ6Ug3v2/DpqyWadsjZ0FWlb2CrMCqwEkdpssoaTn94ZOA28a/GBWKdZZdJJmEjmSb1OLfHdJ8CT9Q4pNBGgMau0I0IcDPuDWQia4YOz3C7futUOZjWLPkkn7EyeTjR6qTGkrIj8z4orM6ICogZx9R8mKFoSAr6/MPRa5ApTCRHxO1w0cbDo6L5faLBTn5eE0TJp0aBIo3QzCA4gTmWk2OQTAlImXHSPT+NubrU+zxZL7aUveWWY6goxXcsBzDa/aoZMaiX6c6/mkeI9ZDN2SoRvtygTDonkD7vjQ/XC7Ia UF51T8CIkCcwexvs3Tu6UDguWiAx/XvtcsZjmFmtRFw0sxU8=
+192.168.86.138 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCzg+Ggui+TjcfGUBCng4M9Owe6kPHuPFvKQTCwtP/n
+192.168.86.138 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHMfQXZ3xp7DM++aAHxe0HCOz1TjbqR0kFQLok2A0NdR2aOfH9dnkEoUsQWuonVs2ThQvNw6u9LWuHiVAAH5JO6dzyntRZnEudvUN5eceYZpA1rYUJisR4UZ+UeCH8G4Pyb7ezJg+nhoVr7oUmFgxAmyYSBLwqCh6toTwbQ9x0E8EZBQVo/672YlwmS0tH1KgSgp8XwJoAoev0S6rG0ftTZpLMthxiPb2eYe3s4OnHHQWQ+LgHsleXRMLoeZ5Px978wniFRhTWHdLkjv51qaidpqS2wCys+/IrBazVOgtEPPzmaJPj40jQMopzA7wzYHalut3tIjiTvin7mpEfGIhb
+192.168.86.138 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCX8+t2NLgwwuXNknS54n/Jyp9cOWR1PI0k8uzOhVo7SbQZ76GgwckSBcEgDALe7j54wvtuyEfel00smwZuGuI0=
+192.168.86.98 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP/6s9m9pQUWymkJeJcC1tClsmoBnYR3UKlX7u1WDXDa
+192.168.86.98 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLuNkC/bgbGTEP8569tWA0UbpK9ucQkcZHnJplDhvi5cCgCoANWsDKfU1AatiXMpscgrBcJmmsnETQqEx/biXcgqGIZXxJKPesgaszwtOb4WbIatnJl88e3S23NFYFy+TZLemawHHseERGguTZyvlM1X1i+Kz6wpDNIpCHtaOHS3H8kzPOsjAbGhEwVWC4FXhDKCqCtWXIjUzLIQPad51YWS0Qx04/2lXgr5b29t0PeL7hnNIw9ymYfS1Q3ZZ2x7ten4xqM3UoHWUfIZF+Z9gou8GrAhvV9NWF4WLY/idLujktNokqL4ZEsvKSnaWTqyZOpXyiVP7KDZOYK4iNRJf7
+192.168.86.98 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGs1mD1UIqwQqvunrP+0px8rHc8ivlOREXsGW32u8ejYJa72OHd3s1AvYpX4A0UScBo7qKNlfAdm35LNmXemXxk=

@@ -1,0 +1,15 @@
+-   Put in AP mode
+    -   Clone Ota wifi config
+    -   `sudo python3 setup.py`
+-   Restart
+-   Start Wifi Api
+    -   `sudo python3 app.py`
+-   Complete Wifi Setup
+-   Restart
+-   Start Assistant
+    -   Clone Assistant
+    -   `sudo python3 main.py`
+-   Complete Config Setup
+-   Start Gui
+-   Start Api
+-   Start Assistant
