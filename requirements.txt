@@ -174,12 +174,4 @@ weaviate-client==3.16.2
 webcolors==1.12
 webencodings==0.5.1
 websocket-client==1.5.1
-Werkzeug==2.2.2
-wget==3.2
-wheel==0.38.4
-widgetsnbextension==4.0.5
-wrapt==1.15.0
-wsproto==1.2.0
-xdg==6.0.0
-yarl==1.9.2
 soxr==0.1.3
