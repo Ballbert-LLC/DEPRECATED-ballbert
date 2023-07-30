@@ -47,7 +47,7 @@ def run_assistant():
         assistant_instance, "https://github.com/seesi8/Personality.git"
     )
 
-    asyncio.run(assistant_instance.text_chat())
+    asyncio.run(assistant_instance.voice_to_voice_chat())
 
 
 def run_gui():
