@@ -23,6 +23,7 @@ class Config:
             "LLM",
             "PORQUPINE_API_KEY",
             "GOOGLE_APPLICATION_CREDENTIALS",
+            "HUGGINGFACE_API_KEY",
         ]
 
         if os.path.exists(self.dotenv_path):

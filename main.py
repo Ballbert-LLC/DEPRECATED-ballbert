@@ -74,6 +74,7 @@ def main():
     run_gui()
 
     time.sleep(1)
+    start_setup()
 
     try:
         run_assistant()

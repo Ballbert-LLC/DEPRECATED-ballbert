@@ -199,6 +199,28 @@ def test_openai_api_key(api_key):
         return True
 
 
+@router.post("/test_huggingface_api_key")
+def test_huggingface_api_key(api_key):
+    import requests
+
+    API_URL = (
+        "https://api-inference.huggingface.co/models/SamLowe/roberta-base-go_emotions"
+    )
+    headers = {"Authorization": f"Bearer {api_key}"}
+
+    def query(payload):
+        response = requests.post(API_URL, headers=headers, json=payload)
+        return response.json()
+
+    output = query(
+        {
+            "inputs": "Hi",
+        }
+    )
+
+    return "error" not in output
+
+
 @router.get("/get_llms")
 def get_llms(api_key):
     openai.api_key = api_key
