@@ -1,1 +1,2 @@
-sudo python3 /opt/hal/main.py
+cd /opt/hal
+sudo python3 main.py
