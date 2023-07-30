@@ -1,5 +1,5 @@
 import os
-import Config
+from Config import Config
 
 config = Config()
 
