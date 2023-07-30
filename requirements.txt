@@ -6,7 +6,6 @@ dotenv
 fastapi==0.98.0
 google
 importlib
-json
 kivy==2.2.1
 kivymd==1.2.0.dev0
 math
