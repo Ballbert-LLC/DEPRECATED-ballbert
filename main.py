@@ -63,12 +63,14 @@ def start_setup():
 
         try:
             setup.setup()
-            print("Setup complete")
         except Exception as e:
             print(e)
 
 
 def main():
+    if not "CURRENT_STAGE" in config:
+        config["CURRENT_STAGE"] = 0
+
     if config["CURRENT_STAGE"] == 0:
         from OTAWifi import run_api
 

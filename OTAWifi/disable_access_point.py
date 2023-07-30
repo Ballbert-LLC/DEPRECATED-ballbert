@@ -1,4 +1,7 @@
 import os
+import Config
+
+config = Config()
 
 
 def disable_access_point():
@@ -8,6 +11,6 @@ def disable_access_point():
     os.system("sudo cp /etc/dnsmasq.conf.copy /etc/dnsmasq.conf")
     os.system("sudo cp /etc/dhcpcd.conf.copy /etc/dhcpcd.conf")
 
-    # Disable the Starup script
+    config["CURRENT_STAGE"] = 1
 
     os.system("reboot")

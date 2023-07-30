@@ -80,4 +80,5 @@ def setup():
     # Check if config is all setup
     while True:
         if config.isReady():
+            config["CURRENT_STAGE"] = 2
             break
