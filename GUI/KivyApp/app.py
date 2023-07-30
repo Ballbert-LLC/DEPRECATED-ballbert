@@ -9,6 +9,7 @@ from kivy.uix.button import Button
 from kivymd.theming import ThemeManager
 from threading import Thread
 from kivy.clock import Clock
+from kivy.core.window import Window
 
 
 class App(MDApp):
@@ -43,6 +44,8 @@ class App(MDApp):
             "surprise": "./GUI/BA/Exitment.png/",
             "neutral": "./GUI/BA/Normal.png",
         }
+
+        Window.borderless = True
 
         Clock.schedule_interval(self.change_face, 0.1)
 
