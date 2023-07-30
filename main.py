@@ -58,7 +58,7 @@ def run_gui():
 
 
 def start_setup():
-    while (not ("SETUP_MODE" in config)) or config["SETUP_MODE"]:
+    while config["CURRENT_STAGE"] == 1:
         import setup
 
         try:
@@ -69,6 +69,11 @@ def start_setup():
 
 
 def main():
+    if config["CURRENT_STAGE"] == 0:
+        from OTAWifi import run_api
+
+        run_api()
+
     web_thread = run_web()
 
     run_gui()

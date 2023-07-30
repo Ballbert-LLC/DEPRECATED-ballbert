@@ -81,5 +81,3 @@ def setup():
     while True:
         if config.isReady():
             break
-
-    config["SETUP_MODE"] = False
