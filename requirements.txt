@@ -15,3 +15,6 @@ tqdm==4.65.0
 uvicorn==0.22.0
 websockets==11.0.3
 PyYAML
+SpeechRecognition
+weaviate-client
+watchdog
