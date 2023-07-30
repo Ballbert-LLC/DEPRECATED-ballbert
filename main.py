@@ -68,6 +68,8 @@ def start_setup():
 
 
 def main():
+    run_gui()
+
     if not "CURRENT_STAGE" in config:
         config["CURRENT_STAGE"] = 0
 
@@ -82,8 +84,6 @@ def main():
         run_api()
 
     web_thread = run_web()
-
-    run_gui()
 
     time.sleep(1)
     start_setup()
