@@ -6,7 +6,7 @@ fastapi==0.98.0
 google-cloud-speech
 kivy==2.2.1
 kivymd
-numpy==1.23.5
+numpy
 openai==0.27.5
 pvporcupine==2.2.0
 pvrecorder==1.1.1
