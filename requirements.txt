@@ -19,3 +19,4 @@ SpeechRecognition
 weaviate-client
 watchdog
 python-multipart
+GitPython

@@ -34,10 +34,10 @@ class Voice:
         # the mics sample rate is 44100
         mic = sr.Microphone(device_index=1)
         recognizer = sr.Recognizer()
-        recognizer.energy_threshold = 3000
+        recognizer.energy_threshold = 5000
 
         def make_callback(text, err):
-            asyncio.run(callback)
+            asyncio.run(callback())
 
         with mic as source:
             while True:

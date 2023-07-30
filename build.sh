@@ -8,4 +8,7 @@ sudo pip3 install cython
 sudo pip3 install numpy
 sudo pip3 install manimlib
 sudo pip3 install soxr
+sudo pip3 install google-cloud-speech
+sudo pip3 install google-cloud-texttospeech
+sudo apt-get install flac
 sudo pip3 install -r requirements.txt
