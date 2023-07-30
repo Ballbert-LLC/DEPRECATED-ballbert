@@ -71,6 +71,11 @@ def main():
     if not "CURRENT_STAGE" in config:
         config["CURRENT_STAGE"] = 0
 
+    try:
+        config["CURRENT_STAGE"]
+    except:
+        config["CURRENT_STAGE"] = 0
+
     if config["CURRENT_STAGE"] == 0:
         from OTAWifi import run_api
 
