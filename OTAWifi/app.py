@@ -3,7 +3,7 @@ import subprocess
 import os
 import time
 from threading import Thread
-from disable_access_point import disable_access_point
+from .disable_access_point import disable_access_point
 import fileinput
 
 app = Flask(__name__)
