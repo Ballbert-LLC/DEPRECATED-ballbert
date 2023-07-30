@@ -14,7 +14,6 @@ pyaudio==0.2.13
 pydub==0.25.1
 simpleaudio==1.0.4
 soxr==0.3.5
-speech_recognition
 starlette==0.27.0
 tiktoken==0.3.3
 tqdm==4.65.0
