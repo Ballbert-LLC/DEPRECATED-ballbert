@@ -37,7 +37,7 @@ class Voice:
         recognizer.energy_threshold = 5000
 
         def make_callback(text, err):
-            asyncio.run(callback())
+            asyncio.run(callback(text, err))
 
         with mic as source:
             while True:

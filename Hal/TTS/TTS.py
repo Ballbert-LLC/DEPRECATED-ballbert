@@ -131,7 +131,7 @@ class TTS:
     def add_exit_code(self):
         self.sentances.append("%EXIT%")
 
-    def speak_gen(self, gen):
+    async def speak_gen(self, gen):
         with CustomManager() as manager:
             ttsManger = manager.TTS()
 
@@ -139,7 +139,7 @@ class TTS:
 
             process2.start()
 
-            for item in gen:
+            async for item in gen:
                 audio = ttsManger.proccess_text(item[0])
                 ttsManger.add_sentance(item[1], audio)
 

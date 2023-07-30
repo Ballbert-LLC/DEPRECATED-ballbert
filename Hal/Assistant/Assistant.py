@@ -90,10 +90,10 @@ class Assistant:
         self.tts = TTS()
         self.voice = Voice()
 
-        def callback(res, err):
+        async def callback(res, err):
             gen = self.sentance_gen(res)
 
-            self.tts.speak_gen(gen)
+            await self.tts.speak_gen(gen)
 
         self.voice.start(callback)
 
