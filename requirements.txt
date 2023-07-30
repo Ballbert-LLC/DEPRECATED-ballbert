@@ -8,9 +8,7 @@ kivymd
 openai==0.27.5
 pvporcupine==2.2.0
 pvrecorder==1.1.1
-pyaudio==0.2.13
 pydub==0.25.1
-simpleaudio==1.0.4
 starlette==0.27.0
 tiktoken==0.3.3
 tqdm==4.65.0
