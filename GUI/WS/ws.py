@@ -9,7 +9,7 @@ from ..Sentament import sentament
 def handle_messages(messages, queue: multiprocessing.Queue):
     while not queue.empty():
         queue.get()
-    queue.put(sentament.get_sentament(" ".join(messages)))
+    queue.put("E" + sentament.get_sentament(" ".join(messages)))
 
 
 class Client:
@@ -36,6 +36,7 @@ async def handle_request(
     # Decode the message
     message = json.loads(message)
 
+    print(message)
     # Get the message type
     message_type = message["type"]
 
@@ -50,6 +51,8 @@ async def handle_request(
             client.add_message(message["message"])
             handle_messages(client.messages, queue)
             client.clear_messages()
+    elif message_type == "color":
+        queue.put("C" + message["color"])
     else:
         print(f"Unknown message type '{message_type}'.")
 

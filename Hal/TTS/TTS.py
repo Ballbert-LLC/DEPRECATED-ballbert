@@ -1,3 +1,6 @@
+import asyncio
+import json
+import threading
 import time
 import simpleaudio as sa
 from multiprocessing.managers import BaseManager
@@ -10,6 +13,8 @@ from google.cloud import texttospeech
 from pydub import AudioSegment
 from pydub.playback import play
 import multiprocessing
+
+import websockets
 from Config import Config
 
 config = Config()
@@ -131,6 +136,20 @@ class TTS:
     def add_exit_code(self):
         self.sentances.append("%EXIT%")
 
+    def send_color(self):
+        async def send_color_to_ws():
+            async with websockets.connect("ws://localhost:8765") as websocket:
+                json_data = json.dumps({"type": "color", "color": "grey"})
+
+                await websocket.send(json_data)
+
+        def send_color_factory():
+            asyncio.run(send_color_to_ws())
+
+        t = threading.Thread(target=send_color_factory)
+        t.start()
+        return t
+
     async def speak_gen(self, gen):
         with CustomManager() as manager:
             ttsManger = manager.TTS()
@@ -150,3 +169,4 @@ class TTS:
                     process2.join()
                     break
                 time.sleep(0.1)
+        self.send_color()

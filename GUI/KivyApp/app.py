@@ -1,19 +1,31 @@
 import multiprocessing
+import platform
 import time
 from kivymd.tools.hotreload.app import MDApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
+from kivy.graphics import Line
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.button import Button
 from kivymd.theming import ThemeManager
 from threading import Thread
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.uix.widget import Widget
+from kivy.graphics import Color
 
 
 class App(MDApp):
     def __init__(self, **kwargs):
+        self.colors = {
+            "green": "./GUI/CO/green.png",
+            "blue": "./GUI/CO/blue.png",
+            "red": "./GUI/CO/red.png",
+            "yellow": "./GUI/CO/yellow.png",
+            "grey": "./GUI/CO/grey.png",
+        }
+
         self.images = {
             "admiration": "./GUI/BA/Admiration.png",
             "amusement": "./GUI/BA/Happy.png",
@@ -45,7 +57,8 @@ class App(MDApp):
             "neutral": "./GUI/BA/Normal.png",
         }
 
-        Window.borderless = True
+        if platform.system() == "linux":
+            Window.borderless = True
 
         Clock.schedule_interval(self.change_face, 0.1)
 
@@ -57,8 +70,14 @@ class App(MDApp):
         else:
             emotion = self.queue.get()
             print(emotion)
-            page = self.images[emotion]
-            self.eyes.source = page
+            if emotion[0] == "E":
+                emotion = emotion[1:]
+                page = self.images[emotion]
+                self.eyes.source = page
+            elif emotion[0] == "C":
+                color = emotion[1:]
+                page = self.colors[color]
+                self.line.source = page
 
     def run(self, queue: multiprocessing.Queue):
         self.queue = queue
@@ -72,6 +91,15 @@ class App(MDApp):
 
         layout = ScreenManager()
         screen = Screen()
+        self.line = Image(
+            source=self.colors["grey"],
+            size_hint=(0.9, 1),
+            pos_hint={"center-x": 0, "center_y": 1},
+            keep_ratio=False,
+            allow_stretch=True,
+            size_hint_y=0.1,
+            size_hint_x=1.1,
+        )
 
         self.eyes = Image(
             source=self.images["neutral"],
@@ -80,6 +108,7 @@ class App(MDApp):
         )
 
         screen.add_widget(self.eyes)
+        screen.add_widget(self.line)
 
         layout.add_widget(screen)
 

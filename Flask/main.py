@@ -12,6 +12,8 @@ import speech_recognition as sr
 from pvrecorder import PvRecorder
 import pvporcupine
 
+from OTAWifi import set_wifi_credentials
+
 
 router = APIRouter()
 
@@ -336,6 +338,17 @@ def is_valid_tts_service_account(file_path):
     except:
         os.remove(file_path)
         return False
+
+
+@router.route("/save_credentials", methods=["GET", "POST"])
+def save_credentials(json: dict):
+    ssid = json["ssid"]
+    wifi_key = json["wifi_key"]
+
+    if set_wifi_credentials(ssid, wifi_key):
+        return {"status": "success", "status_code": 200}
+    else:
+        return {"status": "failed", "status_code": 500}
 
 
 @router.post("/validate_file")

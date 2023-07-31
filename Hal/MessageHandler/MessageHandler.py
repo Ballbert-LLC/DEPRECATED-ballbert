@@ -4,7 +4,7 @@ import openai
 import websockets
 
 from Hal import Assistant
-from ..Utils import get_functions_list
+from ..Utils import get_functions_list, generate_system_message
 from ..Logging import log_line
 from Config import Config
 
@@ -44,7 +44,7 @@ class MessageHandler:
         def run():
             return openai.ChatCompletion.create(
                 model=config["LLM"],
-                messages=self.assistant.messages,
+                messages=[generate_system_message(), *self.assistant.messages],
                 temperature=config["TEMPATURE"],
                 functions=functions,
                 stream=True,
@@ -147,12 +147,18 @@ class MessageHandler:
 
                 await websocket.send(json_data)
 
-            async def send_user_to_ws(item):
+            async def send_user_to_ws():
                 json_data = json.dumps({"type": "user", "message": self.gpt_response})
 
                 await websocket.send(json_data)
 
-            send_user_to_ws(self.gpt_response)
+            async def send_color_to_ws():
+                json_data = json.dumps({"type": "color", "color": "green"})
+
+                await websocket.send(json_data)
+
+            await send_color_to_ws()
+            await send_user_to_ws()
 
             self.add_to_messages(self.gpt_response)
             functions = self.get_functions(self.gpt_response)
@@ -166,13 +172,13 @@ class MessageHandler:
                     for item in self.handle_generator(chunk_result):
                         current_chunk = item
                         yield item
-                        await send_to_websocket(item, False)
+                        # await send_to_websocket(item, False)
                 elif chunk_result:
                     current_chunk = chunk_result
                     yield chunk_result
-                    await send_to_websocket(chunk_result, False)
+                    # await send_to_websocket(chunk_result, False)
 
             if isinstance(current_chunk, str):
                 if current_chunk and not current_chunk[-1] in ".?!'":
                     yield "."
-            await send_to_websocket("", True)
+            # await send_to_websocket("", True)

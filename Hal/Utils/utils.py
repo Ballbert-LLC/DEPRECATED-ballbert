@@ -6,7 +6,7 @@ import os
 import re
 import shutil
 import time
-
+from datetime import datetime as d
 import openai
 from colorama import Fore
 from openai.error import APIError, RateLimitError
@@ -221,8 +221,10 @@ def remove_double_punctuation(text):
 
 
 def generate_system_message():
-    content = """
+    content = f"""
 
+        Todays DateTime Is: {d.now().strftime("%Y-%m-%d %H:%M:%S")}
+        
         Contrains: 
             Follow your personality.
             Set your Gui to match your current message.

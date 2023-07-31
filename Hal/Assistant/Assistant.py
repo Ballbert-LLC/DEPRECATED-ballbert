@@ -49,7 +49,7 @@ class Assistant:
         pm = None
         pm = Weaviate()
 
-        self.messages = [generate_system_message()]
+        self.messages = []
         self.pm = pm
         self.installed_skills = dict()
         self.action_dict = dict()

@@ -1,10 +1,13 @@
 import asyncio
+import json
 import platform
 import pvporcupine
 import pyaudio
 import speech_recognition as sr
 from pvrecorder import PvRecorder
 import threading
+
+import websockets
 from Config import Config
 import numpy as np
 import soxr
@@ -39,6 +42,20 @@ class Voice:
         def make_callback(text, err):
             asyncio.run(callback(text, err))
 
+        def send_color():
+            async def send_color_to_ws():
+                async with websockets.connect("ws://localhost:8765") as websocket:
+                    json_data = json.dumps({"type": "color", "color": "blue"})
+
+                    await websocket.send(json_data)
+
+            def send_color_factory():
+                asyncio.run(send_color_to_ws())
+
+            t = threading.Thread(target=send_color_factory)
+            t.start()
+            return t
+
         with mic as source:
             while True:
                 # Start recording
@@ -50,7 +67,8 @@ class Voice:
 
                 keyword_index = self.porcupine.process(np_audio_data)
                 if keyword_index >= 0:
-                    print("Keyword detected")
+                    send_color()
+                    print("Keyowrd Detected")
                     audio = recognizer.listen(
                         source=source,
                     )
