@@ -92,7 +92,7 @@ class App(MDApp):
         layout = ScreenManager()
         screen = Screen()
         self.line = Image(
-            source=self.colors["grey"],
+            source=self.colors["yellow"],
             size_hint=(0.9, 1),
             pos_hint={"center-x": 0, "center_y": 1},
             keep_ratio=False,
