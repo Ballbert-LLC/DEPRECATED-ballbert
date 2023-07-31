@@ -1,4 +1,5 @@
 import asyncio
+import platform
 import threading
 import os
 import re
@@ -102,7 +103,8 @@ def main():
 def setup_and_teardown():
     import sys
 
-    sys.stdout = open("/etc/hal/logs.txt", "w")
+    if platform.system() == "Linux":
+        sys.stdout = open("/etc/hal/logs.txt", "w")
     try:
         main()
     except Exception as e:
