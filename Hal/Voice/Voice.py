@@ -78,9 +78,10 @@ class Voice:
                     audio = recognizer.listen(
                         source=source,
                     )
-
-                    text = recognizer.recognize_google(audio)
-
+                    try:
+                        text = recognizer.recognize_google(audio)
+                    except Exception as e:
+                        print(e)
                     print("text", text)
 
                     threading.Thread(target=make_callback, args=(text, None)).start()
