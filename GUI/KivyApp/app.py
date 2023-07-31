@@ -94,10 +94,8 @@ class App(MDApp):
         self.line = Image(
             source=self.colors["yellow"],
             size_hint=(0.9, 1),
-            pos_hint={"center-x": 0, "center_y": 1},
-            keep_ratio=False,
-            allow_stretch=True,
-            size_hint_y=0.1,
+            pos_hint={"center-x": 0, "center_y": 0.98},
+            size_hint_y=0.7,
             size_hint_x=1.1,
         )
 
