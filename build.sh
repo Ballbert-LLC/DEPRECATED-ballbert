@@ -18,4 +18,9 @@ sudo pip3 install -r requirements.txt
 autostart_file="/etc/xdg/lxsession/LXDE-pi/autostart"
 
 echo "@sudo /opt/hal/start.sh" | sudo tee "$autostart_file" > /dev/null
+
+sudo raspi-config nonint do_wifi_country US
+sudo connmanctl enable wifi
+rfkill unblock wifi
+
 sudo python3 /opt/hal/ap_mode.py
