@@ -57,7 +57,7 @@ class App(MDApp):
             "neutral": "./GUI/BA/Normal.png",
         }
 
-        if platform.system() == "linux":
+        if platform.system() == "Linux":
             Window.borderless = True
 
         Clock.schedule_interval(self.change_face, 0.1)

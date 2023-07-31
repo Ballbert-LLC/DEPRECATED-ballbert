@@ -43,9 +43,12 @@ def run_assistant():
 
     assistant_instance = initialize_assistant()
 
-    assistant_instance.skill_manager.add_skill_from_url(
-        assistant_instance, "https://github.com/seesi8/Personality.git"
-    )
+    try:
+        assistant_instance.skill_manager.add_skill_from_url(
+            assistant_instance, "https://github.com/seesi8/Personality.git"
+        )
+    except Exception as e:
+        print(e)
 
     asyncio.run(assistant_instance.voice_to_voice_chat())
 
@@ -97,11 +100,15 @@ def main():
 
 
 def setup_and_teardown():
+    import sys
+
+    sys.stdout = open("/etc/hal/logs.txt", "w")
     try:
         main()
     except Exception as e:
         print(e)
         main()
+    sys.stdout.close()
 
 
 if __name__ == "__main__":

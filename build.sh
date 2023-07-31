@@ -13,6 +13,8 @@ sudo pip3 install google-cloud-texttospeech
 sudo apt-get install flac
 sudo chmod 744 ./start.sh
 sudo pip3 install -r requirements.txt
+mkdir -p /etc/hal
+touch /etc/hal/logs.txt
 
 # Path to the autostart file
 autostart_file="/etc/xdg/lxsession/LXDE-pi/autostart"

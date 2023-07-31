@@ -1,2 +1,2 @@
 cd /opt/hal
-sudo python3 main.py
+python3 ./main.py > /etc/hal/logs.txt
