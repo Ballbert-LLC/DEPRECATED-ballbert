@@ -100,7 +100,7 @@ class App(MDApp):
         )
 
         self.eyes = Image(
-            source=self.images["normal"],
+            source=self.images["neutral"],
             size_hint=(0.9, 1),
             pos_hint={"center_x": 0.5, "center_y": 0.5},
         )
