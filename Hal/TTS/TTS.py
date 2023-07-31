@@ -144,7 +144,10 @@ class TTS:
                 await websocket.send(json_data)
 
         def send_color_factory():
-            asyncio.run(send_color_to_ws())
+            try:
+                asyncio.run(send_color_to_ws())
+            except Exception as e:
+                print(e)
 
         t = threading.Thread(target=send_color_factory)
         t.start()

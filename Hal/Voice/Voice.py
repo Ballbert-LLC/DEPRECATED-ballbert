@@ -40,7 +40,10 @@ class Voice:
         recognizer.energy_threshold = 5000
 
         def make_callback(text, err):
-            asyncio.run(callback(text, err))
+            try:
+                asyncio.run(callback(text, err))
+            except Exception as e:
+                print(e)
 
         def send_color():
             async def send_color_to_ws():
@@ -50,7 +53,10 @@ class Voice:
                     await websocket.send(json_data)
 
             def send_color_factory():
-                asyncio.run(send_color_to_ws())
+                try:
+                    asyncio.run(send_color_to_ws())
+                except Exception as e:
+                    print(e)
 
             t = threading.Thread(target=send_color_factory)
             t.start()
