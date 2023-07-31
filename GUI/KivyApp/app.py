@@ -19,11 +19,11 @@ from kivy.graphics import Color
 class App(MDApp):
     def __init__(self, **kwargs):
         self.colors = {
-            "green": "./GUI/CO/green.png",
-            "blue": "./GUI/CO/blue.png",
-            "red": "./GUI/CO/red.png",
-            "yellow": "./GUI/CO/yellow.png",
-            "grey": "./GUI/CO/grey.png",
+            "green": "./GUI/CO/green.jpeg",
+            "blue": "./GUI/CO/blue.jpeg",
+            "red": "./GUI/CO/red.jpeg",
+            "yellow": "./GUI/CO/yellow.jpeg",
+            "grey": "./GUI/CO/grey.jpeg",
         }
 
         self.images = {
