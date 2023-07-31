@@ -1,36 +1,40 @@
-from PIL import Image
-import os
+import asyncio
+import json
+import threading
+import time
+
+import websockets
+from GUI import run_main
 
 
-def resize_images_in_directory(directory_path):
-    # Get a list of all files in the directory
-    file_list = os.listdir(directory_path)
+async def send_color_to_ws(color):
+    async with websockets.connect("ws://localhost:8765") as websocket:
+        json_data = json.dumps({"type": "color", "color": color})
 
-    for filename in file_list:
-        # Get the full path of the image
-        input_path = os.path.join(directory_path, filename)
+        await websocket.send(json_data)
 
-        # Check if it's a file and an image (you can add more checks here if needed)
-        if os.path.isfile(input_path) and filename.lower().endswith(
-            (".png", ".jpg", ".jpeg", ".gif")
-        ):
-            # Open the image using Pillow
-            image = Image.open(input_path)
 
-            # Get the new size (half the original dimensions)
-            new_width = int(image.width / 2)
-            new_height = int(image.height / 2)
+def send_color_factory(color):
+    try:
+        asyncio.run(send_color_to_ws(color))
+    except Exception as e:
+        print(e)
 
-            # Resize the image in place
-            image.thumbnail((new_width, new_height))
 
-            # Save the resized image, overwriting the original image
-            image.save(input_path)
-
-            # Close the image to free up memory
-            image.close()
+def send_color():
+    t = threading.Thread(target=send_color_factory)
+    t.start()
+    return t
 
 
 if __name__ == "__main__":
-    input_directory = "A:\hal\GUI\BA"
-    resize_images_in_directory(input_directory)
+    colors = ["blue", "yellow", "red", "green", "grey"]
+    run_main()
+    index = 0
+    while True:
+        index += 1
+
+        time.sleep(1)
+        send_color_factory(colors[index])
+        if index == len(colors) - 1:
+            index = 0
