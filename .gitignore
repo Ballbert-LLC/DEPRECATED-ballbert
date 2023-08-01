@@ -9,3 +9,4 @@ temp/
 !skills/__init__.py
 Flask/static/images/*
 !/Flask/static/images
+*/*/__pycache__/
