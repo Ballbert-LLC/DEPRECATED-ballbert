@@ -7,3 +7,4 @@ logs.txt
 temp/
 */__pycache__/
 !skills/__init__.py
+Flask/static/images/*
