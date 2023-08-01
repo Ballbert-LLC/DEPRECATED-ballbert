@@ -2,6 +2,7 @@ import asyncio
 import functools
 import json
 import multiprocessing
+import time
 import websockets
 from ..Sentament import sentament
 
@@ -51,6 +52,11 @@ async def handle_request(
             client.add_message(message["message"])
             handle_messages(client.messages, queue)
             client.clear_messages()
+
+            time.sleep(5)
+            while not queue.empty():
+                queue.get()
+            queue.put("neutral")
     elif message_type == "color":
         queue.put("C" + message["color"])
     else:

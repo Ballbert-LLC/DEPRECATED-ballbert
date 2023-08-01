@@ -172,13 +172,13 @@ class MessageHandler:
                     for item in self.handle_generator(chunk_result):
                         current_chunk = item
                         yield item
-                        # await send_to_websocket(item, False)
+                        await send_to_websocket(item, False)
                 elif chunk_result:
                     current_chunk = chunk_result
                     yield chunk_result
-                    # await send_to_websocket(chunk_result, False)
+                    await send_to_websocket(chunk_result, False)
 
             if isinstance(current_chunk, str):
                 if current_chunk and not current_chunk[-1] in ".?!'":
                     yield "."
-            # await send_to_websocket("", True)
+            await send_to_websocket("", True)

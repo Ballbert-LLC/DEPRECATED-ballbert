@@ -45,23 +45,24 @@ class Voice:
             except Exception as e:
                 print(e)
 
-        def send_color():
-            async def send_color_to_ws():
+        def send_color(color):
+            async def send_color_to_ws(color):
                 async with websockets.connect("ws://localhost:8765") as websocket:
-                    json_data = json.dumps({"type": "color", "color": "blue"})
+                    json_data = json.dumps({"type": "color", "color": color})
 
                     await websocket.send(json_data)
 
-            def send_color_factory():
+            def send_color_factory(color):
                 try:
-                    asyncio.run(send_color_to_ws())
+                    asyncio.run(send_color_to_ws(color))
                 except Exception as e:
                     print(e)
 
-            t = threading.Thread(target=send_color_factory)
+            t = threading.Thread(target=send_color_factory, args=(color,))
             t.start()
             return t
 
+        send_color("grey")
         with mic as source:
             while True:
                 # Start recording
@@ -73,15 +74,18 @@ class Voice:
 
                 keyword_index = self.porcupine.process(np_audio_data)
                 if keyword_index >= 0:
-                    send_color()
+                    send_color("blue")
                     print("Keyowrd Detected")
                     audio = recognizer.listen(
                         source=source,
                     )
                     try:
                         text = recognizer.recognize_google(audio)
+                        print("text", text)
+                        threading.Thread(
+                            target=make_callback, args=(text, None)
+                        ).start()
+
                     except Exception as e:
                         print(e)
-                    print("text", text)
-
-                    threading.Thread(target=make_callback, args=(text, None)).start()
+                        threading.Thread(target=make_callback, args=("", e)).start()
