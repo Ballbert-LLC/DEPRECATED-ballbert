@@ -64,6 +64,11 @@ def update_version(current_release, latest_release):
     if not alert_for_update():
         raise (Exception("Update Refused By Another Process"))
 
+    # create version file:
+    with open("/opt/ballbert_backups/updating_to.txt", "w") as file:
+        file.write(latest_release)
+
+    # schedule update
     autostart_file = "/etc/xdg/lxsession/LXDE-pi/autostart"
     os.system(
         f'echo "@sudo python3 {backup_dir}/main_update.py" | sudo tee "{autostart_file}" > /dev/null'

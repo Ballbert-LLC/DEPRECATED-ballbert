@@ -122,8 +122,8 @@ def main():
             web_thread = run_web()
             if should_run_gui:
                 run_gui()
-
-            update_thread = run_update_manager()
+            if platform.system() == "Linux":
+                update_thread = run_update_manager()
             run_assistant()
     except Exception as e:
         print(e)
