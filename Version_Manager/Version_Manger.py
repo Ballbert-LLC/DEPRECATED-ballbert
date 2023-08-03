@@ -40,6 +40,8 @@ def make_backup(current_release):
 
     shutil.copytree("./", backup_dir)
 
+    return backup_dir
+
 
 def alert_for_update():
     open("./UPDATE", "w").close()
@@ -55,10 +57,18 @@ def alert_for_update():
 
 
 def update_version(current_release, latest_release):
-    make_backup(current_release)
+    # backup
+    backup_dir = make_backup(current_release)
+
+    # stop tasks
     if not alert_for_update():
         raise (Exception("Update Refused By Another Process"))
-    return latest_release
+
+    autostart_file = "/etc/xdg/lxsession/LXDE-pi/autostart"
+    os.system(
+        f'echo "@sudo python3 {backup_dir}/main_update.py" | sudo tee "{autostart_file}" > /dev/null'
+    )
+    os.system("sudo reboot")
 
 
 def start_version_manager():
@@ -75,8 +85,6 @@ def start_version_manager():
             continue
 
         try:
-            new_version = update_version(current_release, latest_release)
+            update_version(current_release, latest_release)
         except Exception as e:
             print(e)
-        else:
-            config["CURRENT_VERSION"] = new_version

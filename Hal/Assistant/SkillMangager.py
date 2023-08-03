@@ -387,7 +387,7 @@ class SkillMangager:
 
     def add_skill_from_url(self, assistant: Assistant, url: str):
         self.ready_temp_dir()
-        Repo.clone_from(url, f"{repos_path}/temp")
+        Repo.clone_from(url, f"{repos_path}/temp", depth=1)
         name = self.get_name()
         requirements = self.get_requirements()
         try:

@@ -13,16 +13,16 @@ sudo pip3 install google-cloud-texttospeech
 sudo apt-get install flac
 sudo chmod 744 ./start.sh
 sudo pip3 install -r requirements.txt
-sudo mkdir -p /etc/hal
-sudo touch /etc/hal/logs.txt
+sudo mkdir -p /etc/ballbert
+sudo touch /etc/ballbert/logs.txt
 
 # Path to the autostart file
 autostart_file="/etc/xdg/lxsession/LXDE-pi/autostart"
 
-echo "@sudo /opt/hal/start.sh" | sudo tee "$autostart_file" > /dev/null
+echo "@sudo /opt/ballbert/start.sh" | sudo tee "$autostart_file" > /dev/null
 
 sudo raspi-config nonint do_wifi_country US
 sudo connmanctl enable wifi
 sudo rfkill unblock wifi
 
-sudo python3 /opt/hal/ap_mode.py
+sudo python3 /opt/ballbert/ap_mode.py

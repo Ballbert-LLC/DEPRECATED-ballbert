@@ -1,15 +1,10 @@
 import asyncio
 import platform
-import signal
-import sys
 import threading
 import os
-import re
-import shutil
 import multiprocessing
 import threading
 import time
-import types
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -106,24 +101,29 @@ def run_update_manager():
 
 
 def main():
-    try:
-        run_gui()
+    should_run_gui = True
 
+    try:
         ready_stage()
 
         while config["CURRENT_STAGE"] == 0:
             from OTAWifi import run_api
 
+            run_gui()
+
             run_api()
 
         while config["CURRENT_STAGE"] == 1:
             start_setup()
-
-        web_thread = run_web()
-
-        update_thread = run_update_manager()
+            run_gui()
+            should_run_gui = False
 
         while config["CURRENT_STAGE"] == 2:
+            web_thread = run_web()
+            if should_run_gui:
+                run_gui()
+
+            update_thread = run_update_manager()
             run_assistant()
     except Exception as e:
         print(e)
