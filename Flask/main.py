@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import shutil
 from fastapi import APIRouter, File, UploadFile
 import openai
 import tqdm
@@ -330,14 +331,22 @@ def is_valid_tts_service_account(file_path):
                 and "auth_provider_x509_cert_url" in service_account_data
                 and "client_x509_cert_url" in service_account_data
             ):
-                config["GOOGLE_APPLICATION_CREDENTIALS"] = file_path
+                shutil.copyfile(file_path, "./creds.json")
+                config["GOOGLE_APPLICATION_CREDENTIALS"] = "./creds.json"
+
                 return True
             else:
                 os.remove(file_path)
                 return False
-    except:
+    except Exception as e:
         os.remove(file_path)
+        print(e)
         return False
+    finally:
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            print(e)
 
 
 @router.route("/save_credentials", methods=["GET", "POST"])

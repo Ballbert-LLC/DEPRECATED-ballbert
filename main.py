@@ -1,36 +1,48 @@
 import asyncio
 import platform
+import signal
+import sys
 import threading
 import os
 import re
 import shutil
+import multiprocessing
 import threading
 import time
 import types
-
-
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import PlainTextResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.background import BackgroundTask
 from Config import Config
 
 config = Config()
 
+# VOICE | TEXT
+MODE = "VOICE"
+
 
 def run_web():
+    import uvicorn
+    from fastapi import FastAPI
+    from fastapi.staticfiles import StaticFiles
+
+    app = FastAPI()
+
     def start_web():
-        import uvicorn
-        from fastapi import FastAPI
-        from fastapi.staticfiles import StaticFiles
+        try:
+            # Mount the router from the api module
+            from Flask.main import router
 
-        app = FastAPI()
-
-        # Mount the router from the api module
-        from Flask.main import router
-
-        app.include_router(router)
-        uvicorn.run(
-            app,
-            host="0.0.0.0",
-            port=5000,
-        )
+            app.include_router(router)
+            uvicorn.run(
+                app,
+                host="0.0.0.0",
+                port=5000,
+            )
+        except Exception as e:
+            print("shut down")
+            print("___________________________________")
 
     # Start the web server
     t = threading.Thread(target=start_web)
@@ -40,6 +52,10 @@ def run_web():
 
 
 def run_assistant():
+    if os.path.exists("./UPDATE"):
+        return
+    time.sleep(1)
+
     from Hal import assistant, initialize_assistant
 
     assistant_instance = initialize_assistant()
@@ -49,9 +65,14 @@ def run_assistant():
             assistant_instance, "https://github.com/seesi8/Personality.git"
         )
     except Exception as e:
+        print("e", e)
+    try:
+        if MODE == "VOICE":
+            asyncio.run(assistant_instance.voice_to_voice_chat())
+        else:
+            asyncio.run(assistant_instance.text_chat())
+    except Exception as e:
         print(e)
-
-    asyncio.run(assistant_instance.voice_to_voice_chat())
 
 
 def run_gui():
@@ -62,42 +83,51 @@ def run_gui():
 
 
 def start_setup():
-    while config["CURRENT_STAGE"] == 1:
-        import setup
+    import setup
 
-        try:
-            setup.setup()
-        except Exception as e:
-            print(e)
+    try:
+        setup.setup()
+    except Exception as e:
+        print(e)
+
+
+def ready_stage():
+    if not config["CURRENT_STAGE"]:
+        config["CURRENT_STAGE"] = 0
+
+
+def run_update_manager():
+    from Version_Manager import start_version_manager
+
+    t = multiprocessing.Process(target=start_version_manager)
+
+    t.start()
+    return t
 
 
 def main():
-    run_gui()
-
-    if not "CURRENT_STAGE" in config:
-        config["CURRENT_STAGE"] = 0
-
     try:
-        config["CURRENT_STAGE"]
-    except:
-        config["CURRENT_STAGE"] = 0
+        run_gui()
 
-    while config["CURRENT_STAGE"] == 0:
-        from OTAWifi import run_api
+        ready_stage()
 
-        run_api()
+        while config["CURRENT_STAGE"] == 0:
+            from OTAWifi import run_api
 
-    web_thread = run_web()
+            run_api()
 
-    time.sleep(1)
-    start_setup()
+        while config["CURRENT_STAGE"] == 1:
+            start_setup()
 
-    try:
-        run_assistant()
-        pass
+        web_thread = run_web()
+
+        update_thread = run_update_manager()
+
+        while config["CURRENT_STAGE"] == 2:
+            run_assistant()
     except Exception as e:
         print(e)
-        raise e
+        update_thread.kill()
 
 
 def setup_and_teardown():
@@ -105,11 +135,7 @@ def setup_and_teardown():
 
     if platform.system() == "Linux":
         sys.stdout = open("/etc/hal/logs.txt", "w")
-    try:
-        main()
-    except Exception as e:
-        print(e)
-        main()
+    main()
     sys.stdout.close()
 
 

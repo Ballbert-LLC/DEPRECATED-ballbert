@@ -37,7 +37,6 @@ async def handle_request(
     # Decode the message
     message = json.loads(message)
 
-    print(message)
     # Get the message type
     message_type = message["type"]
 

@@ -9,9 +9,9 @@ class Config:
         self.populate_values()
         self.dotenv_path = dotenv_path
 
-    def __getitem__(self, key):
+    def __getitem__(self, key, default=None):
         self.populate_values()
-        return self.data[key]
+        return self.data.get(key, default)
 
     def isReady(self):
         self.populate_values()
@@ -50,12 +50,12 @@ class Config:
             try:
                 num = float(value)
                 data[key] = num
-            except ValueError:
+            except:
                 pass
             try:
                 num = int(value)
                 data[key] = num
-            except ValueError:
+            except:
                 pass
         self.data = data
 

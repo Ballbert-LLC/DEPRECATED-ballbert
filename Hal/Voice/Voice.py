@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import platform
 import pvporcupine
 import pyaudio
@@ -65,6 +66,8 @@ class Voice:
         send_color("grey")
         with mic as source:
             while True:
+                if os.path.exists("./UPDATE"):
+                    break
                 # Start recording
                 audio_frames = source.stream.read(1410)
 

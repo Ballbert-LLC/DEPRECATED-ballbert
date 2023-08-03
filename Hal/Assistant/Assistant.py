@@ -99,6 +99,8 @@ class Assistant:
 
     async def text_chat(self):
         while True:
+            if os.path.exists("./UPDATE"):
+                break
             question = input("Q: ")
             async for item in self._text_gpt_response(question):
                 print(item, end="", flush=True)

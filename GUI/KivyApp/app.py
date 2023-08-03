@@ -1,4 +1,5 @@
 import multiprocessing
+import os
 import platform
 import time
 from kivymd.tools.hotreload.app import MDApp
@@ -59,12 +60,20 @@ class App(MDApp):
 
         if platform.system() == "Linux":
             Window.borderless = True
+        else:
+            Window.left = 3000
+            Window.top = -100
 
-        Clock.schedule_interval(self.change_face, 0.1)
+        Clock.schedule_interval(self.run_clock, 0.1)
 
         super().__init__(**kwargs)
 
-    def change_face(self, *args):
+    def run_clock(self, *args):
+        if os.path.exists("./UPDATE"):
+            try:
+                self.stop()
+            except:
+                open("./NOUPDATE", "w").close()
         if self.queue.empty():
             return
         else:

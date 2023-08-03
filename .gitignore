@@ -1,5 +1,5 @@
 *.env
-*.json
+creds.json
 *.db
 Skills/*
 bfg.jar
