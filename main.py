@@ -114,8 +114,10 @@ def main():
             run_api()
 
         while config["CURRENT_STAGE"] == 1:
-            start_setup()
+            web_thread = run_web()
+
             run_gui()
+            start_setup()
             should_run_gui = False
 
         while config["CURRENT_STAGE"] == 2:
@@ -134,7 +136,7 @@ def setup_and_teardown():
     import sys
 
     if platform.system() == "Linux":
-        sys.stdout = open("/etc/hal/logs.txt", "w")
+        sys.stdout = open("/etc/ballbert/logs.txt", "w")
     main()
     sys.stdout.close()
 
