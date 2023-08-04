@@ -11,10 +11,12 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.button import Button
 from kivymd.theming import ThemeManager
 from threading import Thread
+import socket
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.graphics import Color
+from kivy.uix.label import Label
 
 
 class App(MDApp):
@@ -60,9 +62,9 @@ class App(MDApp):
 
         if platform.system() == "Linux":
             Window.borderless = True
-        else:
-            Window.left = 3000
-            Window.top = -100
+        # else:
+        #     Window.left = 3000
+        #     Window.top = -100
 
         Clock.schedule_interval(self.run_clock, 0.1)
 
@@ -114,8 +116,16 @@ class App(MDApp):
             pos_hint={"center_x": 0.5, "center_y": 0.5},
         )
 
+        hostname = socket.gethostname()
+        IPAddr = socket.gethostbyname(hostname)
+
+        self.label = Label(
+            text=IPAddr, pos_hint={"x": 0.85, "bottom": 1}, size_hint=[0.1, 0.1]
+        )
+
         screen.add_widget(self.eyes)
         screen.add_widget(self.line)
+        screen.add_widget(self.label)
 
         layout.add_widget(screen)
 

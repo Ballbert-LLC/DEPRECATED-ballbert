@@ -15,3 +15,4 @@ autostart_file = "/etc/xdg/lxsession/LXDE-pi/autostart"
 os.system(
     f'echo "@sudo /opt/ballbert/start.sh" | sudo tee "{autostart_file}" > /dev/null'
 )
+os.system("sudo reboot")

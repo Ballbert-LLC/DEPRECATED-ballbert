@@ -126,10 +126,13 @@ def main():
                 run_gui()
             if platform.system() == "Linux" and False:
                 update_thread = run_update_manager()
+            else:
+                update_thread = None
             run_assistant()
     except Exception as e:
         print(e)
-        update_thread.kill()
+        if update_thread:
+            update_thread.kill()
 
 
 def setup_and_teardown():
