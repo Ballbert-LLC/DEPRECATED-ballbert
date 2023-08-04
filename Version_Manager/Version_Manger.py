@@ -20,6 +20,8 @@ def get_latest_release(repo_owner, repo_name):
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases"
     if API_KEY:
         headers = {"Authorization": f"token {API_KEY}"}
+    else:
+        headers = {}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         releases = response.json()
