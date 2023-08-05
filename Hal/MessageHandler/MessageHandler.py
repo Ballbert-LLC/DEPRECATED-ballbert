@@ -7,6 +7,7 @@ from Hal import Assistant
 from ..Utils import get_functions_list, generate_system_message
 from ..Logging import log_line
 from Config import Config
+from ..Classes import Response
 
 config = Config()
 
@@ -76,9 +77,14 @@ class MessageHandler:
                 if self.function_name:
                     self.arguments = json.loads(self.arguments)
 
-                    function_result = self.assistant.action_dict[self.function_name][
+                    function_result :Response = self.assistant.action_dict[self.function_name][
                         "function"
-                    ](**self.arguments).data
+                    ](**self.arguments)
+                    
+                    if function_result.suceeded:
+                        function_result = function_result.data
+                    else:
+                        function_result = "error"
 
                     log_line(f"FN: {self.function_name}")
                     log_line(f"Arg: {self.arguments}")
