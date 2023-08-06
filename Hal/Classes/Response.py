@@ -7,7 +7,7 @@ class Response:
         succeeded=False,
         original_message: str = "",
         action: str = "",
-        data=None,
+        data="",
     ):
         self.time_created = datetime.datetime.now()
         self.original_message = original_message

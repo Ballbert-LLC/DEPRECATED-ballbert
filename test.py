@@ -1,4 +1,4 @@
-from GUI import run_main
+import geocoder
 
-if __name__ == "__main__":
-    run_main()
+g = geocoder.ip("me")
+print(g.city)

@@ -13,8 +13,10 @@ import yaml
 from git import Repo
 import importlib
 
+from ..Logging import log_line
+
 from . import Assistant
-from ..Decorators import paramRegistrar, reg
+from ..Decorators import reg
 
 import os
 from Config import Config
@@ -386,28 +388,54 @@ class SkillMangager:
         con.close()
 
     def add_skill_from_url(self, assistant: Assistant, url: str):
-        self.ready_temp_dir()
-        Repo.clone_from(url, f"{repos_path}/temp", depth=1)
-        name = self.get_name()
-        requirements = self.get_requirements()
         try:
+            self.ready_temp_dir()
+            Repo.clone_from(url, f"{repos_path}/temp", depth=1)
+        except Exception as e:
+            log_line("Err", e)
+            raise e
+        try:
+            name = self.get_name()
+            requirements = self.get_requirements()
             temp_name = self.rename_temp()
-        except:
-            temp_name = self.rename_temp()
-        requirements_names = self.install_requirements(assistant, requirements, name)
-        prev_action_dict: dict = deepcopy(assistant.action_dict)
+            requirements_names = self.install_requirements(
+                assistant, requirements, name
+            )
+            prev_action_dict: dict = deepcopy(assistant.action_dict)
+        except Exception as e:
+            rmtree_hard(f"{repos_path}/temp")
+            log_line("err", e)
+            raise e
         try:
             self.rename_to_perm_name(name, temp_name)
-        except:
-            return False
-        self.create_settings_meta(name)
-        self.dump_meta_to_yaml(name)
-        self.add_skill(assistant, name)
-        new_action_dict: dict = self.get_new_actions(assistant, prev_action_dict)
-        actions_with_uuids = assistant.pm.add_list(new_action_dict, name)
-        self.insert_actions(actions_with_uuids, name)
-        self.add_to_installed_skills(name)
-        self.add_requirements_to_db(requirements, requirements_names, name)
+        except Exception as e:
+            log_line("err", e)
+            raise e
+        try:
+            self.create_settings_meta(name)
+            self.dump_meta_to_yaml(name)
+            self.add_skill(assistant, name)
+            new_action_dict: dict = self.get_new_actions(assistant, prev_action_dict)
+        except Exception as e:
+            rmtree_hard(f"{repos_path}/{name}")
+            log_line("err", e)
+            raise e
+        try:
+            actions_with_uuids = assistant.pm.add_list(new_action_dict, name)
+        except Exception as e:
+            actions_with_uuids = []
+            self.remove_from_memory(name, assistant)
+            rmtree_hard(f"{repos_path}/{name}")
+        try:
+            self.insert_actions(actions_with_uuids, name)
+            self.add_to_installed_skills(name)
+            self.add_requirements_to_db(requirements, requirements_names, name)
+        except Exception as e:
+            log_line("Err", e)
+            rmtree_hard(f"{repos_path}/{name}")
+            assistant.pm.delete_uuids(
+                value["uuid"] for value in actions_with_uuids.values()
+            )
 
         return name
 

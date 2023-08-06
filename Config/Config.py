@@ -4,10 +4,11 @@ import dotenv
 
 class Config:
     def __init__(self, dotenv_path="./.env"):
+        self.dotenv_path = dotenv_path
+
         if not os.path.exists(dotenv_path):
             open(dotenv_path, "w").close()
         self.populate_values()
-        self.dotenv_path = dotenv_path
 
     def __getitem__(self, key, default=None):
         self.populate_values()
@@ -40,8 +41,11 @@ class Config:
         self.data[key] = value
 
     def populate_values(self):
-        dotenv.load_dotenv()
-        data = dict(dotenv.dotenv_values())
+        if not os.path.exists(self.dotenv_path):
+            open(self.dotenv_path, "w").close()
+        dotenv.load_dotenv(self.dotenv_path)
+
+        data = dict(dotenv.dotenv_values(self.dotenv_path))
         for key, value in data.items():
             if value == "True":
                 data[key] = True
@@ -61,7 +65,10 @@ class Config:
 
     def __delitem__(self, key):
         self.populate_values()
-        del self.data[key]
+        try:
+            del self.data[key]
+        except:
+            pass
 
     def __contains__(self, key):
         self.populate_values()

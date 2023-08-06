@@ -94,4 +94,4 @@ def start_version_manager():
         try:
             update_version(current_release, latest_release)
         except Exception as e:
-            print(e)
+            raise e

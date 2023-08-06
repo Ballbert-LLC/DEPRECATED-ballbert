@@ -1,32 +1,15 @@
-import importlib
-import inspect
-import json
-import multiprocessing
 import os
-import shutil
 import sqlite3
-import sys
-import threading
-import uuid
-import asyncio
-import websockets
-
-
 import openai
-import yaml
-from git import Repo
 
 from Config import Config
+from ..Logging import display_error, handle_error
 
-from ..ASR import ASR
-from ..Classes import Response
-from ..Decorators import paramRegistrar, reg
+from ..Classes import Response, NoTTSException, NoVoiceException
 from ..Logging import log_line
 from ..Memory import Weaviate
 from ..MessageHandler import MessageHandler
 from ..TTS import TTS
-from ..Utils import generate_system_message
-from ..Voice import Voice
 from .SkillMangager import SkillMangager
 
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
@@ -47,72 +30,90 @@ class Assistant:
     def __init__(self):
         # pinecone memory
         pm = None
-        pm = Weaviate()
-
+        skill_manager = None
+        try:
+            pm = Weaviate()
+            tts = self.setup_tts()
+            voice = self.setup_voice()
+            skill_manager = SkillMangager()
+        except Exception as e:
+            log_line("Err", e)
+            display_error()
+            handle_error()
         self.messages = []
         self.pm = pm
+        self.tts = tts
+        self.voice = voice
         self.installed_skills = dict()
         self.action_dict = dict()
-        self.skill_manager = SkillMangager()
+        self.skill_manager = skill_manager
         self.voice = None
         self.tts = None
         self.speak_mode = False
         self.current_callback = None
 
-    async def voice_to_text_chat(self):
-        self.voice = Voice()
-
-        async def callback(res, err):
-            if err:
-                print(err)
-            elif res:
-                res: str = res
-                async for item in self._text_gpt_response(res):
-                    print(item, end="", flush=True)
-                print()
-
-        self.voice.start(callback)
-
     async def sentance_gen(self, res):
-        buffer = ""
-        index = 0
-        async for content in self._text_gpt_response(res):
-            for char in content:
-                if char in [".", "!", "?"]:
-                    buffer += char
-                    yield (buffer, index)
-                    index += 1
-                    buffer = ""
-                else:
-                    buffer += char
+        try:
+            buffer = ""
+            index = 0
+            async for content in self._text_gpt_response(res):
+                for char in content:
+                    if char in [".", "!", "?"]:
+                        buffer += char
+                        yield (buffer, index)
+                        index += 1
+                        buffer = ""
+                    else:
+                        buffer += char
+        except Exception as e:
+            log_line("Err", e)
+            yield "Sorry i made a mistake can you say that again."
 
-    async def voice_to_voice_chat(self):
-        self.tts = TTS()
-        self.voice = Voice()
+    def setup_tts(self):
+        try:
+            tts = TTS()
+            return tts
+        except Exception as e:
+            log_line("Err", e)
+            return None
 
+    def setup_voice(self):
+        try:
+            tts = TTS()
+            return tts
+        except Exception as e:
+            log_line("Err", e)
+            return None
+
+    def voice_to_voice_chat(self):
         async def callback(res, err):
             gen = self.sentance_gen(res)
 
-            await self.tts.speak_gen(gen)
+            try:
+                if not self.tts:
+                    raise NoTTSException("No tts")
 
-        self.voice.start(callback)
+                await self.tts.speak_gen(gen)
+            except NoTTSException as e:
+                log_line("Err", e)
+                self.tts = self.setup_tts()
+                self.tts.backup_speaking()
+            except Exception as e:
+                log_line("Err", e)
+                self.tts = self.setup_tts()
 
-    async def text_chat(self):
-        while True:
-            if os.path.exists("./UPDATE"):
-                break
-            question = input("Q: ")
-            async for item in self._text_gpt_response(question):
-                print(item, end="", flush=True)
-            print()
-
-    async def text_to_voice(self):
-        self.tts = TTS()
-        while True:
-            question = input("Q: ")
-            gen = self.sentance_gen(question)
-
-            self.tts.speak_gen(gen)
+        try:
+            if not self.voice:
+                raise NoVoiceException("No Voice")
+            self.voice.start(callback)
+        except NoVoiceException as e:
+            log_line("Err", e)
+            self.voice = self.setup_voice()
+            self.voice_to_voice_chat()
+        except Exception as e:
+            log_line("Err", e)
+            display_error()
+            handle_error()
 
     async def _text_gpt_response(self, to_gpt):
         message_handler = MessageHandler(self, to_gpt)
@@ -121,7 +122,11 @@ class Assistant:
             yield chunk
 
     def call_function(self, function_id, args=[], kwargs={}):
-        return self.action_dict[function_id]["function"](*args, **kwargs)
+        try:
+            return self.action_dict[function_id]["function"](*args, **kwargs)
+        except Exception as e:
+            log_line("Err", e)
+            return Response(succeeded=False)
 
 
 # Module-level variable to store the shared instance
@@ -130,9 +135,7 @@ assistant = None
 
 # Initialization function to create the instance
 def initialize_assistant():
-    global assistant
-    if assistant is None:
-        assistant = Assistant()
+    def setup_assistant():
         con = sqlite3.connect("skills.db")
 
         cur = con.cursor()
@@ -149,6 +152,17 @@ def initialize_assistant():
         con.commit()
 
         con.close()
+
+    global assistant
+    if assistant is None:
+        assistant = Assistant()
+
+        try:
+            setup_assistant()
+        except Exception as e:
+            log_line("Err", e)
+            display_error()
+            handle_error()
 
         return assistant
 

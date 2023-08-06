@@ -20,3 +20,4 @@ weaviate-client
 watchdog
 python-multipart
 GitPython
+geocoder

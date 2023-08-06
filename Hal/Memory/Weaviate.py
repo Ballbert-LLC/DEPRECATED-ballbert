@@ -4,26 +4,33 @@ import time
 import weaviate
 
 from Config import Config
+from ..Logging import log_line, display_error, handle_error
 
 config = Config()
 
 
 class Weaviate:
     def __init__(self):
-        if platform.system() == "Windows":
-            self.client = weaviate.Client(
-                additional_headers={
-                    "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
-                },
-                url="http://localhost:8080",
-            )
-        else:
-            self.client = weaviate.Client(
-                embedded_options=weaviate.EmbeddedOptions(),
-                additional_headers={
-                    "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
-                },
-            )
+        try:
+            if platform.system() == "Windows":
+                self.client = weaviate.Client(
+                    additional_headers={
+                        "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
+                    },
+                    url="http://localhost:8080",
+                )
+            else:
+                self.client = weaviate.Client(
+                    embedded_options=weaviate.EmbeddedOptions(),
+                    additional_headers={
+                        "X-OpenAI-Api-Key": config["OPENAI_API_KEY"],
+                    },
+                )
+        except Exception as e:
+            log_line("Err", e)
+            display_error()
+            handle_error()
+
         self.vec_num = 0
         self.class_obj = {
             "class": "Action",
@@ -55,11 +62,21 @@ class Weaviate:
         }
 
         if not self.client.schema.contains(self.class_obj):
-            self.client.schema.create_class(self.class_obj)
-        else:
-            if config["CURRENT_STAGE"] == 1:
-                self.client.schema.delete_class("Action")
+            try:
                 self.client.schema.create_class(self.class_obj)
+            except Exception as e:
+                log_line("Err", e)
+                display_error()
+                handle_error()
+        else:
+            try:
+                if config["CURRENT_STAGE"] == 1:
+                    self.clear()
+                    self.client.schema.create_class(self.class_obj)
+            except Exception as e:
+                log_line("Err", e)
+                display_error()
+                handle_error()
 
     def add_list(self, datas: list, skill_name):
         results = datas.copy()
@@ -67,19 +84,22 @@ class Weaviate:
             batch_size=100, weaviate_error_retries=weaviate.WeaviateErrorRetryConf()
         ) as batch:
             for skill_id, data in datas.items():
-                properties = {
-                    "name": data["name"],
-                    "identifier": data["id"],
-                    "skill": skill_name,
-                    "parameters": [
-                        f"{i}: {item.get('description')}"
-                        for i, item in data["parameters"].items()
-                    ],
-                }
+                try:
+                    properties = {
+                        "name": data["name"],
+                        "identifier": data["id"],
+                        "skill": skill_name,
+                        "parameters": [
+                            f"{i}: {item.get('description')}"
+                            for i, item in data["parameters"].items()
+                        ],
+                    }
 
-                results[data["id"]]["uuid"] = self.client.batch.add_data_object(
-                    properties, "Action"
-                )
+                    results[data["id"]]["uuid"] = self.client.batch.add_data_object(
+                        properties, "Action"
+                    )
+                except Exception as e:
+                    raise e
 
                 time.sleep(0.1)
         return results
@@ -97,29 +117,43 @@ class Weaviate:
         :param data: The data to compare to.
         :param num_relevant: The number of relevant data to return. Defaults to 5
         """
-        result = (
-            self.client.query.get("Action", ["name", "identifier", "parameters"])
-            .with_near_text({"concepts": [str(data)]})
-            .with_limit(num_relevant)
-            .do()
-        )
+        try:
+            result = (
+                self.client.query.get("Action", ["name", "identifier", "parameters"])
+                .with_near_text({"concepts": [str(data)]})
+                .with_limit(num_relevant)
+                .do()
+            )
+            return [item["identifier"] for item in result["data"]["Get"]["Action"]]
 
-        return [item["identifier"] for item in result["data"]["Get"]["Action"]]
-
-    def get_stats(self):
-        return self.client.schema()
+        except Exception as e:
+            log_line("Err", e)
+            return []
 
     def delete(self, where={}):
         # default QUORUM
-        self.client.batch.consistency_level = (
-            weaviate.data.replication.ConsistencyLevel.ALL
-        )
+        try:
+            self.client.batch.consistency_level = (
+                weaviate.data.replication.ConsistencyLevel.ALL
+            )
 
-        result = self.client.batch.delete_objects(
-            class_name="Action",
-            # same where operator as in the GraphQL API
-            where=where,
-            output="verbose",
-            dry_run=False,
-        )
-        return result
+            result = self.client.batch.delete_objects(
+                class_name="Action",
+                # same where operator as in the GraphQL API
+                where=where,
+                output="verbose",
+                dry_run=False,
+            )
+            return result
+        except Exception as e:
+            log_line(e)
+
+    def delete_uuids(self, uuuids):
+        for uuid in uuuids:
+            try:
+                self.client.data_object.delete(
+                    uuid=uuid,
+                    class_name="Action",  # Class of the object to be deleted
+                )
+            except Exception as e:
+                log_line("err", e)

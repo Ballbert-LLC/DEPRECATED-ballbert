@@ -16,6 +16,7 @@ import multiprocessing
 
 import websockets
 from Config import Config
+from ..Logging import log_line
 
 config = Config()
 
@@ -137,39 +138,57 @@ class TTS:
         self.sentances.append("%EXIT%")
 
     def send_color(self):
-        async def send_color_to_ws():
-            async with websockets.connect("ws://localhost:8765") as websocket:
-                json_data = json.dumps({"type": "color", "color": "grey"})
+        try:
 
-                await websocket.send(json_data)
+            async def send_color_to_ws():
+                async with websockets.connect("ws://localhost:8765") as websocket:
+                    json_data = json.dumps({"type": "color", "color": "grey"})
 
-        def send_color_factory():
-            try:
-                asyncio.run(send_color_to_ws())
-            except Exception as e:
-                print(e)
+                    await websocket.send(json_data)
 
-        t = threading.Thread(target=send_color_factory)
-        t.start()
-        return t
+            def send_color_factory():
+                try:
+                    asyncio.run(send_color_to_ws())
+                except Exception as e:
+                    raise e
+
+            t = threading.Thread(target=send_color_factory)
+            t.start()
+            return t
+        except Exception as e:
+            log_line("err", e)
+
+    def backup_speaking(self):
+        try:
+            audio = self.proccess_text(
+                "Sorry i'm having trouble right now please try again"
+            )
+            self._play_text(audio)
+        except Exception as e:
+            log_line("err", e)
+            raise e
 
     async def speak_gen(self, gen):
-        with CustomManager() as manager:
-            ttsManger = manager.TTS()
+        try:
+            with CustomManager() as manager:
+                ttsManger = manager.TTS()
 
-            process2 = Process(target=ttsManger.start_loop, args=())
+                process2 = Process(target=ttsManger.start_loop, args=())
 
-            process2.start()
+                process2.start()
 
-            async for item in gen:
-                audio = ttsManger.proccess_text(item[0])
-                ttsManger.add_sentance(item[1], audio)
+                async for item in gen:
+                    audio = ttsManger.proccess_text(item[0])
+                    ttsManger.add_sentance(item[1], audio)
 
-            ttsManger.add_exit_code()
+                ttsManger.add_exit_code()
 
-            while True:
-                if not process2.is_alive():
-                    process2.join()
-                    break
-                time.sleep(0.1)
-        self.send_color()
+                while True:
+                    if not process2.is_alive():
+                        process2.join()
+                        break
+                    time.sleep(0.1)
+            self.send_color()
+        except Exception as e:
+            self.backup_speaking()
+            log_line("err", e)

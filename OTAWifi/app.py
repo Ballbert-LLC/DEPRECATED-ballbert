@@ -37,8 +37,7 @@ def set_wifi_credentials(ssid, password):
 
         return True
     except Exception as e:
-        print(e)
-        return False
+        raise e
 
 
 @app.route("/save_credentials", methods=["GET", "POST"])

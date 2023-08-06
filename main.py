@@ -10,11 +10,9 @@ from fastapi.responses import PlainTextResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.background import BackgroundTask
 from Config import Config
+from Hal.Logging import log_line, display_error, handle_error
 
 config = Config()
-
-# VOICE | TEXT
-MODE = "VOICE"
 
 
 def run_web():
@@ -36,8 +34,7 @@ def run_web():
                 port=5000,
             )
         except Exception as e:
-            print("shut down")
-            print("___________________________________")
+            log_line("Err", e)
 
     # Start the web server
     t = threading.Thread(target=start_web)
@@ -53,28 +50,31 @@ def run_assistant():
 
     from Hal import assistant, initialize_assistant
 
-    assistant_instance = initialize_assistant()
+    try:
+        assistant_instance = initialize_assistant()
+    except Exception as e:
+        log_line("Err", e)
+        display_error()
+        handle_error()
 
     try:
-        assistant_instance.skill_manager.add_skill_from_url(
-            assistant_instance, "https://github.com/seesi8/Personality.git"
-        )
+        assistant_instance.voice_to_voice_chat()
     except Exception as e:
-        print("e", e)
-    try:
-        if MODE == "VOICE":
-            asyncio.run(assistant_instance.voice_to_voice_chat())
-        else:
-            asyncio.run(assistant_instance.text_chat())
-    except Exception as e:
-        print(e)
+        log_line("Err", e)
+        display_error()
+        handle_error()
 
 
 def run_gui():
     # Start the gui
     import GUI
 
-    GUI.run_main()
+    try:
+        GUI.run_main()
+    except Exception as e:
+        log_line("Err", e)
+        display_error()
+        handle_error()
 
 
 def start_setup():
@@ -83,7 +83,9 @@ def start_setup():
     try:
         setup.setup()
     except Exception as e:
-        print(e)
+        log_line("Err", e)
+        display_error()
+        handle_error()
 
 
 def ready_stage():
@@ -130,7 +132,9 @@ def main():
                 update_thread = None
             run_assistant()
     except Exception as e:
-        print(e)
+        log_line("Err", e)
+        display_error()
+        handle_error()
         if update_thread:
             update_thread.kill()
 
@@ -145,4 +149,9 @@ def setup_and_teardown():
 
 
 if __name__ == "__main__":
-    setup_and_teardown()
+    try:
+        setup_and_teardown()
+    except Exception as e:
+        log_line("Err", e)
+        display_error()
+        handle_error()

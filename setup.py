@@ -13,6 +13,7 @@ import shutil
 import speech_recognition as sr
 from pvrecorder import PvRecorder
 import speech_recognition as sr
+import geocoder
 
 
 def rmtree_hard(path, _prev=""):
@@ -73,9 +74,13 @@ def setup():
 
     setup_database()
 
+    g = geocoder.ip("me")
+
     config["TEMPATURE"] = 0.5
     config["PV_MIC"] = 1
     config["SR_MIC"] = 1
+    config["CITY"] = g.city
+    config["COUNTRY"] = g.country
 
     # Check if config is all setup
     while True:
