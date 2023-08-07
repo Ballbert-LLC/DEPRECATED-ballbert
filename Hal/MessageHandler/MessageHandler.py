@@ -20,6 +20,8 @@ class MessageHandler:
         self.assistant = assistant
         self.gpt_response = gpt_response
 
+        openai.api_key = config["OPENAI_API_KEY"]
+
     def get_functions(self, message):
         relevant_ids = self.assistant.pm.get_relevant(message)
         relevant_actions = {

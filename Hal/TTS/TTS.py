@@ -20,8 +20,6 @@ from ..Logging import log_line
 
 config = Config()
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config["GOOGLE_APPLICATION_CREDENTIALS"]
-
 
 class CustomManager(BaseManager):
     # nothing
@@ -82,6 +80,9 @@ class UnfixedList(list):
 class TTS:
     def __init__(self) -> None:
         self.sentances = UnfixedList()
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config[
+            "GOOGLE_APPLICATION_CREDENTIALS"
+        ]
         CustomManager.register("TTS", TTS)
 
     def add_sentance(self, index, text):
