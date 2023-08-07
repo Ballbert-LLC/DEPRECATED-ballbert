@@ -131,6 +131,7 @@ def main():
             else:
                 update_thread = None
             run_assistant()
+            break
     except Exception as e:
         log_line("Err", e)
         display_error()

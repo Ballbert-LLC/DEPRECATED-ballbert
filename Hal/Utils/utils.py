@@ -57,6 +57,17 @@ def get_functions_list(action_dict):
         functions.append(new_dict)
     log_line(f"F: {functions}")
 
+    system_functions = [
+        {
+            "name": "placeholder",
+            "description": "DO NOT USE",
+            "parameters": {"type": "object", "properties": {}},
+        }
+    ]
+
+    for system_function in system_functions:
+        functions.append(system_function)
+
     return functions
 
 

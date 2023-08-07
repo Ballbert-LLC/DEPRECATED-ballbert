@@ -10,6 +10,7 @@ from ..Logging import log_line
 from ..Memory import Weaviate
 from ..MessageHandler import MessageHandler
 from ..TTS import TTS
+from ..Voice import Voice
 from .SkillMangager import SkillMangager
 
 repos_path = f"{os.path.abspath(os.getcwd())}/Skills"
@@ -47,8 +48,8 @@ class Assistant:
         self.installed_skills = dict()
         self.action_dict = dict()
         self.skill_manager = skill_manager
-        self.voice = None
-        self.tts = None
+        self.voice = voice
+        self.tts = tts
         self.speak_mode = False
         self.current_callback = None
 
@@ -79,8 +80,8 @@ class Assistant:
 
     def setup_voice(self):
         try:
-            tts = TTS()
-            return tts
+            voice = Voice()
+            return voice
         except Exception as e:
             log_line("Err", e)
             return None
@@ -90,7 +91,7 @@ class Assistant:
             gen = self.sentance_gen(res)
 
             try:
-                if not self.tts:
+                if self.tts == None:
                     raise NoTTSException("No tts")
 
                 await self.tts.speak_gen(gen)
@@ -103,7 +104,9 @@ class Assistant:
                 self.tts = self.setup_tts()
 
         try:
-            if not self.voice:
+            print(self.voice)
+            if self.voice == None:
+                print("no voice", self.voice)
                 raise NoVoiceException("No Voice")
             self.voice.start(callback)
         except NoVoiceException as e:

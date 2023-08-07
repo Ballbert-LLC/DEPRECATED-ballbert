@@ -13,7 +13,7 @@ def log_line(message, *args):
             open("./logs.txt", "w")
         for arg in args:
             try:
-                message += arg
+                message += str(arg)
             except Exception as e:
                 pass
         with open("./logs.txt", "a", encoding="utf-8") as f1:

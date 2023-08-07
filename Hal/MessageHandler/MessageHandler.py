@@ -87,7 +87,7 @@ class MessageHandler:
                         function_result = function_result.data
                     else:
                         function_result = "error" + function_result.data
-                        log_line("function found error: ", function_result.data)
+                        log_line("function found error: ", function_result)
 
                     function_message_handler = MessageHandler(
                         self.assistant, self.gpt_response

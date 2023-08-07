@@ -23,7 +23,7 @@ class Voice:
     def __init__(self) -> None:
         self.porcupine = self.create_pvporcupine()
 
-    def create_pvporcupine():
+    def create_pvporcupine(self):
         try:
             system = platform.system()
 
@@ -68,7 +68,7 @@ class Voice:
                     try:
                         asyncio.run(send_color_to_ws(color))
                     except Exception as e:
-                        raise e
+                        log_line("err", e)
 
                 t = threading.Thread(target=send_color_factory, args=(color,))
                 t.start()
